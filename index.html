@@ -1,0 +1,821 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>LottoOracle</title>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --bg:         #09101F;
+  --surface:    #101826;
+  --surface2:   #141F30;
+  --surface3:   #192538;
+  --border:     rgba(255,255,255,0.07);
+  --border-hi:  rgba(255,255,255,0.13);
+  --blue:       #3B82F6;
+  --blue-dim:   rgba(59,130,246,0.12);
+  --blue-glow:  rgba(59,130,246,0.22);
+  --pink:       #EC4899;
+  --pink-dim:   rgba(236,72,153,0.12);
+  --purple:     #8B5CF6;
+  --text:       #E8EEF8;
+  --text-mid:   #7A8699;
+  --text-dim:   #3E4A5C;
+  --green:      #34D399;
+  --amber:      #FBBF24;
+  --r:          16px;
+  --rm:         11px;
+  --ease:       cubic-bezier(0.4,0,0.2,1);
+}
+html { font-size: 16px; -webkit-tap-highlight-color: transparent; }
+body { background: var(--bg); color: var(--text); font-family: 'Sora', -apple-system, sans-serif; min-height: 100vh; overflow-x: hidden; }
+
+/* ambient */
+.amb { position: fixed; inset: 0; z-index: 0; pointer-events: none; overflow: hidden; }
+.ab { position: absolute; border-radius: 50%; filter: blur(90px); }
+.ab1 { width: 380px; height: 380px; background: radial-gradient(circle, #1D4ED8, transparent 70%); top: -130px; left: -60px; opacity: .10; }
+.ab2 { width: 300px; height: 300px; background: radial-gradient(circle, #7C3AED, transparent 70%); bottom: 80px; right: -80px; opacity: .07; }
+
+/* layout */
+.page { position: relative; z-index: 1; max-width: 430px; margin: 0 auto; padding: 0 18px 70px; }
+
+/* header */
+.hdr { padding: 44px 0 28px; text-align: center; }
+.logo { width: 46px; height: 46px; margin: 0 auto 14px; border-radius: 50%; background: linear-gradient(135deg, rgba(59,130,246,.18), rgba(139,92,246,.14)); border: 1.5px solid rgba(99,179,237,.25); display: flex; align-items: center; justify-content: center; animation: logoPulse 3.5s ease-in-out infinite; }
+@keyframes logoPulse { 0%,100%{box-shadow:0 0 0 0 rgba(59,130,246,.12)} 50%{box-shadow:0 0 0 10px rgba(59,130,246,0)} }
+.logo-dot { width: 18px; height: 18px; border-radius: 50%; background: linear-gradient(135deg, #60A5FA, #8B5CF6); }
+.hdr-name { font-size: 26px; font-weight: 700; letter-spacing: -.025em; color: var(--text); }
+.hdr-name em { color: var(--blue); font-style: normal; }
+.hdr-sub { font-size: 13px; font-weight: 300; color: var(--text-mid); margin-top: 5px; }
+
+/* game selector */
+.game-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 14px; }
+.game-btn {
+  background: var(--surface); border: 1.5px solid var(--border);
+  border-radius: var(--r); padding: 18px 14px 16px; cursor: pointer;
+  text-align: center; transition: all .22s var(--ease); position: relative; overflow: hidden;
+}
+.game-btn::after { content: ''; position: absolute; inset: 0; border-radius: inherit; opacity: 0; transition: opacity .22s; }
+.game-btn.euro::after  { background: linear-gradient(135deg,rgba(59,130,246,.1),transparent); }
+.game-btn.uk::after    { background: linear-gradient(135deg,rgba(236,72,153,.1),transparent); }
+.game-btn.active::after { opacity: 1; }
+.game-btn.active.euro  { border-color: var(--blue); box-shadow: 0 0 0 1px rgba(59,130,246,.18), 0 6px 20px rgba(59,130,246,.1); }
+.game-btn.active.uk    { border-color: var(--pink); box-shadow: 0 0 0 1px rgba(236,72,153,.18), 0 6px 20px rgba(236,72,153,.1); }
+.game-btn:hover:not(.active) { border-color: var(--border-hi); transform: translateY(-1px); }
+.game-flag { font-size: 26px; display: block; margin-bottom: 6px; }
+.game-name { font-size: 14px; font-weight: 600; display: block; color: var(--text); }
+.game-btn.active.euro .game-name { color: #93C5FD; }
+.game-btn.active.uk   .game-name { color: #F9A8D4; }
+.game-fmt { font-size: 10.5px; font-family: 'DM Mono', monospace; color: var(--text-dim); display: block; margin-top: 2px; }
+.game-chk { position: absolute; top: 9px; right: 11px; width: 17px; height: 17px; border-radius: 50%; font-size: 9px; display: flex; align-items: center; justify-content: center; opacity: 0; transform: scale(.4); transition: all .22s var(--ease); }
+.game-btn.active.euro .game-chk { background: var(--blue); opacity: 1; transform: scale(1); }
+.game-btn.active.uk   .game-chk { background: var(--pink); opacity: 1; transform: scale(1); }
+
+/* draw target strip */
+.draw-strip {
+  background: var(--surface2); border: 1px solid var(--border); border-radius: var(--rm);
+  padding: 11px 14px; margin-bottom: 14px;
+  display: flex; align-items: center; justify-content: space-between;
+}
+.draw-strip-left { display: flex; align-items: center; gap: 8px; }
+.draw-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--green); flex-shrink: 0; animation: blink 2s ease-in-out infinite; }
+@keyframes blink { 0%,100%{opacity:1} 50%{opacity:.3} }
+.draw-label { font-size: 13px; font-weight: 500; color: var(--text); }
+.draw-sub { font-size: 11px; font-family: 'DM Mono', monospace; color: var(--text-mid); margin-top: 1px; }
+.draw-countdown { font-family: 'DM Mono', monospace; font-size: 11px; color: var(--text-dim); text-align: right; }
+
+/* practice mode toggle */
+.practice-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; padding: 0 2px; }
+.practice-label { font-size: 12.5px; color: var(--text-mid); display: flex; align-items: center; gap: 6px; }
+.practice-label svg { opacity: .6; }
+.toggle { width: 38px; height: 22px; border-radius: 11px; background: var(--surface3); border: 1px solid var(--border-hi); position: relative; cursor: pointer; transition: background .2s; flex-shrink: 0; }
+.toggle.on { background: rgba(52,211,153,.25); border-color: rgba(52,211,153,.4); }
+.toggle-knob { position: absolute; top: 2px; left: 2px; width: 16px; height: 16px; border-radius: 50%; background: var(--text-dim); transition: all .2s var(--ease); }
+.toggle.on .toggle-knob { left: 18px; background: var(--green); }
+.practice-badge { display: none; font-size: 10px; font-family: 'DM Mono', monospace; padding: 2px 7px; border-radius: 4px; background: rgba(52,211,153,.12); border: 1px solid rgba(52,211,153,.25); color: var(--green); margin-left: 6px; }
+.practice-badge.show { display: inline-block; }
+
+/* main generate button */
+.gen-btn {
+  width: 100%; padding: 17px 20px;
+  background: linear-gradient(135deg, #2563EB, #1D4ED8);
+  border: none; border-radius: var(--r);
+  color: #fff; font-family: 'Sora', sans-serif; font-size: 15.5px; font-weight: 600; letter-spacing: -.01em;
+  cursor: pointer; position: relative; overflow: hidden;
+  box-shadow: 0 6px 28px rgba(37,99,235,.32), inset 0 1px 0 rgba(255,255,255,.1);
+  transition: all .22s var(--ease); margin-bottom: 10px;
+}
+.gen-btn::after { content: ''; position: absolute; inset: 0; background: linear-gradient(135deg, rgba(255,255,255,.08), transparent); opacity: 0; transition: opacity .2s; }
+.gen-btn:hover::after { opacity: 1; }
+.gen-btn:hover { transform: translateY(-2px); box-shadow: 0 10px 32px rgba(37,99,235,.4); }
+.gen-btn:active { transform: scale(.98); }
+.gen-btn:disabled { opacity: .45; cursor: not-allowed; transform: none; box-shadow: none; }
+
+/* refresh button */
+.refresh-btn {
+  width: 100%; padding: 11px 16px;
+  background: transparent; border: 1px solid var(--border-hi);
+  border-radius: var(--rm); color: var(--text-mid);
+  font-family: 'Sora', sans-serif; font-size: 13px; font-weight: 500;
+  cursor: pointer; transition: all .2s var(--ease); margin-bottom: 22px;
+  display: none;
+}
+.refresh-btn.show { display: block; }
+.refresh-btn:hover { border-color: rgba(255,255,255,.22); color: var(--text); background: rgba(255,255,255,.03); }
+.refresh-btn:active { transform: scale(.98); }
+
+/* loading */
+.loading { display: none; text-align: center; padding: 36px 0; }
+.loading.show { display: block; animation: fadeIn .3s ease; }
+.orbs { display: flex; justify-content: center; gap: 9px; margin-bottom: 16px; }
+.orb { width: 9px; height: 9px; border-radius: 50%; background: var(--blue); animation: orbPop 1.2s ease-in-out infinite; }
+.orb:nth-child(2) { animation-delay: .18s; background: var(--purple); }
+.orb:nth-child(3) { animation-delay: .36s; background: var(--blue); }
+@keyframes orbPop { 0%,100%{transform:scale(.55);opacity:.35} 50%{transform:scale(1.15);opacity:1} }
+.load-txt { font-size: 13.5px; font-weight: 300; color: var(--text-mid); }
+
+/* results */
+.results { display: none; }
+.results.show { display: block; animation: slideUp .45s cubic-bezier(.34,1.1,.64,1); }
+@keyframes slideUp { from{opacity:0;transform:translateY(18px)} to{opacity:1;transform:translateY(0)} }
+
+.results-hdr { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
+.results-title { font-size: 12px; font-weight: 500; color: var(--text-mid); letter-spacing: .03em; text-transform: uppercase; }
+.results-for { font-size: 12px; font-weight: 500; color: var(--text-mid); }
+.results-locked { display: flex; align-items: center; gap: 5px; font-size: 10.5px; font-family: 'DM Mono', monospace; color: var(--text-dim); }
+.lock-icon { font-size: 10px; }
+
+/* line cards */
+.line-card {
+  background: var(--surface); border: 1.5px solid var(--border);
+  border-radius: var(--r); padding: 15px 14px 14px;
+  margin-bottom: 9px; position: relative; overflow: hidden;
+  animation: cardIn .38s cubic-bezier(.34,1.15,.64,1) backwards;
+  transition: border-color .2s, transform .2s;
+}
+.line-card:hover { transform: translateY(-1px); border-color: var(--border-hi); }
+.line-card:nth-child(1){animation-delay:.04s}
+.line-card:nth-child(2){animation-delay:.10s}
+.line-card:nth-child(3){animation-delay:.16s}
+.line-card:nth-child(4){animation-delay:.22s}
+.line-card:nth-child(5){animation-delay:.28s}
+@keyframes cardIn { from{opacity:0;transform:translateY(14px) scale(.97)} to{opacity:1;transform:translateY(0) scale(1)} }
+.line-card.top { background: linear-gradient(145deg, #0F1C35, #0D1929); border-color: rgba(59,130,246,.28); }
+.line-card.top::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px; background: linear-gradient(90deg, transparent, #3B82F6, transparent); }
+
+.line-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
+.line-rank { font-size: 10.5px; font-weight: 500; font-family: 'DM Mono', monospace; color: var(--text-dim); letter-spacing: .07em; }
+.line-card.top .line-rank { color: var(--blue); }
+.score-chip { display: flex; align-items: center; gap: 5px; background: rgba(255,255,255,.04); border: 1px solid var(--border); border-radius: 20px; padding: 3px 9px; }
+.score-chip-lbl { font-size: 9.5px; font-family: 'DM Mono', monospace; color: var(--text-dim); }
+.score-chip-val { font-size: 13px; font-weight: 600; font-family: 'DM Mono', monospace; color: var(--text); }
+.line-card.top .score-chip { background: rgba(59,130,246,.08); border-color: rgba(59,130,246,.2); }
+.line-card.top .score-chip-val { color: #93C5FD; }
+
+.bar-wrap { height: 2px; background: rgba(255,255,255,.04); border-radius: 1px; margin-bottom: 11px; overflow: hidden; }
+.bar-fill { height: 100%; border-radius: 1px; background: rgba(99,179,237,.55); transition: width .8s cubic-bezier(.34,1.56,.64,1); }
+.line-card.top .bar-fill { background: linear-gradient(90deg, #3B82F6, #93C5FD); }
+
+/* match highlight on line card */
+.line-card.has-match { border-color: rgba(52,211,153,.25); }
+.line-match-tag { font-size: 10px; font-family: 'DM Mono', monospace; color: var(--green); margin-top: 9px; display: flex; align-items: center; gap: 5px; }
+.line-match-tag::before { content: '✓'; }
+
+/* balls */
+.nums { display: flex; align-items: center; gap: 5px; flex-wrap: wrap; }
+.ball {
+  width: 38px; height: 38px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'DM Mono', monospace; font-size: 13px; font-weight: 500;
+  position: relative; flex-shrink: 0;
+  animation: ballPop .32s cubic-bezier(.34,1.56,.64,1) backwards;
+  transition: transform .15s ease;
+}
+.ball:hover { transform: scale(1.08); }
+.ball::after { content: ''; position: absolute; top: 4px; left: 6px; width: 8px; height: 5px; border-radius: 50%; background: rgba(255,255,255,.17); transform: rotate(-30deg); }
+.ball.main { background: linear-gradient(145deg, #1E3A6E, #1E40AF); border: 1px solid rgba(99,179,237,.22); color: #A8C8F4; box-shadow: 0 2px 7px rgba(30,58,138,.45); }
+.ball.bonus { background: linear-gradient(145deg, #3B1D6E, #6D28D9); border: 1px solid rgba(139,92,246,.3); color: #C4B5FD; box-shadow: 0 2px 7px rgba(109,40,217,.4); }
+.ball.matched { border-color: var(--green) !important; box-shadow: 0 0 10px rgba(52,211,153,.4) !important; }
+@keyframes ballPop { from{opacity:0;transform:scale(.3)} to{opacity:1;transform:scale(1)} }
+.plus { font-size: 14px; color: var(--text-dim); font-weight: 300; flex-shrink: 0; padding: 0 1px; }
+
+/* footer note */
+.foot-note { text-align: center; font-size: 12px; font-weight: 300; color: var(--text-dim); margin-top: 12px; margin-bottom: 24px; }
+
+/* ── COMPARISON PANEL ── */
+.compare-panel {
+  background: var(--surface2); border: 1px solid var(--border);
+  border-radius: var(--r); padding: 16px; margin-bottom: 22px;
+  display: none;
+}
+.compare-panel.show { display: block; animation: fadeIn .3s ease; }
+.cp-title { font-size: 12px; font-weight: 600; color: var(--text-mid); letter-spacing: .04em; text-transform: uppercase; margin-bottom: 12px; }
+.cp-row { display: flex; align-items: flex-start; gap: 10px; }
+.cp-col { flex: 1; }
+.cp-col-label { font-size: 10px; font-family: 'DM Mono', monospace; color: var(--text-dim); letter-spacing: .08em; text-transform: uppercase; margin-bottom: 7px; }
+.cp-balls { display: flex; gap: 4px; flex-wrap: wrap; }
+.cp-divider { width: 1px; background: var(--border); align-self: stretch; flex-shrink: 0; margin: 0 4px; }
+.cp-summary { margin-top: 12px; padding-top: 11px; border-top: 1px solid var(--border); font-size: 13px; color: var(--text-mid); }
+.cp-summary strong { color: var(--green); }
+.cp-input-area { margin-top: 12px; }
+.cp-input-label { font-size: 11px; font-family: 'DM Mono', monospace; color: var(--text-dim); margin-bottom: 5px; letter-spacing: .06em; }
+.cp-input { width: 100%; background: var(--surface); border: 1px solid var(--border-hi); border-radius: var(--rm); padding: 9px 12px; color: var(--text); font-family: 'DM Mono', monospace; font-size: 13px; outline: none; transition: border-color .2s; margin-bottom: 6px; }
+.cp-input:focus { border-color: rgba(99,179,237,.4); }
+.cp-input::placeholder { color: var(--text-dim); }
+.cp-save-btn { width: 100%; padding: 10px; background: rgba(59,130,246,.1); border: 1px solid rgba(59,130,246,.25); border-radius: var(--rm); color: #93C5FD; font-family: 'Sora', sans-serif; font-size: 13px; font-weight: 500; cursor: pointer; transition: all .2s; }
+.cp-save-btn:hover { background: rgba(59,130,246,.16); }
+
+/* ── HISTORY SECTION ── */
+.section-title {
+  font-size: 12px; font-weight: 600; color: var(--text-mid);
+  letter-spacing: .06em; text-transform: uppercase;
+  margin-bottom: 12px; display: flex; align-items: center; gap: 8px;
+}
+.section-title::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+
+.hist-card {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: var(--r); overflow: hidden; margin-bottom: 22px;
+}
+.hist-row {
+  display: flex; align-items: center; gap: 8px;
+  padding: 11px 14px; border-bottom: 1px solid rgba(255,255,255,.04);
+  flex-wrap: wrap;
+}
+.hist-row:last-child { border-bottom: none; }
+.hist-date { font-family: 'DM Mono', monospace; font-size: 10.5px; color: var(--text-dim); min-width: 56px; flex-shrink: 0; }
+.hist-balls { display: flex; gap: 4px; flex-wrap: wrap; align-items: center; }
+.hball { width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-family: 'DM Mono', monospace; font-size: 10px; font-weight: 500; flex-shrink: 0; }
+.hball.main  { background: linear-gradient(145deg, #162D54, #1E3A72); border: 1px solid rgba(99,179,237,.18); color: #93B8E0; }
+.hball.bonus { background: linear-gradient(145deg, #2D1655, #5B21B6); border: 1px solid rgba(139,92,246,.22); color: #B4A0E0; }
+.hball.plus  { background: none; border: none; font-size: 11px; color: var(--text-dim); width: 12px; }
+
+/* disclaimer */
+.disc { text-align: center; font-size: 11px; color: var(--text-dim); opacity: .5; padding: 0 12px; line-height: 1.65; }
+
+@keyframes fadeIn { from{opacity:0} to{opacity:1} }
+@media(max-width:360px){
+  .ball{width:34px;height:34px;font-size:12px;}
+  .hball{width:25px;height:25px;font-size:9px;}
+  .hdr-name{font-size:23px;}
+}
+</style>
+</head>
+<body>
+<div class="amb"><div class="ab ab1"></div><div class="ab ab2"></div></div>
+<div class="page">
+
+<!-- HEADER -->
+<header class="hdr">
+  <div class="logo"><div class="logo-dot"></div></div>
+  <h1 class="hdr-name">Lotto<em>Oracle</em></h1>
+  <p class="hdr-sub">Smart line generator · EuroMillions &amp; UK Lotto</p>
+</header>
+
+<!-- GAME SELECTOR -->
+<div class="game-grid">
+  <button class="game-btn euro active" data-game="euromillions" onclick="selectGame(this)">
+    <div class="game-chk">✓</div>
+    <span class="game-flag">🇪🇺</span>
+    <span class="game-name">EuroMillions</span>
+    <span class="game-fmt">5 + 2 stars</span>
+  </button>
+  <button class="game-btn uk" data-game="uklotto" onclick="selectGame(this)">
+    <div class="game-chk">✓</div>
+    <span class="game-flag">🇬🇧</span>
+    <span class="game-name">UK Lotto</span>
+    <span class="game-fmt">6 + bonus</span>
+  </button>
+</div>
+
+<!-- DRAW TARGET STRIP -->
+<div class="draw-strip" id="drawStrip">
+  <div class="draw-strip-left">
+    <div class="draw-dot"></div>
+    <div>
+      <div class="draw-label" id="drawLabel">Next draw</div>
+      <div class="draw-sub" id="drawSub">Calculating…</div>
+    </div>
+  </div>
+  <div class="draw-countdown" id="drawCountdown"></div>
+</div>
+
+<!-- PRACTICE MODE -->
+<div class="practice-row">
+  <span class="practice-label">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 12l2 2 4-4"/><circle cx="12" cy="12" r="10"/></svg>
+    Practice / Track mode
+    <span class="practice-badge" id="practiceBadge">ON</span>
+  </span>
+  <div class="toggle" id="practiceToggle" onclick="togglePractice()">
+    <div class="toggle-knob"></div>
+  </div>
+</div>
+
+<!-- GENERATE BUTTON -->
+<button class="gen-btn" id="genBtn" onclick="generate()">
+  ✦ &nbsp;Generate Best Lines
+</button>
+
+<!-- REFRESH BUTTON -->
+<button class="refresh-btn" id="refreshBtn" onclick="forceRefresh()">
+  ↺ &nbsp;Refresh Picks
+</button>
+
+<!-- LOADING -->
+<div class="loading" id="loading">
+  <div class="orbs"><div class="orb"></div><div class="orb"></div><div class="orb"></div></div>
+  <div class="load-txt" id="loadTxt">Analysing patterns…</div>
+</div>
+
+<!-- RESULTS -->
+<div class="results" id="results">
+  <div class="results-hdr">
+    <span class="results-title" id="resultsTitle">Top 5 Lines</span>
+    <span class="results-locked"><span class="lock-icon">🔒</span> Locked to draw</span>
+  </div>
+  <div id="linesList"></div>
+  <p class="foot-note">Lines ranked by spread quality and pattern balance.</p>
+
+  <!-- COMPARE PANEL -->
+  <div class="compare-panel" id="comparePanel">
+    <div class="cp-title">Your picks vs actual draw</div>
+    <div id="cpContent"></div>
+  </div>
+</div>
+
+<!-- HISTORY -->
+<div id="historySection" style="display:none">
+  <div class="section-title">Recent Draw History</div>
+  <div class="hist-card" id="histList"></div>
+</div>
+
+<p class="disc">For entertainment and statistical exploration only. Lottery draws are random. Past patterns do not predict future outcomes.</p>
+</div>
+
+<script>
+/* ═══════════════════════════════════════════
+   CONFIG
+═══════════════════════════════════════════ */
+const GAMES = {
+  euromillions: {
+    name: 'EuroMillions', short: 'EURO',
+    mainCount: 5, mainMax: 50,
+    bonusCount: 2, bonusMax: 12, bonusLabel: 'Lucky Stars',
+    drawDays: [2, 5], // Tue=2, Fri=5
+    drawDayNames: ['Tuesday', 'Friday'],
+    drawTime: '21:00'
+  },
+  uklotto: {
+    name: 'UK Lotto', short: 'LOTTO',
+    mainCount: 6, mainMax: 59,
+    bonusCount: 1, bonusMax: 59, bonusLabel: 'Bonus Ball',
+    drawDays: [3, 6], // Wed=3, Sat=6
+    drawDayNames: ['Wednesday', 'Saturday'],
+    drawTime: '20:00'
+  }
+};
+
+const DAY_NAMES = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+
+/* ═══════════════════════════════════════════
+   STATE
+═══════════════════════════════════════════ */
+let S = {
+  game: 'euromillions',
+  practice: false,
+  locked: null,   // { lines, drawDate (YYYY-MM-DD), drawLabel, game }
+  savedActual: null, // { main, bonus }
+};
+
+/* ═══════════════════════════════════════════
+   DRAW DATE LOGIC
+═══════════════════════════════════════════ */
+function getNextDrawInfo(gameId) {
+  const cfg = GAMES[gameId];
+  const now = new Date();
+  const todayDay = now.getDay(); // 0=Sun
+  const todayDate = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+
+  let minDiff = 8, targetDay = cfg.drawDays[0];
+  for (const d of cfg.drawDays) {
+    let diff = d - todayDay;
+    if (diff < 0) diff += 7;
+    // If today is a draw day, check if draw time has passed
+    if (diff === 0) {
+      const [h, m] = cfg.drawTime.split(':').map(Number);
+      const drawTimeToday = new Date(now.getFullYear(), now.getMonth(), now.getDate(), h, m);
+      if (now >= drawTimeToday) diff = 7; // already passed, next week
+    }
+    if (diff < minDiff) { minDiff = diff; targetDay = d; }
+  }
+
+  const drawDate = new Date(todayDate);
+  drawDate.setDate(todayDate.getDate() + minDiff);
+
+  const dayName = DAY_NAMES[targetDay];
+  const dateStr = drawDate.toLocaleDateString('en-GB', { day: '2-digit', month: 'short' });
+  const dateKey = drawDate.toISOString().split('T')[0];
+
+  return { dayName, dateStr, dateKey, daysAway: minDiff };
+}
+
+function getCountdownText(daysAway) {
+  if (daysAway === 0) return 'Draw today';
+  if (daysAway === 1) return 'Tomorrow';
+  return `In ${daysAway} days`;
+}
+
+function updateDrawStrip() {
+  const cfg = GAMES[S.game];
+  const info = getNextDrawInfo(S.game);
+  document.getElementById('drawLabel').textContent = `Best picks for ${info.dayName} draw`;
+  document.getElementById('drawSub').textContent = `${cfg.name} · ${info.dateStr} · ${cfg.drawTime}`;
+  document.getElementById('drawCountdown').textContent = getCountdownText(info.daysAway);
+}
+
+/* ═══════════════════════════════════════════
+   HISTORY GENERATION (simulated realistic)
+═══════════════════════════════════════════ */
+function buildBias(max) {
+  const b = {};
+  for (let i = 1; i <= max; i++) {
+    const p = i / max;
+    b[i] = Math.max(0.2, 0.5 + Math.sin(p * Math.PI) + (Math.random() - 0.5) * 0.85);
+  }
+  return b;
+}
+
+function wSample(max, count, bias, exclude = []) {
+  const pool = []; for (let i = 1; i <= max; i++) if (!exclude.includes(i)) pool.push(i);
+  const sel = []; const av = [...pool];
+  while (sel.length < count && av.length > 0) {
+    const ws = av.map(n => bias[n] || 1);
+    const t = ws.reduce((a, b) => a + b, 0); let r = Math.random() * t;
+    for (let i = 0; i < av.length; i++) { r -= ws[i]; if (r <= 0) { sel.push(av[i]); av.splice(i, 1); break; } }
+  }
+  return sel.sort((a, b) => a - b);
+}
+
+function shuffle(a) { const b=[...a]; for(let i=b.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[b[i],b[j]]=[b[j],b[i]];} return b; }
+
+function generateDrawHistory(gameId) {
+  const cfg = GAMES[gameId];
+  const mBias = buildBias(cfg.mainMax);
+  const bBias = buildBias(cfg.bonusMax);
+  const draws = [];
+  const now = new Date();
+
+  // Walk backwards from today, hitting only draw days
+  const drawDays = cfg.drawDays;
+  let scanDate = new Date(now); scanDate.setHours(0,0,0,0);
+  let count = 0;
+  while (count < 15) {
+    scanDate.setDate(scanDate.getDate() - 1);
+    if (drawDays.includes(scanDate.getDay())) {
+      draws.push({
+        date: new Date(scanDate),
+        main: wSample(cfg.mainMax, cfg.mainCount, mBias),
+        bonus: wSample(cfg.bonusMax, cfg.bonusCount, bBias)
+      });
+      count++;
+    }
+  }
+  return draws;
+}
+
+/* ═══════════════════════════════════════════
+   LINE GENERATION + SCORING
+═══════════════════════════════════════════ */
+function scoreLine(nums, cfg, mf, lastSeen) {
+  const sorted = [...nums].sort((a, b) => a - b);
+  const count = nums.length;
+
+  const odds = nums.filter(n => n % 2 !== 0).length;
+  const oeScore = Math.round(20 * (1 - Math.abs(odds - count / 2) / (count / 2)));
+
+  const mid = cfg.mainMax / 2;
+  const low = nums.filter(n => n <= mid).length;
+  const lhScore = Math.round(20 * (1 - Math.min(1, Math.abs(low - count / 2) / (count / 2))));
+
+  const gaps = []; for (let i = 1; i < sorted.length; i++) gaps.push(sorted[i] - sorted[i-1]);
+  const avgGap = gaps.reduce((a, b) => a + b, 0) / gaps.length;
+  const minGap = Math.min(...gaps);
+  const idealGap = cfg.mainMax / count;
+  const spacingScore = Math.round(20 * (1 - Math.min(1, Math.abs(avgGap - idealGap) / idealGap))) - (minGap <= 1 ? 8 : minGap <= 2 ? 3 : 0);
+
+  const avgF = Object.values(mf).reduce((a, b) => a + b, 0) / cfg.mainMax;
+  const selF = nums.reduce((s, n) => s + (mf[n] || 0), 0) / count;
+  const freqScore = Math.round(20 * (1 - Math.min(1, Math.abs(selF - avgF) / Math.max(1, avgF))));
+
+  const avgLS = nums.reduce((s, n) => s + (lastSeen[n] || 0), 0) / count;
+  const overdueScore = Math.round(Math.min(20, avgLS * 0.9));
+
+  let penalty = 0;
+  let run = 1;
+  for (let i = 1; i < sorted.length; i++) { if (sorted[i] === sorted[i-1]+1) run++; else run=1; if (run>=3){penalty+=10;break;} }
+  if (cfg.mainMax > 31 && nums.filter(n => n > 31).length < 2) penalty += 8;
+
+  const raw = oeScore + lhScore + Math.max(0, spacingScore) + freqScore + overdueScore - penalty;
+  return Math.max(30, Math.min(95, raw));
+}
+
+function genCandidate(cfg, sortedMain, sortedBonus, mf, lastSeen, style) {
+  const n = sortedMain.length;
+  let pool;
+  if (style === 'hot') pool = sortedMain.slice(0, Math.floor(n*.35));
+  else if (style === 'cold') pool = sortedMain.slice(Math.floor(n*.65));
+  else if (style === 'overdue') pool = Object.entries(lastSeen).sort((a,b)=>b[1]-a[1]).slice(0,Math.floor(n*.35));
+  else {
+    pool = [...sortedMain.slice(0,Math.floor(n*.3)), ...sortedMain.slice(Math.floor(n*.7)), ...sortedMain.slice(Math.floor(n*.3),Math.floor(n*.7)).slice(0,8)];
+  }
+  if (!pool || pool.length < cfg.mainCount) pool = [...sortedMain];
+
+  const av = pool.map(e=>({n:+e[0],f:e[1]}));
+  const sel=[]; const af=[...av];
+  while (sel.length < cfg.mainCount && af.length > 0) {
+    const ws=af.map(x=>Math.max(.1,x.f)+Math.random()*3);
+    const t=ws.reduce((a,b)=>a+b,0); let r=Math.random()*t;
+    for(let i=0;i<af.length;i++){r-=ws[i];if(r<=0){sel.push(af[i].n);af.splice(i,1);break;}}
+  }
+  // Birthday avoidance
+  if (cfg.mainMax > 31) {
+    const ab31 = sel.filter(n=>n>31).length;
+    if (ab31 < 2) {
+      const lowI = sel.map((n,i)=>[n,i]).filter(([n])=>n<=31).sort(()=>Math.random()-.5);
+      const avail=[]; for(let n=32;n<=cfg.mainMax;n++) if(!sel.includes(n)) avail.push(n);
+      avail.sort(()=>Math.random()-.5);
+      for(let i=0;i<Math.min(2-ab31,lowI.length,avail.length);i++) sel[lowI[i][1]]=avail[i];
+    }
+  }
+  sel.sort((a,b)=>a-b);
+  const bPool=sortedBonus.slice(0,Math.ceil(sortedBonus.length*.6)).map(([k])=>+k);
+  const bonus=shuffle(bPool).slice(0,cfg.bonusCount).sort((a,b)=>a-b);
+  return {main:sel,bonus};
+}
+
+function buildLines(gameId) {
+  const cfg = GAMES[gameId];
+  const draws = generateDrawHistory(gameId);
+  const mf={},bf={};
+  for(let i=1;i<=cfg.mainMax;i++) mf[i]=0;
+  for(let i=1;i<=cfg.bonusMax;i++) bf[i]=0;
+  draws.forEach(d=>{d.main.forEach(n=>mf[n]++);d.bonus.forEach(n=>bf[n]++);});
+  const lastSeen={};
+  for(let i=1;i<=cfg.mainMax;i++) lastSeen[i]=draws.length;
+  draws.forEach((d,idx)=>{d.main.forEach(n=>{if(lastSeen[n]===draws.length)lastSeen[n]=idx;});});
+  const sortedMain=Object.entries(mf).sort((a,b)=>b[1]-a[1]);
+  const sortedBonus=Object.entries(bf).sort((a,b)=>b[1]-a[1]);
+
+  const styles=['balanced','hot','cold','overdue','balanced'];
+  const candidates=[];
+  for(let s=0;s<5;s++){
+    let best=null,bestScore=-1;
+    for(let a=0;a<20;a++){
+      const c=genCandidate(cfg,sortedMain,sortedBonus,mf,lastSeen,styles[s]);
+      const sc=scoreLine(c.main,cfg,mf,lastSeen);
+      if(sc>bestScore){bestScore=sc;best={...c,score:sc};}
+    }
+    candidates.push(best);
+  }
+  candidates.sort((a,b)=>b.score-a.score);
+  const unique=[candidates[0]];
+  for(let i=1;i<candidates.length&&unique.length<5;i++){
+    const c=candidates[i];
+    const isDup=unique.some(u=>c.main.filter(n=>u.main.includes(n)).length>=Math.floor(cfg.mainCount*.7));
+    if(!isDup) unique.push(c);
+  }
+  while(unique.length<5){
+    const e=genCandidate(cfg,sortedMain,sortedBonus,mf,lastSeen,'balanced');
+    e.score=scoreLine(e.main,cfg,mf,lastSeen);
+    unique.push(e);
+  }
+  return {lines:unique.slice(0,5),historyDraws:draws};
+}
+
+/* ═══════════════════════════════════════════
+   RENDER
+═══════════════════════════════════════════ */
+function renderLines(lines, cfg, actual) {
+  const maxScore = lines[0].score;
+  const list = document.getElementById('linesList');
+  list.innerHTML = lines.map((line, i) => {
+    const isTop = i === 0;
+    const barW = Math.round((line.score / maxScore) * 100);
+    let matchMain = [], matchBonus = [];
+    if (actual) {
+      matchMain  = line.main.filter(n => actual.main.includes(n));
+      matchBonus = line.bonus.filter(n => actual.bonus.includes(n));
+    }
+    const totalMatch = matchMain.length + matchBonus.length;
+    const hasMatch = totalMatch > 0;
+
+    const mainBalls = line.main.map((n,bi) =>
+      `<div class="ball main${actual && matchMain.includes(n)?' matched':''}" style="animation-delay:${i*.07+bi*.055}s">${n}</div>`
+    ).join('');
+    const bonusBalls = line.bonus.map((n,bi) =>
+      `<div class="ball bonus${actual && matchBonus.includes(n)?' matched':''}" style="animation-delay:${i*.07+(line.main.length+bi)*.055}s">${n}</div>`
+    ).join('');
+
+    return `<div class="line-card ${isTop?'top':''} ${actual&&hasMatch?'has-match':''}">
+      <div class="line-top">
+        <span class="line-rank">LINE ${i+1}</span>
+        <div class="score-chip"><span class="score-chip-lbl">Score</span><span class="score-chip-val">${line.score}</span></div>
+      </div>
+      <div class="bar-wrap"><div class="bar-fill" style="width:${barW}%"></div></div>
+      <div class="nums">
+        ${mainBalls}
+        ${cfg.bonusCount > 0 ? `<span class="plus">+</span>${bonusBalls}` : ''}
+      </div>
+      ${actual && hasMatch ? `<div class="line-match-tag">${totalMatch} match${totalMatch>1?'es':''} with actual draw</div>` : ''}
+    </div>`;
+  }).join('');
+}
+
+function renderHistory(draws, cfg) {
+  const sec = document.getElementById('historySection');
+  const list = document.getElementById('histList');
+  sec.style.display = 'block';
+
+  list.innerHTML = draws.map(d => {
+    const dateLbl = d.date.toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'2-digit'});
+    const dayLbl = DAY_NAMES[d.date.getDay()].slice(0,3);
+    const mainBalls = d.main.map(n=>`<div class="hball main">${n}</div>`).join('');
+    const bonusBalls = d.bonus.map(n=>`<div class="hball bonus">${n}</div>`).join('');
+    return `<div class="hist-row">
+      <div class="hist-date">${dayLbl} ${dateLbl}</div>
+      <div class="hist-balls">${mainBalls}<div class="hball plus">+</div>${bonusBalls}</div>
+    </div>`;
+  }).join('');
+}
+
+function renderCompare(lines, cfg, actual) {
+  const panel = document.getElementById('comparePanel');
+  const content = document.getElementById('cpContent');
+
+  if (!actual) {
+    // Show input form
+    content.innerHTML = `
+      <div class="cp-input-area">
+        <div class="cp-input-label">Enter actual draw — main numbers (comma separated)</div>
+        <input class="cp-input" id="cpMain" type="text" inputmode="numeric" placeholder="${cfg.mainCount === 5 ? 'e.g. 7, 14, 22, 35, 48' : 'e.g. 4, 12, 25, 31, 44, 57'}">
+        <div class="cp-input-label">${cfg.bonusLabel} (comma separated)</div>
+        <input class="cp-input" id="cpBonus" type="text" inputmode="numeric" placeholder="${cfg.bonusCount === 2 ? 'e.g. 3, 9' : 'e.g. 22'}">
+        <button class="cp-save-btn" onclick="saveActual()">Save &amp; Compare</button>
+      </div>`;
+    panel.classList.add('show');
+    return;
+  }
+
+  // Already have actual — show comparison
+  const totalMatchAll = lines.reduce((s, line) => {
+    const mm = line.main.filter(n => actual.main.includes(n)).length;
+    const mb = line.bonus.filter(n => actual.bonus.includes(n)).length;
+    return s + mm + mb;
+  }, 0);
+
+  const mainBalls = actual.main.map(n=>`<div class="hball main">${n}</div>`).join('');
+  const bonusBalls = actual.bonus.map(n=>`<div class="hball bonus">${n}</div>`).join('');
+
+  content.innerHTML = `
+    <div class="cp-col">
+      <div class="cp-col-label">Actual Draw</div>
+      <div class="cp-balls">${mainBalls}<div class="hball plus">+</div>${bonusBalls}</div>
+    </div>
+    <div class="cp-summary">
+      Across your 5 lines, <strong>${totalMatchAll} total match${totalMatchAll!==1?'es':''}</strong> with the actual draw result.
+      ${totalMatchAll===0 ? 'No numbers matched this time.' : ''}
+    </div>`;
+  panel.classList.add('show');
+}
+
+/* ═══════════════════════════════════════════
+   MAIN ACTIONS
+═══════════════════════════════════════════ */
+async function generate() {
+  const drawInfo = getNextDrawInfo(S.game);
+
+  // Check if we already have locked picks for this game + draw date
+  if (S.locked && S.locked.game === S.game && S.locked.drawDate === drawInfo.dateKey) {
+    // Reuse locked picks — just re-show
+    showLocked();
+    return;
+  }
+
+  await doGenerate(drawInfo);
+}
+
+async function forceRefresh() {
+  const drawInfo = getNextDrawInfo(S.game);
+  S.savedActual = null;
+  await doGenerate(drawInfo);
+}
+
+async function doGenerate(drawInfo) {
+  const btn = document.getElementById('genBtn');
+  const loading = document.getElementById('loading');
+  const results = document.getElementById('results');
+  const refreshBtn = document.getElementById('refreshBtn');
+
+  btn.disabled = true;
+  results.classList.remove('show');
+  document.getElementById('comparePanel').classList.remove('show');
+  document.getElementById('historySection').style.display = 'none';
+  loading.classList.add('show');
+
+  const msgs = ['Analysing patterns…','Scoring lines…','Ranking combinations…'];
+  let mi = 0;
+  const lt = document.getElementById('loadTxt');
+  const iv = setInterval(() => { lt.textContent = msgs[(++mi) % msgs.length]; }, 650);
+
+  await new Promise(r => setTimeout(r, 1600));
+  clearInterval(iv);
+  loading.classList.remove('show');
+
+  const cfg = GAMES[S.game];
+  const { lines, historyDraws } = buildLines(S.game);
+
+  S.locked = {
+    lines,
+    historyDraws,
+    drawDate: drawInfo.dateKey,
+    drawDayName: drawInfo.dayName,
+    game: S.game
+  };
+
+  showLocked();
+  btn.disabled = false;
+  refreshBtn.classList.add('show');
+}
+
+function showLocked() {
+  const { lines, historyDraws, drawDayName } = S.locked;
+  const cfg = GAMES[S.game];
+  const results = document.getElementById('results');
+
+  document.getElementById('resultsTitle').textContent = `Best picks for ${drawDayName} draw`;
+
+  renderLines(lines, cfg, S.savedActual);
+  renderHistory(historyDraws, cfg);
+  if (S.practice) renderCompare(lines, cfg, S.savedActual);
+
+  results.classList.add('show');
+}
+
+function saveActual() {
+  if (!S.locked) return;
+  const cfg = GAMES[S.game];
+  const mainRaw  = document.getElementById('cpMain').value;
+  const bonusRaw = document.getElementById('cpBonus').value;
+  const main  = mainRaw.split(',').map(x=>parseInt(x.trim())).filter(n=>!isNaN(n)&&n>=1&&n<=cfg.mainMax);
+  const bonus = bonusRaw.split(',').map(x=>parseInt(x.trim())).filter(n=>!isNaN(n)&&n>=1&&n<=cfg.bonusMax);
+  if (main.length < 1) return;
+  S.savedActual = { main, bonus };
+  // Re-render with matches
+  renderLines(S.locked.lines, cfg, S.savedActual);
+  renderCompare(S.locked.lines, cfg, S.savedActual);
+}
+
+/* ═══════════════════════════════════════════
+   UI CONTROLS
+═══════════════════════════════════════════ */
+function selectGame(btn) {
+  document.querySelectorAll('.game-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  S.game = btn.dataset.game;
+  S.savedActual = null;
+  updateDrawStrip();
+  // If no lock or different game, hide results
+  if (!S.locked || S.locked.game !== S.game) {
+    document.getElementById('results').classList.remove('show');
+    document.getElementById('historySection').style.display = 'none';
+    document.getElementById('refreshBtn').classList.remove('show');
+    document.getElementById('comparePanel').classList.remove('show');
+  } else {
+    showLocked();
+  }
+}
+
+function togglePractice() {
+  S.practice = !S.practice;
+  const t = document.getElementById('practiceToggle');
+  const b = document.getElementById('practiceBadge');
+  t.classList.toggle('on', S.practice);
+  b.classList.toggle('show', S.practice);
+  if (S.practice && S.locked && S.locked.game === S.game) {
+    const cfg = GAMES[S.game];
+    renderCompare(S.locked.lines, cfg, S.savedActual);
+  } else {
+    document.getElementById('comparePanel').classList.remove('show');
+  }
+}
+
+/* ═══════════════════════════════════════════
+   INIT
+═══════════════════════════════════════════ */
+updateDrawStrip();
+</script>
+</body>
+</html>

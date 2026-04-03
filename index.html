@@ -728,6 +728,68 @@
   .score-badge.mid { background: rgba(230,126,34,0.15); color: var(--warn); border: 1px solid rgba(230,126,34,0.3); }
   .score-badge.low { background: rgba(78,97,128,0.15); color: var(--text3); border: 1px solid rgba(78,97,128,0.3); }
 
+
+  /* MODEL INDEPENDENCE BADGES */
+  .model-badge-6m  { display:inline-block;padding:1px 7px;border-radius:2px;font-family:var(--font-mono);font-size:0.6rem;font-weight:600;letter-spacing:.5px;background:rgba(201,148,58,.15);color:var(--gold2);border:1px solid rgba(201,148,58,.3); }
+  .model-badge-12m { display:inline-block;padding:1px 7px;border-radius:2px;font-family:var(--font-mono);font-size:0.6rem;font-weight:600;letter-spacing:.5px;background:rgba(58,123,213,.15);color:var(--lotto-blue2);border:1px solid rgba(58,123,213,.3); }
+  .model-badge-3m  { display:inline-block;padding:1px 7px;border-radius:2px;font-family:var(--font-mono);font-size:0.6rem;font-weight:600;letter-spacing:.5px;background:rgba(46,204,113,.12);color:var(--green);border:1px solid rgba(46,204,113,.3); }
+  .model-badge-tie { display:inline-block;padding:1px 7px;border-radius:2px;font-family:var(--font-mono);font-size:0.6rem;font-weight:600;background:rgba(78,97,128,.2);color:var(--text3);border:1px solid rgba(78,97,128,.3); }
+
+  /* COLLAPSIBLE AUDIT PANEL */
+  .audit-toggle { cursor:pointer;display:flex;align-items:center;gap:8px;padding:10px 14px;background:var(--bg2);border:1px solid var(--border);border-radius:4px;font-family:var(--font-mono);font-size:0.7rem;color:var(--text2);letter-spacing:.5px;user-select:none;margin-bottom:4px; }
+  .audit-toggle:hover { border-color:var(--border2);color:var(--text); }
+  .audit-toggle .caret { margin-left:auto;transition:transform .2s; }
+  .audit-toggle.open .caret { transform:rotate(180deg); }
+  .audit-body { display:none;background:var(--bg3);border:1px solid var(--border);border-top:none;border-radius:0 0 4px 4px;padding:14px;margin-bottom:16px; }
+  .audit-body.open { display:block; }
+  .audit-grid { display:grid;grid-template-columns:1fr 1fr;gap:12px; }
+  @media(max-width:640px){ .audit-grid { grid-template-columns:1fr; } }
+  .audit-panel { background:var(--bg2);border:1px solid var(--border);border-radius:3px;padding:12px; }
+  .audit-panel h4 { font-family:var(--font-mono);font-size:0.65rem;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:8px; }
+  .audit-panel.m6 h4 { color:var(--gold2); }
+  .audit-panel.m12 h4 { color:var(--lotto-blue2); }
+  .audit-panel.m3  h4 { color:var(--green); }
+  .audit-row { display:flex;justify-content:space-between;font-family:var(--font-mono);font-size:0.68rem;padding:3px 0;border-bottom:1px solid rgba(255,255,255,.03); }
+  .audit-row .ak { color:var(--text3); }
+  .audit-row .av { color:var(--text); }
+  .audit-confirm { font-family:var(--font-mono);font-size:0.68rem;margin-top:10px;padding:7px 10px;border-radius:3px;background:rgba(46,204,113,.08);border:1px solid rgba(46,204,113,.2);color:var(--green); }
+  .signal-heatmap { display:flex;flex-wrap:wrap;gap:3px;margin-top:8px; }
+  .sig-num { width:28px;height:28px;display:flex;align-items:center;justify-content:center;border-radius:3px;font-family:var(--font-mono);font-size:0.55rem;font-weight:600; }
+
+  /* COMPARISON SUMMARY */
+  .comp-summary-grid { display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px;margin-bottom:24px; }
+  .cs-card { background:var(--bg2);border:1px solid var(--border);border-radius:4px;padding:12px 14px; }
+  .cs-card h4 { font-family:var(--font-mono);font-size:0.62rem;letter-spacing:1.5px;text-transform:uppercase;color:var(--text3);margin-bottom:10px; }
+  .cs-row { display:flex;justify-content:space-between;align-items:center;font-family:var(--font-mono);font-size:0.72rem;padding:3px 0; }
+  .cs-row .csk { color:var(--text2); }
+  .cs-row .csv-6m { color:var(--gold2);font-weight:600; }
+  .cs-row .csv-12m { color:var(--lotto-blue2);font-weight:600; }
+  .cs-row .csv-3m { color:var(--green);font-weight:600; }
+  .cs-row .csv-tie { color:var(--text3); }
+
+  /* HISTORY TABLE - generated number cols */
+  .gen-balls { display:flex;flex-wrap:wrap;gap:3px; }
+  .ball.gen-6m  { background:radial-gradient(circle at 35% 30%,#d4a84e,#9a6a1a);color:#fff;box-shadow:0 2px 6px rgba(154,106,26,.4),inset 0 1px 0 rgba(255,255,255,.2); }
+  .ball.gen-12m { background:radial-gradient(circle at 35% 30%,#4a8ee0,#1e5cb3);color:#fff;box-shadow:0 2px 6px rgba(30,92,179,.4),inset 0 1px 0 rgba(255,255,255,.2); }
+  .ball.gen-3m  { background:radial-gradient(circle at 35% 30%,#3ecf7a,#1a8a4a);color:#fff;box-shadow:0 2px 6px rgba(26,138,74,.4),inset 0 1px 0 rgba(255,255,255,.2); }
+  .ball.hit-6m  { background:radial-gradient(circle at 35% 30%,#f5d070,#c9943a);color:#1a0e00;box-shadow:0 0 10px rgba(245,208,112,.6),inset 0 1px 0 rgba(255,255,255,.3);outline:2px solid var(--gold3); }
+  .ball.hit-12m { background:radial-gradient(circle at 35% 30%,#7bb8ff,#3a7bd5);color:#001233;box-shadow:0 0 10px rgba(91,156,240,.6),inset 0 1px 0 rgba(255,255,255,.3);outline:2px solid var(--lotto-blue2); }
+  .ball.hit-3m  { background:radial-gradient(circle at 35% 30%,#5ef09a,#27ae60);color:#001a0e;box-shadow:0 0 10px rgba(46,204,113,.6),inset 0 1px 0 rgba(255,255,255,.3);outline:2px solid var(--green); }
+
+  /* WINNER CELL */
+  .win-6m  { color:var(--gold2);font-family:var(--font-mono);font-size:0.7rem;font-weight:600; }
+  .win-12m { color:var(--lotto-blue2);font-family:var(--font-mono);font-size:0.7rem;font-weight:600; }
+  .win-3m  { color:var(--green);font-family:var(--font-mono);font-size:0.7rem;font-weight:600; }
+  .win-tie { color:var(--text3);font-family:var(--font-mono);font-size:0.7rem; }
+
+  /* MODEL TOGGLE */
+  .model-toggle { display:flex;gap:6px;flex-wrap:wrap;margin-bottom:20px; }
+  .mt-btn { font-family:var(--font-mono);font-size:0.68rem;letter-spacing:.8px;text-transform:uppercase;padding:6px 14px;border-radius:3px;cursor:pointer;border:1px solid var(--border2);background:var(--bg2);color:var(--text3);transition:all .2s; }
+  .mt-btn:hover { border-color:var(--text2);color:var(--text); }
+  .mt-btn.active-3m  { background:rgba(46,204,113,.1);border-color:var(--green);color:var(--green); }
+  .mt-btn.active-6m  { background:rgba(201,148,58,.1);border-color:var(--gold2);color:var(--gold2); }
+  .mt-btn.active-12m { background:rgba(58,123,213,.1);border-color:var(--lotto-blue2);color:var(--lotto-blue2); }
+
   /* RESPONSIVE */
   @media (max-width: 768px) {
     .line-card { grid-template-columns: 28px 1fr; }
@@ -787,7 +849,7 @@
     <div class="header-meta">
       <div>Version <span>2.1.0</span> · Build <span id="buildDate"></span></div>
       <div>Data range: <span id="dataRange"></span></div>
-      <div>Week lock: <span id="weekLock"></span></div>
+      <div>Draw key: <span id="weekLock"></span></div>
     </div>
   </header>
 
@@ -818,18 +880,27 @@
 
     <div id="statsRow" class="stats-row"></div>
 
-    <div class="lock-status">
+    <!-- WEEKLY LOCK STATUS — no regenerate button by design -->
+    <div class="lock-status" id="lockStatusBar">
       <div class="lock-info">
-        <span class="lock-icon" id="lockIcon">🔒</span>
+        <span class="lock-icon">🔒</span>
         <div class="lock-text">
-          Lines locked for week: <strong id="currentWeek"></strong> · 
-          Expires: <strong id="lockExpiry"></strong> · 
-          Last generated: <strong id="lastGenerated"></strong>
+          <strong style="color:var(--gold2);" id="lockStatusLabel">Locked for this week</strong>
+          <span style="color:var(--text3);margin:0 6px;">·</span>
+          Draw key: <strong id="currentWeek"></strong>
+          <span style="color:var(--text3);margin:0 6px;">·</span>
+          Generated: <strong id="lastGenerated"></strong>
+          <span style="color:var(--text3);margin:0 6px;">·</span>
+          Next refresh after: <strong id="lockExpiry"></strong>
         </div>
       </div>
-      <div style="display:flex;gap:8px;">
+      <div style="display:flex;gap:8px;align-items:center;">
+        <span id="lockStorageTag" style="font-family:var(--font-mono);font-size:0.6rem;
+              padding:2px 8px;border-radius:2px;background:rgba(46,204,113,.1);
+              color:var(--green);border:1px solid rgba(46,204,113,.25);">
+          Saved locally
+        </span>
         <button class="btn btn-ghost btn-small" onclick="exportPicks()">⬇ Export</button>
-        <button class="btn btn-gold btn-small" onclick="confirmRegenerate()">↻ Regenerate</button>
       </div>
     </div>
 
@@ -928,33 +999,41 @@
       <button class="game-btn" onclick="setGame('euro');renderHistory()">⭐ EuroMillions</button>
     </div>
 
-    <div class="section-title">Recent Draws — Last 52 Weeks <span class="line-accent"></span></div>
+    <!-- MODEL TOGGLE -->
+    <div style="margin-bottom:16px;">
+      <div style="font-family:var(--font-mono);font-size:0.65rem;letter-spacing:1px;text-transform:uppercase;color:var(--text3);margin-bottom:8px;">Active Models for Comparison</div>
+      <div class="model-toggle">
+        <button class="mt-btn" id="hist-mt-3m" onclick="histToggleModel('3m')" style="display:none;">3-Month Model</button>
+        <button class="mt-btn active-6m" id="hist-mt-6m" onclick="histToggleModel('6m')">6-Month Model</button>
+        <button class="mt-btn active-12m" id="hist-mt-12m" onclick="histToggleModel('12m')">12-Month Model</button>
+      </div>
+    </div>
 
-    <div class="table-wrap">
-      <table>
-        <thead>
-          <tr>
-            <th>Date</th>
-            <th>Numbers Drawn</th>
-            <th>Bonus</th>
-            <th>Our Best Match</th>
-            <th>Matches</th>
-            <th>Close Score</th>
-            <th>Random Match</th>
-          </tr>
-        </thead>
+    <!-- MODEL INDEPENDENCE AUDIT (collapsible) -->
+    <div class="audit-toggle" id="auditToggle" onclick="toggleAudit()">
+      🔍 Model Independence Audit &amp; Debug Panel
+      <span class="caret">▼</span>
+    </div>
+    <div class="audit-body" id="auditBody">
+      <div id="auditContent"></div>
+    </div>
+
+    <div class="section-title" style="margin-top:8px;">Draw History — Most Recent First <span class="line-accent"></span></div>
+
+    <div class="table-wrap" style="overflow-x:auto;">
+      <table id="histTable" style="min-width:900px;">
+        <thead id="histTableHead"></thead>
         <tbody id="historyTableBody"></tbody>
       </table>
     </div>
 
     <div class="export-row">
-      <button class="btn btn-ghost btn-small" onclick="exportHistory()">⬇ Export History CSV</button>
+      <button class="btn btn-ghost btn-small" onclick="exportHistory()">⬇ Export Full CSV</button>
     </div>
   </div>
 
   <!-- ===== BACKTEST TAB ===== -->
   <div class="tab-content" id="tab-backtest">
-    <div class="section-title">Backtest Engine <span class="line-accent"></span></div>
 
     <div class="backtest-controls">
       <label>Game:
@@ -963,11 +1042,11 @@
           <option value="euro">EuroMillions</option>
         </select>
       </label>
-      <label>Draws to test:
+      <label>Test window:
         <select id="btDraws" onchange="runBacktest()">
-          <option value="12">Last 12</option>
-          <option value="26" selected>Last 26</option>
-          <option value="52">Last 52</option>
+          <option value="26" selected>Last 26 draws</option>
+          <option value="40">Last 40 draws</option>
+          <option value="52">Last 52 draws</option>
         </select>
       </label>
       <label>Lines per draw:
@@ -976,25 +1055,69 @@
           <option value="10">10 lines</option>
         </select>
       </label>
-      <button class="btn btn-gold btn-small" onclick="runBacktest()">▶ Run Backtest</button>
+      <button class="btn btn-gold btn-small" onclick="runBacktest()">▶ Run Benchmark</button>
+      <button class="btn btn-ghost btn-small" onclick="exportBacktestCSV()">⬇ Export CSV</button>
     </div>
 
-    <div id="backtestSummary" class="stats-row" style="margin-bottom:20px;"></div>
+    <!-- METHOD EXPLAINER -->
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:24px;">
+      <div style="background:var(--bg2);border:1px solid var(--border);border-left:3px solid var(--gold2);border-radius:4px;padding:12px 14px;">
+        <div style="font-family:var(--font-mono);font-size:0.65rem;letter-spacing:1.5px;text-transform:uppercase;color:var(--gold2);margin-bottom:6px;">6-Month Model (26 draws)</div>
+        <div style="font-family:var(--font-body);font-size:0.75rem;color:var(--text2);line-height:1.5;">Frequency weights and gap analysis built from the <strong style="color:var(--text)">most recent 26 draws</strong> only. Higher recency sensitivity — reacts faster to emerging patterns but has less historical depth.</div>
+      </div>
+      <div style="background:var(--bg2);border:1px solid var(--border);border-left:3px solid var(--lotto-blue2);border-radius:4px;padding:12px 14px;">
+        <div style="font-family:var(--font-mono);font-size:0.65rem;letter-spacing:1.5px;text-transform:uppercase;color:var(--lotto-blue2);margin-bottom:6px;">12-Month Model (52 draws)</div>
+        <div style="font-family:var(--font-body);font-size:0.75rem;color:var(--text2);line-height:1.5;">Frequency weights and gap analysis built from the <strong style="color:var(--text)">full 52-draw history</strong>. More stable, regression-resistant baseline — slower to react but captures longer seasonal patterns.</div>
+      </div>
+    </div>
 
-    <div class="section-title">Per-Draw Results <span class="line-accent"></span></div>
-    <div class="table-wrap">
-      <table>
+    <!-- MODEL TOGGLE FOR BACKTEST -->
+    <div style="margin-bottom:16px;">
+      <div style="font-family:var(--font-mono);font-size:0.65rem;letter-spacing:1px;text-transform:uppercase;color:var(--text3);margin-bottom:8px;">Models to Benchmark (default: 6M vs 12M)</div>
+      <div class="model-toggle">
+        <button class="mt-btn" id="bt-mt-3m" onclick="btToggleModel('3m')" style="display:none;">3-Month</button>
+        <button class="mt-btn active-6m" id="bt-mt-6m" onclick="btToggleModel('6m')">6-Month</button>
+        <button class="mt-btn active-12m" id="bt-mt-12m" onclick="btToggleModel('12m')">12-Month</button>
+      </div>
+    </div>
+
+    <!-- COMPARISON SUMMARY (always visible after run) -->
+    <div id="btCompSummary" style="display:none;margin-bottom:24px;"></div>
+
+    <!-- SUMMARY VERDICT BANNER -->
+    <div id="btVerdictBanner" style="display:none;margin-bottom:24px;"></div>
+
+    <!-- HEAD-TO-HEAD KPI CARDS -->
+    <div class="section-title">Head-to-Head Benchmark <span class="line-accent"></span></div>
+    <div id="btKpiGrid" style="margin-bottom:24px;"></div>
+
+    <!-- FULL METRICS TABLE -->
+    <div class="section-title">Full Metrics Comparison <span class="line-accent"></span></div>
+    <div class="table-wrap" style="margin-bottom:24px;">
+      <table id="btMetricsTable">
         <thead>
           <tr>
-            <th>Draw Date</th>
-            <th>Numbers</th>
-            <th>Best Line</th>
-            <th>Matches</th>
-            <th>Close Score</th>
-            <th>Vs Random</th>
-            <th>Vs Freq</th>
+            <th>Metric</th>
+            <th style="color:var(--gold2);">6-Month Model</th>
+            <th style="color:var(--lotto-blue2);">12-Month Model</th>
+            <th>Winner</th>
           </tr>
         </thead>
+        <tbody id="btMetricsBody"></tbody>
+      </table>
+    </div>
+
+    <!-- CHART -->
+    <div class="section-title">Close Score Per Draw <span class="line-accent"></span></div>
+    <div class="chart-wrap" style="margin-bottom:24px;">
+      <canvas id="btChart" height="220"></canvas>
+    </div>
+
+    <!-- PER-DRAW DRILL-DOWN -->
+    <div class="section-title">Per-Draw Drill-Down — Most Recent First <span class="line-accent"></span></div>
+    <div class="table-wrap" style="overflow-x:auto;">
+      <table style="min-width:900px;">
+        <thead></thead>
         <tbody id="backtestTableBody"></tbody>
       </table>
     </div>
@@ -1061,6 +1184,15 @@
 </div>
 
 <script>
+// ============================================================
+//  FEATURE FLAGS
+// ============================================================
+
+// Set to true to re-enable the 3-month model in all tables,
+// summaries, exports, and toggles.  Currently disabled while
+// 6M vs 12M validation is ongoing.
+const ENABLE_3M_MODEL = false;
+
 // ============================================================
 //  DATA ENGINE — Realistic embedded historical data
 // ============================================================
@@ -1143,15 +1275,25 @@ const EURO_DRAWS  = generateHistoricalDraws('euro',  52, 98761234);
 // ============================================================
 
 let currentGame = 'lotto';
-let lockedPicks = {};   // { 'lotto:2024-W01': [...lines], ... }
-let scores = {};        // cumulative scores per line
+let scores = {};  // cumulative scores per line (runtime only)
 
-// Get ISO week key
-function getWeekKey(date) {
-  const d = date || new Date();
+// ── Draw-cycle week key ──────────────────────────────────────────────────────
+// Returns a stable string like "lotto_2026_week_14" or "euro_2026_week_14".
+// UK Lotto draws Wed + Sat; EuroMillions draws Tue + Fri.
+// A "draw week" starts on the day after the last draw of the previous cycle.
+// For simplicity we use ISO calendar week — same as before but namespaced per
+// game so each game gets its own independent lock.
+function getDrawKey(game, date) {
+  const d = date ? new Date(date) : new Date();
   const jan1 = new Date(d.getFullYear(), 0, 1);
   const week = Math.ceil(((d - jan1) / 86400000 + jan1.getDay() + 1) / 7);
-  return `${d.getFullYear()}-W${String(week).padStart(2, '0')}`;
+  const weekNum = String(week).padStart(2, '0');
+  return `${game}_${d.getFullYear()}_week_${weekNum}`;
+}
+
+// localStorage key for a given game + week
+function lsKey(game, drawKey) {
+  return `lottoanalyst_picks_v1__${game}__${drawKey}`;
 }
 
 function getWeekStart(date) {
@@ -1159,7 +1301,7 @@ function getWeekStart(date) {
   const day = d.getDay();
   const diff = d.getDate() - day + (day === 0 ? -6 : 1);
   const monday = new Date(d.setDate(diff));
-  monday.setHours(0,0,1,0);
+  monday.setHours(0, 0, 1, 0);
   return monday;
 }
 
@@ -1167,8 +1309,49 @@ function getWeekEnd(date) {
   const start = getWeekStart(date);
   const end = new Date(start);
   end.setDate(end.getDate() + 6);
-  end.setHours(23,59,59,999);
+  end.setHours(23, 59, 59, 999);
   return end;
+}
+
+// ── localStorage helpers ─────────────────────────────────────────────────────
+function lsSave(key, value) {
+  try { localStorage.setItem(key, JSON.stringify(value)); return true; }
+  catch(e) { console.warn('lsSave failed:', e); return false; }
+}
+
+function lsLoad(key) {
+  try {
+    const raw = localStorage.getItem(key);
+    return raw ? JSON.parse(raw) : null;
+  } catch(e) { console.warn('lsLoad failed:', e); return null; }
+}
+
+function lsDelete(key) {
+  try { localStorage.removeItem(key); } catch(e) { /* ignore */ }
+}
+
+// ── Prune stale entries (keep only current + last 4 weeks per game) ──────────
+function pruneOldPicks() {
+  try {
+    const prefix = 'lottoanalyst_picks_v1__';
+    const keysToDelete = [];
+    for (let i = 0; i < localStorage.length; i++) {
+      const k = localStorage.key(i);
+      if (!k || !k.startsWith(prefix)) continue;
+      // Extract year_week from key: lottoanalyst_picks_v1__lotto__lotto_2026_week_14
+      const m = k.match(/_(\d{4})_week_(\d{2})$/);
+      if (!m) continue;
+      const keyYear = parseInt(m[1]), keyWeek = parseInt(m[2]);
+      const now = new Date();
+      const jan1 = new Date(now.getFullYear(), 0, 1);
+      const curWeek = Math.ceil(((now - jan1) / 86400000 + jan1.getDay() + 1) / 7);
+      const curYear = now.getFullYear();
+      // Delete if older than 5 weeks
+      const weekAge = (curYear - keyYear) * 52 + (curWeek - keyWeek);
+      if (weekAge > 5) keysToDelete.push(k);
+    }
+    keysToDelete.forEach(k => localStorage.removeItem(k));
+  } catch(e) { /* localStorage may be unavailable in some contexts */ }
 }
 
 // ============================================================
@@ -1203,6 +1386,87 @@ function computeGaps(draws, maxNum) {
   draws.forEach((d, i) => d.main.forEach(n => { lastSeen[n] = i + 1; }));
   const gaps = lastSeen.map((last, n) => n === 0 ? 0 : totalDraws - last);
   return gaps;
+}
+
+// ============================================================
+//  MODEL HELPERS — parameterised by training window size
+// ============================================================
+
+// Build frequency weights using only the last `windowSize` draws.
+// recentBoost applies 2× weight to the last 12 draws within that window.
+function buildWeightsN(draws, game, windowSize) {
+  const cfg = getGameConfig(game);
+  const trainingDraws = draws.slice(-windowSize);
+  const recentCutoff = Math.max(0, trainingDraws.length - 12);
+  const gaps = computeGaps(trainingDraws, cfg.mainMax);
+
+  const weights = new Array(cfg.mainMax + 1).fill(0);
+  for (let i = recentCutoff; i < trainingDraws.length; i++) {
+    trainingDraws[i].main.forEach(n => { weights[n] += 2; });
+  }
+  for (let i = 0; i < recentCutoff; i++) {
+    trainingDraws[i].main.forEach(n => { weights[n] += 1; });
+  }
+  const expectedGap = Math.round(cfg.mainMax / cfg.mainCount);
+  for (let n = 1; n <= cfg.mainMax; n++) {
+    if (gaps[n] > expectedGap * 1.5) weights[n] += 1.5;
+  }
+  return weights;
+}
+
+// Generate N lines using a specific training window size.
+// trainingDraws = draws available BEFORE this test draw (walk-forward).
+function generateLinesN(game, seed, trainingDraws, windowSize, lineCount) {
+  const cfg = getGameConfig(game);
+  const window = trainingDraws.slice(-windowSize);
+  if (window.length < 4) return []; // not enough data
+
+  const weights  = buildWeightsN(trainingDraws, game, windowSize);
+  const { mean, std } = historicalSumStats(window);
+  const pool = Array.from({length: cfg.mainMax}, (_, i) => i + 1);
+  const rng  = seedRng(seed);
+
+  let starWeights = [];
+  if (cfg.starCount > 0) starWeights = buildStarWeights(window, cfg.starMax);
+
+  const lines = [];
+  let attempts = 0;
+
+  while (lines.length < lineCount && attempts < 3000) {
+    attempts++;
+    const candidate = weightedSample(pool, weights, cfg.mainCount, rng);
+    const sum = computeLineSum(candidate);
+    if (Math.abs(sum - mean) >= std * 1.4) continue;
+    const testLines = [...lines, { main: candidate }];
+    if (!diversityOk(testLines)) continue;
+
+    let stars = [];
+    if (cfg.starCount > 0) {
+      const starPool = Array.from({length: cfg.starMax}, (_, i) => i + 1);
+      stars = weightedSample(starPool, starWeights, cfg.starCount, rng);
+    }
+    const rawSig = computeSignalScore(candidate, window, mean, std, game);
+    lines.push({ main: candidate, extra: stars, signalScore: rawSig });
+  }
+
+  if (lines.length > 0) {
+    const rawScores = lines.map(l => l.signalScore);
+    const confs = normalizeConfidences(rawScores);
+    lines.forEach((l, i) => { l.confidence = confs[i]; });
+  }
+  return lines;
+}
+
+// Compute streak stats from a boolean array (true = at least 1 match)
+function computeStreaks(hitArr) {
+  let bestHit = 0, bestMiss = 0, curHit = 0, curMiss = 0;
+  hitArr.forEach(hit => {
+    if (hit) { curHit++; curMiss = 0; }
+    else      { curMiss++; curHit = 0; }
+    if (curHit  > bestHit)  bestHit  = curHit;
+    if (curMiss > bestMiss) bestMiss = curMiss;
+  });
+  return { bestHit, bestMiss };
 }
 
 function buildWeights(draws, game) {
@@ -1368,34 +1632,54 @@ function normalizeConfidences(rawScores) {
 //  SCORING
 // ============================================================
 
+// ── computeCloseScore ───────────────────────────────────────────────────────
+// All comparisons use Number() coercion so there is never a string vs number
+// mismatch regardless of how data was generated or stored.
+// Returns: { mainMatches, matchedMains[], bonusMatch, starMatches, matchedStars[],
+//            nearMiss, score, line (reference back to the input line) }
 function computeCloseScore(line, draw, game) {
-  const cfg = getGameConfig(game);
-  let mainMatches = line.main.filter(n => draw.main.includes(n)).length;
-  let bonusMatch = 0;
+  // Normalise both sets to numbers before any comparison
+  const genMain  = (line.main  || []).map(Number);
+  const genExtra = (line.extra || []).map(Number);
+  const winMain  = (draw.main  || []).map(Number);
+  const winExtra = (draw.extra || []).map(Number);
+  const winBonus = draw.bonus != null ? Number(draw.bonus) : null;
 
-  if (game === 'lotto' && draw.bonus !== null && line.main.includes(draw.bonus)) {
+  // Exact intersection — same function drives both counts AND highlights
+  const matchedMains = genMain.filter(n => winMain.includes(n));
+  const mainMatches  = matchedMains.length;
+
+  let bonusMatch = 0;
+  if (game === 'lotto' && winBonus !== null && genMain.includes(winBonus)) {
     bonusMatch = 1;
   }
 
   let starMatches = 0;
-  if (game === 'euro' && line.extra && draw.extra) {
-    starMatches = line.extra.filter(n => draw.extra.includes(n)).length;
+  let matchedStars = [];
+  if (game === 'euro' && genExtra.length && winExtra.length) {
+    matchedStars = genExtra.filter(n => winExtra.includes(n));
+    starMatches  = matchedStars.length;
   }
 
-  // Closeness scoring: 
-  // Main matches: 1pt each + bonus for higher
-  // Near-misses (±1): 0.3pt each
+  // Near-misses: generated number is ±1 of a winning number but not an exact match
   let nearMiss = 0;
-  line.main.forEach(n => {
-    if (!draw.main.includes(n)) {
-      if (draw.main.includes(n - 1) || draw.main.includes(n + 1)) nearMiss += 0.3;
+  genMain.forEach(n => {
+    if (!winMain.includes(n)) {
+      if (winMain.includes(n - 1) || winMain.includes(n + 1)) nearMiss += 0.3;
     }
   });
 
   const matchScore = mainMatches * 2 + bonusMatch * 1 + starMatches * 1.5;
   const closeScore = Math.min(20, matchScore + nearMiss * 0.5);
 
-  return { mainMatches, bonusMatch, starMatches, nearMiss: Math.round(nearMiss * 10) / 10, score: Math.round(closeScore * 10) / 10 };
+  return {
+    mainMatches, matchedMains,
+    bonusMatch,
+    starMatches, matchedStars,
+    nearMiss: Math.round(nearMiss * 10) / 10,
+    score: Math.round(closeScore * 10) / 10,
+    line  // keep reference so caller can verify
+  };
 }
 
 function getBestLineScore(lines, draw, game) {
@@ -1404,30 +1688,71 @@ function getBestLineScore(lines, draw, game) {
 }
 
 // ============================================================
-//  WEEKLY LOCK
+//  WEEKLY LOCK  (localStorage-backed, survives page refresh)
 // ============================================================
 
+// Returns the locked picks for the current draw week.
+// Flow:
+//   1. Compute drawKey for today (e.g. "lotto_2026_week_14")
+//   2. Look up localStorage for that exact key
+//   3. If found → return stored data (no regeneration)
+//   4. If not found → generate now, save, return
+//   A new week's drawKey will never match the old one, so picks
+//   are automatically replaced when the week rolls over.
 function getLockedLines(game) {
-  const weekKey = getWeekKey();
-  const storeKey = `${game}:${weekKey}`;
+  const drawKey = getDrawKey(game);
+  const key     = lsKey(game, drawKey);
 
-  if (lockedPicks[storeKey]) return lockedPicks[storeKey];
+  // ── Try to load from localStorage first ──────────────────────
+  const stored = lsLoad(key);
+  if (stored && stored.drawKey === drawKey && Array.isArray(stored.lines) && stored.lines.length > 0) {
+    return stored;  // exact same picks as when first generated — no drift
+  }
 
-  // Generate using week seed for determinism
-  const weekSeed = parseInt(weekKey.replace(/\D/g, '')) * (game === 'lotto' ? 7 : 13);
+  // ── Nothing stored for this week: generate fresh and lock ────
+  const weekSeed = drawKey.replace(/\D/g, '').split('').reduce(
+    (acc, c, i) => acc + parseInt(c) * (i + 1), 0
+  ) * (game === 'lotto' ? 997 : 1009);  // stable, game-specific seed
+
   const lines = generateLines(game, weekSeed);
-  lockedPicks[storeKey] = { lines, generated: new Date().toISOString(), weekKey };
-  return lockedPicks[storeKey];
+
+  const record = {
+    game,
+    drawKey,
+    lines,
+    generatedAt:  new Date().toISOString(),
+    generatedDate: new Date().toLocaleDateString('en-GB'),
+    weekEnd:       getWeekEnd().toLocaleDateString('en-GB', { weekday:'short', day:'numeric', month:'short', year:'numeric' }),
+  };
+
+  lsSave(key, record);   // persist — survives refresh and browser restart
+  pruneOldPicks();       // tidy up entries older than 5 weeks
+  return record;
 }
 
-function forceRegenerate(game) {
-  const weekKey = getWeekKey();
-  const storeKey = `${game}:${weekKey}`;
-  const newSeed = Date.now() % 999999997;
-  const lines = generateLines(game, newSeed);
-  lockedPicks[storeKey] = { lines, generated: new Date().toISOString(), weekKey, regenerated: true };
-  return lockedPicks[storeKey];
-}
+// ── DEVELOPER RESET (hidden — not shown in UI) ───────────────────────────────
+// Call window.__devResetPicks('lotto') or window.__devResetPicks('euro')
+// from the browser console to clear the current week's lock and regenerate.
+window.__devResetPicks = function(game) {
+  const drawKey = getDrawKey(game || 'lotto');
+  const key     = lsKey(game || 'lotto', drawKey);
+  lsDelete(key);
+  console.log(`[DevReset] Cleared picks for ${key}. Reload the page to regenerate.`);
+  if (game === currentGame) renderPicks();
+};
+
+// window.__devClearAll() wipes ALL lottoanalyst picks from localStorage
+window.__devClearAll = function() {
+  const prefix = 'lottoanalyst_picks_v1__';
+  const toDelete = [];
+  for (let i = 0; i < localStorage.length; i++) {
+    const k = localStorage.key(i);
+    if (k && k.startsWith(prefix)) toDelete.push(k);
+  }
+  toDelete.forEach(k => localStorage.removeItem(k));
+  console.log(`[DevReset] Cleared ${toDelete.length} pick entries.`);
+  renderPicks();
+};
 
 // ============================================================
 //  RANDOM / FREQUENCY BASELINE
@@ -1721,12 +2046,21 @@ function renderPicks() {
   // Header meta
   document.getElementById('buildDate').textContent = new Date().toLocaleDateString('en-GB');
   document.getElementById('dataRange').textContent = `${draws[0].date} — ${draws[draws.length - 1].date}`;
-  const weekStart = getWeekStart();
-  const weekEnd = getWeekEnd();
-  document.getElementById('currentWeek').textContent = locked.weekKey;
-  document.getElementById('weekLock').textContent = locked.weekKey;
-  document.getElementById('lockExpiry').textContent = weekEnd.toLocaleDateString('en-GB', {weekday:'short', day:'numeric', month:'short'});
-  document.getElementById('lastGenerated').textContent = new Date(locked.generated).toLocaleDateString('en-GB');
+  // drawKey is the stable identifier — e.g. "lotto_2026_week_14"
+  const drawKey = locked.drawKey || locked.weekKey || getDrawKey(currentGame);
+  document.getElementById('currentWeek').textContent = drawKey;
+  document.getElementById('weekLock').textContent     = drawKey;
+  // Show the exact stored expiry or compute from current week-end
+  document.getElementById('lockExpiry').textContent   = locked.weekEnd || getWeekEnd().toLocaleDateString('en-GB', {weekday:'short', day:'numeric', month:'short', year:'numeric'});
+  // Show the date the picks were first created (not today's date)
+  document.getElementById('lastGenerated').textContent = locked.generatedDate || new Date(locked.generatedAt || locked.generated || Date.now()).toLocaleDateString('en-GB');
+  // Update the storage tag to confirm it came from localStorage
+  const storageTag = document.getElementById('lockStorageTag');
+  if (storageTag) {
+    const fromStorage = !!localStorage.getItem(lsKey(currentGame, drawKey));
+    storageTag.textContent = fromStorage ? 'Saved locally ✓' : 'Saving…';
+    storageTag.style.color = fromStorage ? 'var(--green)' : 'var(--warn)';
+  }
 
   // Stats
   const freq = computeFrequencies(draws, cfg.mainMax);
@@ -1840,106 +2174,713 @@ function renderAnalysis() {
     </div>`;
 }
 
+// ── History state ──────────────────────────────────────────────────────────
+// 3M is forced off when ENABLE_3M_MODEL = false, regardless of toggle state
+let _histActiveModels = { '3m': false, '6m': true, '12m': true };
+
+function histToggleModel(m) {
+  if (m === '3m' && !ENABLE_3M_MODEL) return; // disabled — do nothing
+  _histActiveModels[m] = !_histActiveModels[m];
+  const btn = document.getElementById(`hist-mt-${m}`);
+  if (_histActiveModels[m]) {
+    btn.classList.add(`active-${m}`);
+  } else {
+    btn.classList.remove(`active-3m`, `active-6m`, `active-12m`);
+  }
+  renderHistory();
+}
+
+function toggleAudit() {
+  const tog = document.getElementById('auditToggle');
+  const body = document.getElementById('auditBody');
+  tog.classList.toggle('open');
+  body.classList.toggle('open');
+  if (body.classList.contains('open')) renderAuditPanel();
+}
+
+function renderAuditPanel() {
+  const allDraws   = getDraws(currentGame);
+  const cfg        = getGameConfig(currentGame);
+  const MODELS_ALL = [
+    { id:'3m',  window:13, label:'3-Month',  cls:'m3',  badge:'model-badge-3m'  },
+    { id:'6m',  window:26, label:'6-Month',  cls:'m6',  badge:'model-badge-6m'  },
+    { id:'12m', window:52, label:'12-Month', cls:'m12', badge:'model-badge-12m' },
+  ];
+  // Only audit models that are currently enabled
+  const MODELS = MODELS_ALL.filter(m => m.id !== '3m' || ENABLE_3M_MODEL);
+
+  const panelsHtml = MODELS.map(m => {
+    const trainingDraws = allDraws.slice(-m.window);
+    const startDate = trainingDraws[0]?.date || 'N/A';
+    const endDate   = trainingDraws[trainingDraws.length-1]?.date || 'N/A';
+    const n         = trainingDraws.length;
+    const recentN   = Math.min(12, n);
+    const oldN      = n - recentN;
+    const weights   = buildWeightsN(allDraws, currentGame, m.window);
+    const gaps      = computeGaps(trainingDraws, cfg.mainMax);
+    const expectedGap = Math.round(cfg.mainMax / cfg.mainCount);
+
+    // Top 10 and bottom 5 signal weights for this model
+    const numList = Array.from({length:cfg.mainMax},(_,i)=>i+1);
+    const sorted  = numList.slice().sort((a,b)=>weights[b]-weights[a]);
+    const top10   = sorted.slice(0,10);
+    const bot5    = sorted.slice(-5);
+
+    // Signal heatmap: colour scale from weight min→max
+    const wArr = numList.map(n=>weights[n]||0);
+    const wMin = Math.min(...wArr), wMax = Math.max(...wArr);
+    const heatmap = numList.slice(0, Math.min(cfg.mainMax, 30)).map(n => {
+      const t = wMax>wMin ? (weights[n]-wMin)/(wMax-wMin) : 0.5;
+      const r = Math.round(30 + t*180), g = Math.round(60 + t*100), b = 80;
+      const txt = t > 0.5 ? '#fff' : '#aaa';
+      return `<div class="sig-num" style="background:rgb(${r},${g},${b});color:${txt};" title="Number ${n} · weight ${(weights[n]||0).toFixed(1)}">${n}</div>`;
+    }).join('');
+
+    return `<div class="audit-panel ${m.cls}">
+      <h4><span class="${m.badge}">${m.label}</span> Model — Independent Generation Audit</h4>
+      <div class="audit-confirm">✓ ${m.label} model generated independently using ${m.window} draws of data only. No shared state with other models.</div>
+      <div style="margin-top:10px;">
+        <div class="audit-row"><span class="ak">Data window</span><span class="av">Last ${m.window} draws</span></div>
+        <div class="audit-row"><span class="ak">Draw range</span><span class="av">${startDate} → ${endDate}</span></div>
+        <div class="audit-row"><span class="ak">Draws included</span><span class="av">${n}</span></div>
+        <div class="audit-row"><span class="ak">Recency boost</span><span class="av">Last ${recentN} draws × 2 weight</span></div>
+        <div class="audit-row"><span class="ak">Historical weight</span><span class="av">${oldN} older draws × 1 weight</span></div>
+        <div class="audit-row"><span class="ak">Gap bonus</span><span class="av">+1.5 if gap > ${Math.round(expectedGap*1.5)} draws</span></div>
+        <div class="audit-row"><span class="ak">Top-weighted numbers</span><span class="av">${top10.join(', ')}</span></div>
+        <div class="audit-row"><span class="ak">Lowest-weighted numbers</span><span class="av">${bot5.join(', ')}</span></div>
+        <div class="audit-row"><span class="ak">Seed scheme</span><span class="av">Per-draw walk-forward seed (no cross-model sharing)</span></div>
+      </div>
+      <div style="margin-top:10px;font-family:var(--font-mono);font-size:0.62rem;color:var(--text3);">Signal weight heatmap (numbers 1–${Math.min(cfg.mainMax,30)}, gold = high weight)</div>
+      <div class="signal-heatmap">${heatmap}</div>
+    </div>`;
+  }).join('');
+
+  document.getElementById('auditContent').innerHTML = `
+    <div style="font-family:var(--font-mono);font-size:0.68rem;color:var(--text2);margin-bottom:12px;">
+      Each model builds its own weight table from its own data window using <strong style="color:var(--text)">buildWeightsN(draws, game, windowSize)</strong>.
+      Seeds are offset by model (6M uses base+6661·idx, 12M uses base+7771·idx, 3M uses base+3331·idx).
+      No line arrays are shared between models. The RNG state is independent per model per draw.
+    </div>
+    <div class="audit-grid">${panelsHtml}</div>`;
+}
+
 function renderHistory() {
-  const draws = getDraws(currentGame);
-  const locked = getLockedLines(currentGame);
-  const lines = locked.lines;
-  const rng = seedRng(55443322);
+  const allDraws = getDraws(currentGame);
+  const cfg      = getGameConfig(currentGame);
+  const ballCls  = currentGame === 'lotto' ? 'lotto' : 'euro-main';
+  const active   = _histActiveModels;
 
-  const rows = draws.slice().reverse().slice(0, 30).map(draw => {
-    const best = getBestLineScore(lines, draw, currentGame);
-    const randomLine = generateRandomLine(currentGame, rng);
-    const randScore = computeCloseScore(randomLine, draw, currentGame);
+  // Build model config list for active models
+  const MODEL_DEFS = [
+    { id:'3m',  window:13, label:'3M', genCls:'gen-3m', hitCls:'hit-3m', seedBase:10000, seedStep:3331, badge:'model-badge-3m'  },
+    { id:'6m',  window:26, label:'6M', genCls:'gen-6m', hitCls:'hit-6m', seedBase:20000, seedStep:6661, badge:'model-badge-6m'  },
+    { id:'12m', window:52, label:'12M',genCls:'gen-12m',hitCls:'hit-12m',seedBase:30000, seedStep:7771, badge:'model-badge-12m' },
+  ];
+  // ENABLE_3M_MODEL gate: 3M entry is in MODEL_DEFS for future use but
+  // must never reach activeModels when the flag is off.
+  const activeModels = MODEL_DEFS.filter(m => active[m.id] && (m.id !== '3m' || ENABLE_3M_MODEL));
 
-    const mainBalls = draw.main.map(n => ballHtml(n, currentGame === 'lotto' ? 'lotto' : 'euro-main')).join('');
-    let bonusHtml = draw.bonus ? ballHtml(draw.bonus, 'bonus') : '';
-    if (draw.extra && draw.extra.length) bonusHtml = draw.extra.map(n => ballHtml(n, 'euro-star')).join('');
+  // Build dynamic table header — includes Debug column for match verification
+  let thCols = `<th>Date</th><th>Winning Numbers</th>`;
+  activeModels.forEach(m => {
+    thCols += `<th><span class="${m.badge}">${m.label}</span> Generated</th>`;
+    thCols += `<th><span class="${m.badge}">${m.label}</span> Matches</th>`;
+    thCols += `<th><span class="${m.badge}">${m.label}</span> Score</th>`;
+    thCols += `<th style="color:var(--text3);font-size:0.65rem;"><span class="${m.badge}">${m.label}</span> Debug</th>`;
+  });
+  if (activeModels.length > 1) thCols += `<th>Winner</th>`;
+  document.getElementById('histTableHead').innerHTML = `<tr>${thCols}</tr>`;
 
-    const sc = best.score;
-    const scCls = sc >= 8 ? 'high' : sc >= 3 ? 'mid' : 'low';
+  // Most-recent-first, last 30 draws
+  const draws = allDraws.slice().reverse().slice(0, 30);
+
+  const rows = draws.map((draw, idx) => {
+    // idx in reversed array → absoluteIdx in original allDraws
+    const absoluteIdx   = allDraws.length - 1 - idx; // position of this draw in allDraws
+    const trainingDraws = allDraws.slice(0, absoluteIdx); // strictly before this draw
+
+    // ── Generate lines for each active model independently ───────────────────
+    // KEY INVARIANT: rep = lines[0] is the line we display.
+    // scoring = computeCloseScore(rep, draw) is computed from that SAME line.
+    // getBestLineScore is NOT used here — it picks a different line than rep,
+    // which was the root cause of the match-count/highlight mismatch.
+    const modelResults = activeModels.map(m => {
+      const seed  = m.seedBase + idx * m.seedStep;
+      const lines = trainingDraws.length >= 4
+        ? generateLinesN(currentGame, seed, trainingDraws, m.window, 5)
+        : [];
+
+      // rep is the displayed line — scoring MUST come from this same line
+      const rep = lines[0] || null;
+
+      // Compute match info directly from rep vs this draw's actual numbers
+      // using Number() coercion throughout (no string/int mismatch possible)
+      let scoring;
+      if (rep) {
+        scoring = computeCloseScore(rep, draw, currentGame);
+      } else {
+        scoring = { mainMatches:0, matchedMains:[], bonusMatch:0,
+                    starMatches:0, matchedStars:[], nearMiss:0, score:0 };
+      }
+
+      return { ...m, lines, rep, scoring };
+    });
+
+    // ── Drawn numbers display ─────────────────────────────────────────────────
+    const drawnHtml = draw.main.map(n => ballHtml(n, ballCls)).join('');
+    let bonusHtml = '';
+    if (draw.bonus) bonusHtml = `<span class="ball-divider">+</span>${ballHtml(draw.bonus,'bonus')}`;
+    if (draw.extra?.length) bonusHtml = `<span class="ball-divider">★</span>` + draw.extra.map(n=>ballHtml(n,'euro-star')).join('');
+
+    // ── Build model cells ─────────────────────────────────────────────────────
+    let modelCells = '';
+    modelResults.forEach(mr => {
+      const sc = mr.scoring;
+
+      // Generated number balls — isHit driven by sc.matchedMains (same set used for count)
+      let genHtml = '<span style="color:var(--text3);font-family:var(--font-mono);font-size:0.7rem;">no data</span>';
+      if (mr.rep) {
+        // Normalise rep numbers to Number() before rendering
+        const repMain  = (mr.rep.main  || []).map(Number);
+        const repExtra = (mr.rep.extra || []).map(Number);
+        const winMain  = (draw.main    || []).map(Number);
+        const winExtra = (draw.extra   || []).map(Number);
+
+        // Highlight logic uses sc.matchedMains — the exact same set that produced sc.mainMatches
+        genHtml = repMain.map(n => {
+          const isHit = sc.matchedMains.includes(n); // authoritative: same source as count
+          return ballHtml(n, isHit ? mr.hitCls : mr.genCls);
+        }).join('');
+
+        if (currentGame === 'euro' && repExtra.length) {
+          genHtml += `<span class="ball-divider">★</span>` +
+            repExtra.map(n => {
+              const isHit = sc.matchedStars.includes(n); // same source as starMatches count
+              return ballHtml(n, isHit ? mr.hitCls : mr.genCls);
+            }).join('');
+        }
+      }
+
+      // Match display: Main X | Stars Y  (or Main X | +Bonus for Lotto)
+      const mainM = sc.mainMatches;
+      const mCls  = mainM >= 3 ? 'td-score' : mainM >= 1 ? 'td-matches' : 'td-method';
+      const bonusTag  = sc.bonusMatch  ? ' <span style="color:var(--warn);font-size:0.62rem;">+B</span>'  : '';
+      const starTag   = currentGame === 'euro'
+        ? ` <span style="color:var(--text3);font-size:0.62rem;">★${sc.starMatches}</span>` : '';
+      const totalTag  = currentGame === 'euro'
+        ? ` <span style="color:var(--text3);font-size:0.62rem;">/ ${mainM + sc.starMatches}</span>` : '';
+
+      // Debug column: matched main and star numbers
+      const debugMains = sc.matchedMains.length ? sc.matchedMains.join(', ') : '—';
+      const debugStars = sc.matchedStars.length  ? sc.matchedStars.join(', ') : '—';
+      const debugHtml = `
+        <div style="font-family:var(--font-mono);font-size:0.6rem;line-height:1.6;color:var(--text3);white-space:nowrap;">
+          <span style="color:var(--text2);">Mains:</span> [${debugMains}]<br>
+          ${currentGame==='euro'?`<span style="color:var(--text2);">Stars:</span> [${debugStars}]`:''}
+        </div>`;
+
+      modelCells += `<td><div class="gen-balls">${genHtml}</div></td>`;
+      modelCells += `<td class="${mCls}" style="white-space:nowrap;">
+        Main&nbsp;<strong>${mainM}</strong>${bonusTag}${starTag}${totalTag}
+      </td>`;
+      modelCells += `<td style="font-family:var(--font-mono);font-size:0.75rem;color:var(--text2);">${sc.score.toFixed(1)}</td>`;
+      modelCells += `<td>${debugHtml}</td>`;  // debug column
+    });
+
+    // ── Winner cell — based on scoring.score from the rep line ───────────────
+    let winnerCell = '';
+    if (activeModels.length > 1) {
+      const scores  = modelResults.map(mr => mr.scoring.score);
+      const maxSc   = Math.max(...scores);
+      const winners = modelResults.filter(mr => mr.scoring.score === maxSc);
+      if (winners.length === modelResults.length || maxSc === 0) {
+        winnerCell = `<td><span class="win-tie">— TIE</span></td>`;
+      } else {
+        const w = winners[0];
+        winnerCell = `<td><span class="win-${w.id}">▲ ${w.label}</span></td>`;
+      }
+    }
 
     return `<tr>
       <td class="td-date">${draw.date}</td>
-      <td><div class="balls-row" style="gap:4px;">${mainBalls}</div></td>
-      <td>${bonusHtml}</td>
-      <td class="td-matches">${best.mainMatches} main${best.bonusMatch ? ' +B' : ''}${best.starMatches > 0 ? ` +${best.starMatches}★` : ''}</td>
-      <td><span class="score-badge ${scCls}">${best.mainMatches} matched</span></td>
-      <td class="td-score">${sc}</td>
-      <td class="td-method">${randScore.mainMatches} main / ${randScore.score.toFixed(1)}</td>
+      <td><div class="balls-row" style="gap:3px;">${drawnHtml}${bonusHtml}</div></td>
+      ${modelCells}
+      ${winnerCell}
     </tr>`;
   }).join('');
 
   document.getElementById('historyTableBody').innerHTML = rows;
 }
 
+// ── Backtest state ────────────────────────────────────────────────────────────
+let _lastBacktestData = null;
+// 3M is forced off when ENABLE_3M_MODEL = false, regardless of toggle state
+let _btActiveModels = { '3m': false, '6m': true, '12m': true };
+
+const BT_MODEL_DEFS = [
+  { id:'3m',  window:13, label:'3-Month',  color:'#2ecc71', seedBase:10000, seedStep:3331, genCls:'gen-3m',  hitCls:'hit-3m',  badge:'model-badge-3m'  },
+  { id:'6m',  window:26, label:'6-Month',  color:'#c9943a', seedBase:20000, seedStep:6661, genCls:'gen-6m',  hitCls:'hit-6m',  badge:'model-badge-6m'  },
+  { id:'12m', window:52, label:'12-Month', color:'#3a7bd5', seedBase:30000, seedStep:7771, genCls:'gen-12m', hitCls:'hit-12m', badge:'model-badge-12m' },
+];
+
+function btToggleModel(m) {
+  if (m === '3m' && !ENABLE_3M_MODEL) return; // disabled — do nothing
+  _btActiveModels[m] = !_btActiveModels[m];
+  const btn = document.getElementById(`bt-mt-${m}`);
+  if (_btActiveModels[m]) {
+    btn.classList.add(`active-${m}`);
+  } else {
+    btn.classList.remove(`active-3m`,`active-6m`,`active-12m`);
+  }
+  runBacktest();
+}
+
 function runBacktest() {
-  const game = document.getElementById('btGame').value;
+  const game      = document.getElementById('btGame').value;
   const drawCount = parseInt(document.getElementById('btDraws').value);
   const lineCount = parseInt(document.getElementById('btLines').value);
+  const ballCls   = game === 'lotto' ? 'lotto' : 'euro-main';
 
-  const draws = getDraws(game);
-  const testDraws = draws.slice(-drawCount);
+  const allDraws   = getDraws(game);
+  const testDraws  = allDraws.slice(-drawCount);
+  // ENABLE_3M_MODEL gate: exclude 3M entirely when disabled
+  const activeModels = BT_MODEL_DEFS.filter(m => _btActiveModels[m.id] && (m.id !== '3m' || ENABLE_3M_MODEL));
 
-  let ourTotal = 0, randTotal = 0, freqTotal = 0;
-  let ourMatchTotal = 0, randMatchTotal = 0, freqMatchTotal = 0;
-  const rng = seedRng(77665544);
+  if (activeModels.length === 0) {
+    document.getElementById('btVerdictBanner').style.display = 'none';
+    document.getElementById('btKpiGrid').innerHTML = '<div class="empty-state">Select at least one model above.</div>';
+    document.getElementById('backtestTableBody').innerHTML = '';
+    return;
+  }
 
-  const rowData = testDraws.map((draw, idx) => {
-    // Generate lines using data BEFORE this draw (simulated)
-    const trainingDraws = draws.slice(0, draws.length - drawCount + idx);
-    const seed = 10000 + idx * 7777;
-    const ourLines = generateLines(game, seed);
-    const randLine = generateRandomLine(game, rng);
-    const freqLine = generateFreqLine(trainingDraws.length > 0 ? trainingDraws : draws.slice(0, 10), game, rng);
+  // ── Walk-forward evaluation ──────────────────────────────────────────────
+  // results[modelId] = array of per-draw result objects
+  const results = {};
+  activeModels.forEach(m => { results[m.id] = []; });
 
-    const ourBest = getBestLineScore(ourLines.slice(0, lineCount), draw, game);
-    const randScore = computeCloseScore(randLine, draw, game);
-    const freqScore = computeCloseScore(freqLine, draw, game);
+  testDraws.forEach((draw, idx) => {
+    const absoluteIdx   = allDraws.length - drawCount + idx;
+    const trainingDraws = allDraws.slice(0, absoluteIdx);
+    if (trainingDraws.length < 4) {
+      activeModels.forEach(m => results[m.id].push(null));
+      return;
+    }
+    activeModels.forEach(m => {
+      const seed  = m.seedBase + idx * m.seedStep;
+      const lines = generateLinesN(game, seed, trainingDraws, m.window, lineCount);
 
-    ourTotal += ourBest.score;
-    randTotal += randScore.score;
-    freqTotal += freqScore.score;
-    ourMatchTotal += ourBest.mainMatches;
-    randMatchTotal += randScore.mainMatches;
-    freqMatchTotal += freqScore.mainMatches;
+      // rep = lines[0] is the line we display; score it directly.
+      // Aggregate stats are now consistent with what the drill-down shows.
+      const rep = lines[0] || null;
+      const sc  = rep
+        ? computeCloseScore(rep, draw, game)
+        : { mainMatches:0, matchedMains:[], bonusMatch:0, starMatches:0, matchedStars:[], score:0 };
 
-    const mainBalls = draw.main.map(n => ballHtml(n, game === 'lotto' ? 'lotto' : 'euro-main')).join('');
-    const bestLineBalls = ourBest.mainMatches > 0
-      ? ourLines[0].main.map(n => {
-          const cls = draw.main.includes(n) ? ' matched' : '';
-          return ballHtml(n, (game === 'lotto' ? 'lotto' : 'euro-main') + cls);
-        }).join('')
-      : ourLines[0].main.map(n => ballHtml(n, game === 'lotto' ? 'lotto' : 'euro-main')).join('');
+      results[m.id].push({
+        draw, date: draw.date,
+        matches:    sc.mainMatches,
+        starMatches:sc.starMatches,
+        bonusMatch: sc.bonusMatch,
+        score:      sc.score,
+        rep
+      });
+    });
+  });
 
-    const winner = ourBest.score >= randScore.score && ourBest.score >= freqScore.score ? '🏆 Ours'
-      : freqScore.score >= randScore.score ? '📊 Freq' : '🎲 Random';
+  // Filter nulls and align
+  const validRows = {};
+  activeModels.forEach(m => { validRows[m.id] = results[m.id].filter(Boolean); });
+  const N = Math.min(...activeModels.map(m => validRows[m.id].length));
+  activeModels.forEach(m => { validRows[m.id] = validRows[m.id].slice(-N); });
+
+  // ── Aggregate stats per model ─────────────────────────────────────────────
+  function stats(rows) {
+    const n = rows.length;
+    if (!n) return null;
+    const totalScore   = rows.reduce((s,r)=>s+r.score,0);
+    const totalMatches = rows.reduce((s,r)=>s+r.matches,0);
+    const at1plus  = rows.filter(r=>r.matches>=1).length;
+    const at2plus  = rows.filter(r=>r.matches>=2).length;
+    const zeros    = rows.filter(r=>r.matches===0).length;
+    const scores   = rows.map(r=>r.score);
+    const variance = scores.reduce((s,x)=>s+(x-totalScore/n)**2,0)/n;
+    const stdDev   = Math.sqrt(variance);
+    const streaks  = computeStreaks(rows.map(r=>r.matches>=1));
+    // Last 5 / 10 wins
+    const last5  = rows.slice(-5);
+    const last10 = rows.slice(-10);
+    return { n, totalScore, avgScore:totalScore/n, totalMatches,
+             avgMatchesPerDraw:totalMatches/n, at1plus, at2plus, zeros, stdDev,
+             bestStreak:streaks.bestHit, worstStreak:streaks.bestMiss,
+             last5scores:last5.map(r=>r.score), last10scores:last10.map(r=>r.score) };
+  }
+
+  const modelStats = {};
+  activeModels.forEach(m => { modelStats[m.id] = stats(validRows[m.id]); });
+
+  // ── Per-row winner ─────────────────────────────────────────────────────────
+  // For each draw idx, find which model had the highest score
+  const perDrawWinners = Array.from({length:N}, (_,i) => {
+    let maxScore = -1, winner = null, tied = false;
+    activeModels.forEach(m => {
+      const sc = validRows[m.id][i]?.score || 0;
+      if (sc > maxScore) { maxScore = sc; winner = m.id; tied = false; }
+      else if (sc === maxScore && sc > 0) { tied = true; }
+    });
+    return (tied || maxScore === 0) ? 'TIE' : winner;
+  });
+
+  // ── Overall verdict ───────────────────────────────────────────────────────
+  const winCount = {};
+  activeModels.forEach(m => { winCount[m.id] = 0; });
+  perDrawWinners.forEach(w => { if (w !== 'TIE' && winCount[w] !== undefined) winCount[w]++; });
+  const tieCount = perDrawWinners.filter(w=>w==='TIE').length;
+
+  // Category wins
+  const categories = ['totalScore','avgScore','at2plus','zeros_inv','bestStreak','stdDev_inv'];
+  const catWins = {};
+  activeModels.forEach(m => { catWins[m.id] = 0; });
+
+  function catWinner(getter, lowerBetter) {
+    let best = lowerBetter ? Infinity : -Infinity;
+    let winner = null;
+    activeModels.forEach(m => {
+      const v = getter(modelStats[m.id]);
+      if (v === null || v === undefined) return;
+      if (lowerBetter ? v < best : v > best) { best = v; winner = m.id; }
+    });
+    return winner;
+  }
+  const catResults = [
+    catWinner(s=>s.totalScore, false),
+    catWinner(s=>s.avgScore, false),
+    catWinner(s=>s.at2plus, false),
+    catWinner(s=>s.zeros, true),
+    catWinner(s=>s.bestStreak, false),
+    catWinner(s=>s.stdDev, true),
+  ];
+  catResults.forEach(w => { if (w && catWins[w] !== undefined) catWins[w]++; });
+
+  const overallWinner = Object.entries(catWins).sort((a,b)=>b[1]-a[1]);
+  const topModel = overallWinner[0];
+  const isOverallTie = overallWinner.length > 1 && overallWinner[0][1] === overallWinner[1][1];
+  const topModelDef = BT_MODEL_DEFS.find(m=>m.id===topModel[0]);
+
+  // ── Save for export ────────────────────────────────────────────────────────
+  _lastBacktestData = { game, activeModels, validRows, modelStats, perDrawWinners,
+                        winCount, tieCount, catWins, N };
+
+  // ── Comparison summary panel ───────────────────────────────────────────────
+  document.getElementById('btCompSummary').style.display = 'block';
+  const recentSummary = (n_last) => {
+    const wins = {}; let ties = 0;
+    activeModels.forEach(m => { wins[m.id] = 0; });
+    perDrawWinners.slice(-n_last).forEach(w => {
+      if (w === 'TIE') ties++;
+      else if (wins[w] !== undefined) wins[w]++;
+    });
+    const parts = activeModels.map(m => {
+      const def = BT_MODEL_DEFS.find(d=>d.id===m.id);
+      return `<span class="${def.badge}">${m.label.split('-')[0]}M</span> ${wins[m.id]}`;
+    }).join('  ');
+    return `${parts}  <span class="win-tie">Ties ${ties}</span>`;
+  };
+
+  document.getElementById('btCompSummary').innerHTML = `
+    <div class="comp-summary-grid">
+      <div class="cs-card">
+        <h4>Overall Results — ${N} Draws</h4>
+        ${activeModels.map(m=>{
+          const def=BT_MODEL_DEFS.find(d=>d.id===m.id);
+          return `<div class="cs-row"><span class="csk">${m.label} wins</span><span class="csv-${m.id}">${winCount[m.id]} <small>draws</small></span></div>`;
+        }).join('')}
+        <div class="cs-row"><span class="csk">Ties</span><span class="csv-tie">${tieCount}</span></div>
+      </div>
+      <div class="cs-card">
+        <h4>Recent Form</h4>
+        <div class="cs-row"><span class="csk">Last 5 draws</span><span style="font-family:var(--font-mono);font-size:0.68rem;">${recentSummary(5)}</span></div>
+        <div class="cs-row"><span class="csk">Last 10 draws</span><span style="font-family:var(--font-mono);font-size:0.68rem;">${recentSummary(10)}</span></div>
+      </div>
+      <div class="cs-card">
+        <h4>Avg Matches / Draw</h4>
+        ${activeModels.map(m=>
+          `<div class="cs-row"><span class="csk">${m.label}</span><span class="csv-${m.id}">${modelStats[m.id].avgMatchesPerDraw.toFixed(2)}</span></div>`
+        ).join('')}
+      </div>
+      <div class="cs-card">
+        <h4>1+ Match Draws</h4>
+        ${activeModels.map(m=>
+          `<div class="cs-row"><span class="csk">${m.label}</span><span class="csv-${m.id}">${modelStats[m.id].at1plus} / ${N}</span></div>`
+        ).join('')}
+      </div>
+      <div class="cs-card">
+        <h4>2+ Match Draws</h4>
+        ${activeModels.map(m=>
+          `<div class="cs-row"><span class="csk">${m.label}</span><span class="csv-${m.id}">${modelStats[m.id].at2plus} / ${N}</span></div>`
+        ).join('')}
+      </div>
+      <div class="cs-card">
+        <h4>Best Hit Streak</h4>
+        ${activeModels.map(m=>
+          `<div class="cs-row"><span class="csk">${m.label}</span><span class="csv-${m.id}">${modelStats[m.id].bestStreak} draws</span></div>`
+        ).join('')}
+      </div>
+    </div>`;
+
+  // ── Verdict banner ─────────────────────────────────────────────────────────
+  const bannerEl = document.getElementById('btVerdictBanner');
+  bannerEl.style.display = 'block';
+  bannerEl.innerHTML = `
+    <div style="background:linear-gradient(135deg,rgba(201,148,58,.07),rgba(58,123,213,.07));border:1px solid var(--border2);border-radius:6px;padding:16px 20px;">
+      <div style="font-family:var(--font-mono);font-size:0.62rem;letter-spacing:2px;text-transform:uppercase;color:var(--text3);margin-bottom:8px;">Benchmark Verdict — ${N} draws · ${activeModels.length} models</div>
+      <div style="font-family:var(--font-display);font-size:1.4rem;font-weight:700;color:${isOverallTie?'var(--text2)':(topModelDef?.color||'var(--gold2)')};margin-bottom:8px;">
+        ${isOverallTie ? '⚖ Models statistically tied across categories'
+          : `🏆 ${topModelDef?.label} Model leads with ${topModel[1]} / ${categories.length} categories`}
+      </div>
+      <div style="display:flex;flex-wrap:wrap;gap:16px;font-family:var(--font-mono);font-size:0.7rem;">
+        ${activeModels.map(m=>`<span><span class="${BT_MODEL_DEFS.find(d=>d.id===m.id).badge}">${m.label}</span> · cat wins: <strong>${catWins[m.id]}</strong> · draw wins: <strong>${winCount[m.id]}</strong></span>`).join('')}
+        <span style="color:var(--text3)">Ties: ${tieCount}</span>
+      </div>
+    </div>`;
+
+  // ── KPI Cards ──────────────────────────────────────────────────────────────
+  function kpiCard(label, getVal, lowerBetter, fmtFn, note) {
+    const vals = activeModels.map(m => ({m, v: getVal(modelStats[m.id])}));
+    const bestV = lowerBetter ? Math.min(...vals.map(x=>x.v)) : Math.max(...vals.map(x=>x.v));
+    return `<div style="background:var(--bg2);border:1px solid var(--border);border-radius:4px;padding:14px;">
+      <div style="font-family:var(--font-mono);font-size:0.62rem;letter-spacing:1.5px;text-transform:uppercase;color:var(--text3);margin-bottom:10px;">${label}</div>
+      <div style="display:flex;gap:14px;flex-wrap:wrap;margin-bottom:8px;">
+        ${vals.map(({m,v})=>{
+          const def=BT_MODEL_DEFS.find(d=>d.id===m.id);
+          const isWin = v===bestV;
+          return `<div>
+            <div style="font-family:var(--font-mono);font-size:0.6rem;margin-bottom:2px;"><span class="${def.badge}">${m.label.split('-')[0]}M</span></div>
+            <div style="font-family:var(--font-mono);font-size:1.2rem;font-weight:${isWin?'700':'400'};color:${isWin?def.color:'var(--text2)'};">${fmtFn(v)}</div>
+          </div>`;
+        }).join('')}
+      </div>
+      <div style="font-family:var(--font-mono);font-size:0.6rem;color:var(--text3);">${note}</div>
+    </div>`;
+  }
+
+  document.getElementById('btKpiGrid').innerHTML = `
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px;">
+      ${kpiCard('Total Close Score',s=>s.totalScore,false,v=>v.toFixed(1),`over ${N} draws`)}
+      ${kpiCard('Avg Close Score / Draw',s=>s.avgScore,false,v=>v.toFixed(2),'higher = closer to draws')}
+      ${kpiCard('Avg Matches / Draw',s=>s.avgMatchesPerDraw,false,v=>v.toFixed(2),'main numbers matched')}
+      ${kpiCard('Draws with 1+ Match',s=>s.at1plus,false,v=>`${v}/${N}`,'at least 1 main match')}
+      ${kpiCard('Draws with 2+ Matches',s=>s.at2plus,false,v=>`${v}/${N}`,'higher-value hits')}
+      ${kpiCard('Zero-Hit Draws',s=>s.zeros,true,v=>`${v}/${N}`,'fewer = better')}
+      ${kpiCard('Score Std Dev (σ)',s=>s.stdDev,true,v=>v.toFixed(2),'lower = more consistent')}
+      ${kpiCard('Best Hit Streak',s=>s.bestStreak,false,v=>`${v} draws`,'consecutive 1+ match runs')}
+      ${kpiCard('Worst Miss Streak',s=>s.worstStreak,true,v=>`${v} draws`,'consecutive zeros · lower = better')}
+    </div>`;
+
+  // ── Full metrics table ─────────────────────────────────────────────────────
+  function metricRow(label, getVal, lowerBetter, fmtFn, note) {
+    const vals = activeModels.map(m => ({m, v:getVal(modelStats[m.id])}));
+    const bestV = lowerBetter ? Math.min(...vals.map(x=>x.v)) : Math.max(...vals.map(x=>x.v));
+    const cells = vals.map(({m,v}) => {
+      const def  = BT_MODEL_DEFS.find(d=>d.id===m.id);
+      const isW  = v===bestV;
+      return `<td style="font-family:var(--font-mono);font-size:0.76rem;font-weight:${isW?'700':'400'};color:${isW?def.color:'var(--text2)'};">${fmtFn(v)}</td>`;
+    }).join('');
+    const winnerDef = BT_MODEL_DEFS.find(d=>d.id===catResults[0]);
+    return `<tr><td style="color:var(--text2);font-family:var(--font-mono);font-size:0.72rem;">${label}${note?`<div style="color:var(--text3);font-size:0.6rem;">${note}</div>`:''}</td>${cells}<td>${''}</td></tr>`;
+  }
+
+  // Build header with model columns
+  const mthCols = activeModels.map(m=>`<th style="color:${BT_MODEL_DEFS.find(d=>d.id===m.id).color};">${m.label}</th>`).join('');
+  document.getElementById('btMetricsTable').querySelector('thead').innerHTML =
+    `<tr><th>Metric</th>${mthCols}<th>Winner</th></tr>`;
+
+  function fullMetricRow(label, getVal, lowerBetter, fmtFn, note) {
+    const vals = activeModels.map(m=>({m,v:getVal(modelStats[m.id])}));
+    const bestV = lowerBetter ? Math.min(...vals.map(x=>x.v)) : Math.max(...vals.map(x=>x.v));
+    const winDef = activeModels.length>1 ? BT_MODEL_DEFS.find(d=>d.id===vals.find(x=>x.v===bestV)?.m.id) : null;
+    const cells = vals.map(({m,v})=>{
+      const def=BT_MODEL_DEFS.find(d=>d.id===m.id);
+      const isW=v===bestV&&activeModels.length>1;
+      return `<td style="font-family:var(--font-mono);font-weight:${isW?700:400};color:${isW?def.color:'var(--text2)'};">${fmtFn(v)}</td>`;
+    }).join('');
+    const winCell = winDef ? `<td><span class="${winDef.badge}">${winDef.label.split('-')[0]}M ▲</span></td>` : '<td></td>';
+    return `<tr><td style="color:var(--text2);font-family:var(--font-mono);font-size:0.72rem;">${label}${note?`<div style="color:var(--text3);font-size:0.6rem;margin-top:2px;">${note}</div>`:''}</td>${cells}${winCell}</tr>`;
+  }
+
+  document.getElementById('btMetricsBody').innerHTML = [
+    fullMetricRow('Total Close Score',     s=>s.totalScore,         false, v=>v.toFixed(1), `sum over ${N} draws`),
+    fullMetricRow('Avg Score / Draw',      s=>s.avgScore,           false, v=>v.toFixed(2), 'mean closeness per draw'),
+    fullMetricRow('Total Main Matches',    s=>s.totalMatches,       false, v=>v,            'across all draws & lines'),
+    fullMetricRow('Avg Matches / Draw',    s=>s.avgMatchesPerDraw,  false, v=>v.toFixed(2), ''),
+    fullMetricRow('Draws with ≥1 Match',   s=>s.at1plus,            false, v=>`${v}/${N}`,  'at least 1 main number'),
+    fullMetricRow('Draws with ≥2 Matches', s=>s.at2plus,            false, v=>`${v}/${N}`,  'higher-value threshold'),
+    fullMetricRow('Zero-Hit Draws',        s=>s.zeros,              true,  v=>`${v}/${N}`,  'lower = better'),
+    fullMetricRow('Score Std Dev (σ)',      s=>s.stdDev,             true,  v=>v.toFixed(2), 'lower = more consistent'),
+    fullMetricRow('Best Hit Streak',        s=>s.bestStreak,         false, v=>`${v} draws`, 'consecutive 1+ matches'),
+    fullMetricRow('Worst Miss Streak',      s=>s.worstStreak,        true,  v=>`${v} draws`, 'consecutive zeros'),
+    /* category points shown in verdict banner */
+  ].join('');
+
+  // ── Per-draw chart ─────────────────────────────────────────────────────────
+  const labels   = validRows[activeModels[0].id].map(r=>r.date.slice(5));
+  const chartDs  = activeModels.map(m=>({
+    data:  validRows[m.id].map(r=>r.score),
+    color: BT_MODEL_DEFS.find(d=>d.id===m.id).color,
+    label: m.label
+  }));
+  setTimeout(() => { drawLineChart('btChart', labels, chartDs); }, 50);
+
+  // ── Per-draw drill-down — MOST RECENT FIRST ────────────────────────────────
+  // Build dynamic header
+  let drillHeadCols = `<th>Draw Date</th><th>Numbers Drawn</th>`;
+  activeModels.forEach(m => {
+    const def = BT_MODEL_DEFS.find(d=>d.id===m.id);
+    drillHeadCols += `<th><span class="${def.badge}">${m.label.split('-')[0]}M</span> Generated</th>`;
+    drillHeadCols += `<th>Matches</th><th>Score</th>`;
+    drillHeadCols += `<th style="color:var(--text3);font-size:0.65rem;"><span class="${def.badge}">${m.label.split('-')[0]}M</span> Debug</th>`;
+  });
+  if (activeModels.length > 1) drillHeadCols += `<th>Winner</th>`;
+  const drillTable = document.querySelector('#backtestTableBody').closest('table');
+  drillTable.querySelector('thead').innerHTML = `<tr>${drillHeadCols}</tr>`;
+
+  // ── Per-draw drill-down: most-recent-first, rep line drives everything ────
+  // Same fix as history table: scoring comes from computeCloseScore(rep, draw),
+  // NOT from getBestLineScore. Highlights and counts are from the same source.
+  const drillRows = Array.from({length:N},(_,i)=>i).reverse().map(i => {
+    const draw      = validRows[activeModels[0].id][i].draw;
+    const drawnHtml = (draw.main||[]).map(n=>ballHtml(n, ballCls)).join('');
+    let bonusHtml = '';
+    if (draw.bonus) bonusHtml = `<span class="ball-divider">+</span>${ballHtml(draw.bonus,'bonus')}`;
+    if (draw.extra?.length) bonusHtml += `<span class="ball-divider">★</span>`+(draw.extra||[]).map(n=>ballHtml(n,'euro-star')).join('');
+
+    let modelCells = '';
+    activeModels.forEach(m => {
+      const r   = validRows[m.id][i];
+      const def = BT_MODEL_DEFS.find(d=>d.id===m.id);
+
+      // Re-score rep against this draw — single authoritative source
+      let sc;
+      if (r.rep) {
+        sc = computeCloseScore(r.rep, draw, game);
+      } else {
+        sc = { mainMatches:0, matchedMains:[], bonusMatch:0,
+               starMatches:0, matchedStars:[], nearMiss:0, score:0 };
+      }
+
+      let genHtml = '<span style="color:var(--text3);font-size:0.7rem;font-family:var(--font-mono);">no data</span>';
+      if (r.rep) {
+        const repMain  = (r.rep.main  || []).map(Number);
+        const repExtra = (r.rep.extra || []).map(Number);
+        genHtml = repMain.map(n => {
+          const isHit = sc.matchedMains.includes(n);
+          return ballHtml(n, isHit ? def.hitCls : def.genCls);
+        }).join('');
+        if (game === 'euro' && repExtra.length) {
+          genHtml += `<span class="ball-divider">★</span>` +
+            repExtra.map(n => {
+              const isHit = sc.matchedStars.includes(n);
+              return ballHtml(n, isHit ? def.hitCls : def.genCls);
+            }).join('');
+        }
+      }
+
+      const mc   = sc.mainMatches;
+      const mCls = mc>=3?'td-score':mc>=1?'td-matches':'td-method';
+      const bonusTag = sc.bonusMatch ? ' <span style="color:var(--warn);font-size:0.62rem;">+B</span>' : '';
+      const starTag  = game==='euro' ? ` <span style="color:var(--text3);font-size:0.62rem;">★${sc.starMatches}</span>` : '';
+
+      const debugMains = sc.matchedMains.length ? sc.matchedMains.join(', ') : '—';
+      const debugStars = sc.matchedStars.length  ? sc.matchedStars.join(', ') : '—';
+      const debugHtml = `<div style="font-family:var(--font-mono);font-size:0.6rem;line-height:1.6;color:var(--text3);">
+        <span style="color:var(--text2);">Mains:</span> [${debugMains}]<br>
+        ${game==='euro'?`<span style="color:var(--text2);">Stars:</span> [${debugStars}]`:''}
+      </div>`;
+
+      modelCells += `<td><div class="gen-balls">${genHtml}</div></td>`;
+      modelCells += `<td class="${mCls}" style="white-space:nowrap;">Main&nbsp;<strong>${mc}</strong>${bonusTag}${starTag}</td>`;
+      modelCells += `<td style="font-family:var(--font-mono);font-size:0.75rem;color:var(--text2);">${sc.score.toFixed(1)}</td>`;
+      modelCells += `<td>${debugHtml}</td>`;
+    });
+
+    let winCell = '';
+    if (activeModels.length > 1) {
+      // Re-derive winner from the corrected per-rep scores
+      const repScores = activeModels.map(m => {
+        const r = validRows[m.id][i];
+        return r.rep ? computeCloseScore(r.rep, draw, game).score : 0;
+      });
+      const maxSc = Math.max(...repScores);
+      const winIdxs = repScores.map((s,ii)=>s===maxSc?ii:-1).filter(ii=>ii>=0);
+      if (winIdxs.length > 1 || maxSc === 0) {
+        winCell = `<td><span class="win-tie">— TIE</span></td>`;
+      } else {
+        const wd = BT_MODEL_DEFS.find(d=>d.id===activeModels[winIdxs[0]].id);
+        winCell = `<td><span class="win-${wd.id}">▲ ${wd.label.split('-')[0]}M</span></td>`;
+      }
+    }
 
     return `<tr>
       <td class="td-date">${draw.date}</td>
-      <td><div class="balls-row" style="gap:3px;">${mainBalls}</div></td>
-      <td><div class="balls-row" style="gap:3px;">${bestLineBalls}</div></td>
-      <td class="td-matches">${ourBest.mainMatches}</td>
-      <td class="td-score">${ourBest.score.toFixed(1)}</td>
-      <td class="${randScore.score > ourBest.score ? 'td-score' : 'td-method'}">${randScore.score.toFixed(1)}</td>
-      <td class="${freqScore.score > ourBest.score ? 'td-score' : 'td-method'}">${freqScore.score.toFixed(1)}</td>
+      <td><div class="balls-row" style="gap:3px;">${drawnHtml}${bonusHtml}</div></td>
+      ${modelCells}
+      ${winCell}
     </tr>`;
+  }).join('');
+
+  document.getElementById('backtestTableBody').innerHTML = drillRows;
+}
+
+function exportBacktestCSV() {
+  if (!_lastBacktestData) { alert('Run the benchmark first.'); return; }
+  const { game, activeModels, validRows, modelStats, perDrawWinners, N } = _lastBacktestData;
+  const cfg = getGameConfig(game);
+
+  // Header
+  let mCols = '';
+  activeModels.forEach(m => {
+    mCols += `,${m.label} Generated,${m.label} Matches,${m.label} Score,${m.label} Window`;
+  });
+  let csv = `LottoAnalyst Backtest Export — ${game.toUpperCase()} — ${N} draws\n`;
+  csv += `Draw Date,Winning Numbers${mCols},Better Model,Tie\n`;
+
+  for (let i=0; i<N; i++) {
+    const draw   = validRows[activeModels[0].id][i].draw;
+    const winner = perDrawWinners[i];
+    let row = `${draw.date},"${draw.main.join('-')}"`;
+    const scores = activeModels.map(m=>validRows[m.id][i].score);
+    const maxSc  = Math.max(...scores);
+    const isTie  = scores.filter(s=>s===maxSc).length>1 || maxSc===0;
+    activeModels.forEach(m => {
+      const r   = validRows[m.id][i];
+      const gen = r.rep ? r.rep.main.join('-') : '';
+      row += `,"${gen}",${r.matches},${r.score.toFixed(1)},Last ${m.window} draws`;
+    });
+    row += `,"${isTie?'TIE':BT_MODEL_DEFS.find(d=>d.id===winner)?.label||winner}","${isTie?'Y':'N'}"`;
+    csv += row + '\n';
+  }
+
+  // Summary block
+  csv += '\nSUMMARY\n';
+  csv += `Metric${activeModels.map(m=>','+m.label).join('')}\n`;
+  const summaryRows = [
+    ['Total Score', s=>s.totalScore.toFixed(1)],
+    ['Avg Score/Draw', s=>s.avgScore.toFixed(2)],
+    ['Total Matches', s=>s.totalMatches],
+    ['Avg Matches/Draw', s=>s.avgMatchesPerDraw.toFixed(2)],
+    ['1+ Match Draws', s=>`${s.at1plus}/${N}`],
+    ['2+ Match Draws', s=>`${s.at2plus}/${N}`],
+    ['Zero-Hit Draws', s=>`${s.zeros}/${N}`],
+    ['Std Dev (σ)', s=>s.stdDev.toFixed(2)],
+    ['Best Streak', s=>s.bestStreak],
+    ['Worst Miss Streak', s=>s.worstStreak],
+  ];
+  summaryRows.forEach(([label, fn]) => {
+    csv += `${label}${activeModels.map(m=>`,"${fn(modelStats[m.id])}"`).join('')}\n`;
   });
 
-  document.getElementById('backtestTableBody').innerHTML = rowData.join('');
-
-  const ourAvg = (ourTotal / drawCount).toFixed(2);
-  const randAvg = (randTotal / drawCount).toFixed(2);
-  const freqAvg = (freqTotal / drawCount).toFixed(2);
-  const improvement = ourTotal > randTotal
-    ? `+${((ourTotal - randTotal) / randTotal * 100).toFixed(1)}% vs random`
-    : `${((ourTotal - randTotal) / randTotal * 100).toFixed(1)}% vs random`;
-
-  document.getElementById('backtestSummary').innerHTML = `
-    <div class="stat-card"><div class="label">Our System Total</div><div class="value" style="color:var(--gold2)">${ourTotal.toFixed(1)}</div><div class="sub">avg ${ourAvg}/draw · ${ourMatchTotal} main matches</div></div>
-    <div class="stat-card"><div class="label">Random Baseline</div><div class="value" style="color:var(--text2)">${randTotal.toFixed(1)}</div><div class="sub">avg ${randAvg}/draw · ${randMatchTotal} main matches</div></div>
-    <div class="stat-card"><div class="label">Freq-Only Baseline</div><div class="value" style="color:var(--lotto-blue2)">${freqTotal.toFixed(1)}</div><div class="sub">avg ${freqAvg}/draw · ${freqMatchTotal} main matches</div></div>
-    <div class="stat-card"><div class="label">System Performance</div><div class="value" style="font-size:1rem;color:${ourTotal >= randTotal ? 'var(--green)' : 'var(--red)'}">${improvement}</div><div class="sub">close score comparison</div></div>
-  `;
+  const blob = new Blob([csv],{type:'text/csv'});
+  const a = document.createElement('a'); a.href=URL.createObjectURL(blob);
+  a.download=`backtest-${activeModels.map(m=>m.id).join('vs')}-${game}.csv`; a.click();
 }
 
 function renderComparison() {
@@ -2108,48 +3049,74 @@ function setGame(game) {
   renderPicks();
 }
 
+// confirmRegenerate is intentionally removed from the UI.
+// Use window.__devResetPicks(game) from the browser console for development resets.
+// This function is kept as a no-op to prevent errors if called from old bookmarks.
 function confirmRegenerate() {
-  if (confirm('Regenerate lines? This will override the weekly lock for this session only. The original lock will restore on next page load.')) {
-    forceRegenerate(currentGame);
-    renderPicks();
-  }
+  console.info('[LottoAnalyst] Regeneration is disabled. Use window.__devResetPicks() in the console.');
 }
 
 function exportPicks() {
   const locked = getLockedLines(currentGame);
-  const cfg = getGameConfig(currentGame);
-  let csv = `LottoAnalyst Export — ${cfg.name} — Week ${locked.weekKey}\n`;
-  csv += `Generated,${locked.generated}\n\n`;
-  csv += `Line,Numbers,${cfg.starCount > 0 ? 'Lucky Stars,' : ''}Confidence %,Signal Score\n`;
+  const cfg    = getGameConfig(currentGame);
+  const drawKey = locked.drawKey || locked.weekKey || getDrawKey(currentGame);
+
+  let csv = `LottoAnalyst Weekly Picks Export\n`;
+  csv += `Game,${cfg.name}\n`;
+  csv += `Draw Key,${drawKey}\n`;
+  csv += `Generated At,${locked.generatedAt || locked.generated || ''}\n`;
+  csv += `Generated Date,${locked.generatedDate || ''}\n`;
+  csv += `Lock Expires,${locked.weekEnd || ''}\n`;
+  csv += `Storage,localStorage (persists across browser sessions)\n\n`;
+  csv += `Line,Numbers,${cfg.starCount > 0 ? 'Lucky Stars,' : ''}Confidence %,Signal Score,Game,Draw Key,Generated At\n`;
   locked.lines.forEach((l, i) => {
     const stars = l.extra && l.extra.length > 0 ? l.extra.join('-') + ',' : (cfg.starCount > 0 ? ',' : '');
-    const conf = Math.min(100, l.confidence || 0);
-    const sig = l.signalScore !== undefined ? (l.signalScore * 100).toFixed(1) : '';
-    csv += `${i + 1},${l.main.join('-')},${stars}${conf}%,${sig}\n`;
+    const conf  = Math.min(100, l.confidence || 0);
+    const sig   = l.signalScore !== undefined ? (l.signalScore * 100).toFixed(1) : '';
+    csv += `${i + 1},${l.main.join('-')},${stars}${conf}%,${sig},${cfg.name},${drawKey},${locked.generatedAt || ''}\n`;
   });
 
   const blob = new Blob([csv], {type: 'text/csv'});
   const a = document.createElement('a');
   a.href = URL.createObjectURL(blob);
-  a.download = `lotto-picks-${locked.weekKey}.csv`;
+  a.download = `lottoanalyst-picks-${drawKey}.csv`;
   a.click();
 }
 
 function exportHistory() {
-  const draws = getDraws(currentGame);
-  const cfg = getGameConfig(currentGame);
-  let csv = `Date,Numbers,${cfg.hasBonus ? 'Bonus,' : ''}${cfg.starCount > 0 ? 'Stars,' : ''}\n`;
-  draws.forEach(d => {
-    const bonus = d.bonus ? d.bonus + ',' : (cfg.hasBonus ? ',' : '');
-    const stars = d.extra && d.extra.length > 0 ? d.extra.join('-') + ',' : (cfg.starCount > 0 ? ',' : '');
-    csv += `${d.date},${d.main.join('-')},${bonus}${stars}\n`;
+  const allDraws = getDraws(currentGame);
+  const cfg      = getGameConfig(currentGame);
+  const activeModels = BT_MODEL_DEFS.filter(m=>_btActiveModels[m.id]);
+
+  let mCols = '';
+  activeModels.forEach(m => { mCols += `,${m.label} Generated,${m.label} Matches,${m.label} Score,${m.label} Window`; });
+  let csv = `LottoAnalyst History Export — ${cfg.name}\n`;
+  csv += `Date,Winning Numbers${mCols},Better Model\n`;
+
+  const draws = allDraws.slice().reverse().slice(0, 30);
+  draws.forEach((draw, idx) => {
+    const absoluteIdx   = allDraws.length - 1 - idx;
+    const trainingDraws = allDraws.slice(0, absoluteIdx);
+    let row = `${draw.date},"${draw.main.join('-')}"`;
+    const scores = [];
+    activeModels.forEach(m => {
+      const seed  = m.seedBase + idx * m.seedStep;
+      const lines = trainingDraws.length>=4 ? generateLinesN(currentGame,seed,trainingDraws,m.window,5) : [];
+      const best  = lines.length ? getBestLineScore(lines,draw,currentGame) : {mainMatches:0,score:0};
+      const rep   = lines[0]||null;
+      row += `,"${rep?rep.main.join('-'):''}",${best.mainMatches},${best.score.toFixed(1)},Last ${m.window} draws`;
+      scores.push({id:m.id,score:best.score});
+    });
+    const maxSc = Math.max(...scores.map(s=>s.score));
+    const winners = scores.filter(s=>s.score===maxSc);
+    const winner = (winners.length>1||maxSc===0)?'TIE':(BT_MODEL_DEFS.find(d=>d.id===winners[0].id)?.label||'');
+    row += `,"${winner}"`;
+    csv += row+'\n';
   });
 
-  const blob = new Blob([csv], {type: 'text/csv'});
-  const a = document.createElement('a');
-  a.href = URL.createObjectURL(blob);
-  a.download = `draw-history-${currentGame}.csv`;
-  a.click();
+  const blob = new Blob([csv],{type:'text/csv'});
+  const a=document.createElement('a'); a.href=URL.createObjectURL(blob);
+  a.download=`history-${currentGame}.csv`; a.click();
 }
 
 // ============================================================
@@ -2157,6 +3124,7 @@ function exportHistory() {
 // ============================================================
 
 window.addEventListener('load', () => {
+  pruneOldPicks();   // clean up entries older than 5 weeks on every load
   renderPicks();
   // Pre-compute backtest silently
   setTimeout(() => {

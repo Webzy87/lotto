@@ -2,1002 +2,2176 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>LottoOracle</title>
-<link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LottoAnalyst — Statistical Tracking System</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=IBM+Plex+Mono:wght@300;400;500;600&family=IBM+Plex+Sans:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-:root {
-  --bg:        #09101F;
-  --surface:   #101826;
-  --surface2:  #141F30;
-  --surface3:  #192538;
-  --border:    rgba(255,255,255,0.07);
-  --border-hi: rgba(255,255,255,0.13);
-  --blue:      #3B82F6;
-  --blue-dim:  rgba(59,130,246,0.12);
-  --pink:      #EC4899;
-  --purple:    #8B5CF6;
-  --text:      #E8EEF8;
-  --text-mid:  #7A8699;
-  --text-dim:  #3E4A5C;
-  --green:     #34D399;
-  --amber:     #FBBF24;
-  --r:         16px;
-  --rm:        11px;
-  --ease:      cubic-bezier(0.4,0,0.2,1);
-}
-html { font-size: 16px; -webkit-tap-highlight-color: transparent; }
-body { background: var(--bg); color: var(--text); font-family: 'Sora', -apple-system, sans-serif; min-height: 100vh; overflow-x: hidden; }
+  :root {
+    --bg: #080c14;
+    --bg2: #0d1422;
+    --bg3: #111927;
+    --border: #1e2d45;
+    --border2: #243350;
+    --gold: #c9943a;
+    --gold2: #e8b84b;
+    --gold3: #f5d070;
+    --amber: #d4750a;
+    --text: #d6dfe8;
+    --text2: #8a9bb5;
+    --text3: #4e6180;
+    --lotto-blue: #3a7bd5;
+    --lotto-blue2: #5b9cf0;
+    --euro-red: #c0392b;
+    --euro-red2: #e05244;
+    --green: #2ecc71;
+    --green2: #27ae60;
+    --warn: #e67e22;
+    --red: #e74c3c;
+    --glow: rgba(201,148,58,0.15);
+    --font-display: 'Playfair Display', serif;
+    --font-mono: 'IBM Plex Mono', monospace;
+    --font-body: 'IBM Plex Sans', sans-serif;
+  }
 
-/* ── ambient glow ── */
-.amb { position: fixed; inset: 0; z-index: 0; pointer-events: none; overflow: hidden; }
-.ab { position: absolute; border-radius: 50%; filter: blur(90px); }
-.ab1 { width: 380px; height: 380px; background: radial-gradient(circle,#1D4ED8,transparent 70%); top:-130px; left:-60px; opacity:.10; }
-.ab2 { width: 300px; height: 300px; background: radial-gradient(circle,#7C3AED,transparent 70%); bottom:80px; right:-80px; opacity:.07; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
 
-/* ── layout ── */
-.page { position: relative; z-index: 1; max-width: 430px; margin: 0 auto; padding: 0 18px 70px; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--font-body);
+    font-size: 14px;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
 
-/* ── header ── */
-.hdr { padding: 44px 0 28px; text-align: center; }
-.logo { width: 46px; height: 46px; margin: 0 auto 14px; border-radius: 50%; background: linear-gradient(135deg,rgba(59,130,246,.18),rgba(139,92,246,.14)); border: 1.5px solid rgba(99,179,237,.25); display: flex; align-items: center; justify-content: center; animation: logoPulse 3.5s ease-in-out infinite; }
-@keyframes logoPulse { 0%,100%{box-shadow:0 0 0 0 rgba(59,130,246,.12)} 50%{box-shadow:0 0 0 10px rgba(59,130,246,0)} }
-.logo-dot { width: 18px; height: 18px; border-radius: 50%; background: linear-gradient(135deg,#60A5FA,#8B5CF6); }
-.hdr-name { font-size: 26px; font-weight: 700; letter-spacing: -.025em; }
-.hdr-name em { color: var(--blue); font-style: normal; }
-.hdr-sub { font-size: 13px; font-weight: 300; color: var(--text-mid); margin-top: 5px; }
+  /* Background grain effect */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 0;
+    opacity: 0.6;
+  }
 
-/* ── game selector ── */
-.game-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 14px; }
-.game-btn {
-  background: var(--surface); border: 1.5px solid var(--border);
-  border-radius: var(--r); padding: 18px 14px 16px;
-  cursor: pointer; text-align: center; transition: all .22s var(--ease);
-  position: relative; overflow: hidden;
-}
-.game-btn::after { content:''; position:absolute; inset:0; border-radius:inherit; opacity:0; transition:opacity .22s; }
-.game-btn.euro::after { background: linear-gradient(135deg,rgba(59,130,246,.1),transparent); }
-.game-btn.uk::after   { background: linear-gradient(135deg,rgba(236,72,153,.1),transparent); }
-.game-btn.active::after { opacity:1; }
-.game-btn.active.euro { border-color:var(--blue); box-shadow:0 0 0 1px rgba(59,130,246,.18),0 6px 20px rgba(59,130,246,.1); }
-.game-btn.active.uk   { border-color:var(--pink); box-shadow:0 0 0 1px rgba(236,72,153,.18),0 6px 20px rgba(236,72,153,.1); }
-.game-btn:hover:not(.active) { border-color:var(--border-hi); transform:translateY(-1px); }
-.game-flag { font-size: 26px; display: block; margin-bottom: 6px; }
-.game-name { font-size: 14px; font-weight: 600; display: block; color: var(--text); }
-.game-btn.active.euro .game-name { color: #93C5FD; }
-.game-btn.active.uk   .game-name { color: #F9A8D4; }
-.game-fmt { font-size: 10.5px; font-family: 'DM Mono',monospace; color: var(--text-dim); display: block; margin-top: 2px; }
-.game-chk { position:absolute; top:9px; right:11px; width:17px; height:17px; border-radius:50%; font-size:9px; display:flex; align-items:center; justify-content:center; opacity:0; transform:scale(.4); transition:all .22s var(--ease); }
-.game-btn.active.euro .game-chk { background:var(--blue); opacity:1; transform:scale(1); }
-.game-btn.active.uk   .game-chk { background:var(--pink); opacity:1; transform:scale(1); }
+  .container { position: relative; z-index: 1; max-width: 1400px; margin: 0 auto; padding: 0 24px 48px; }
 
-/* ── draw strip ── */
-.draw-strip { background:var(--surface2); border:1px solid var(--border); border-radius:var(--rm); padding:11px 14px; margin-bottom:14px; display:flex; align-items:center; justify-content:space-between; }
-.draw-left { display:flex; align-items:center; gap:8px; }
-.draw-dot { width:7px; height:7px; border-radius:50%; background:var(--green); flex-shrink:0; animation:blink 2s ease-in-out infinite; }
-@keyframes blink { 0%,100%{opacity:1} 50%{opacity:.3} }
-.draw-label { font-size:13px; font-weight:500; }
-.draw-sub { font-size:11px; font-family:'DM Mono',monospace; color:var(--text-mid); margin-top:1px; }
-.draw-timer { font-family:'DM Mono',monospace; font-size:12px; color:var(--text-mid); text-align:right; white-space:nowrap; }
-.draw-timer span { display:block; font-size:10px; color:var(--text-dim); margin-top:1px; text-align:right; }
+  /* HEADER */
+  header {
+    padding: 32px 0 24px;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 32px;
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 16px;
+  }
 
-/* ── practice toggle ── */
-.practice-row { display:flex; align-items:center; justify-content:space-between; margin-bottom:14px; padding:0 2px; }
-.practice-label { font-size:12.5px; color:var(--text-mid); display:flex; align-items:center; gap:6px; }
-.toggle { width:38px; height:22px; border-radius:11px; background:var(--surface3); border:1px solid var(--border-hi); position:relative; cursor:pointer; transition:background .2s; flex-shrink:0; }
-.toggle.on { background:rgba(52,211,153,.22); border-color:rgba(52,211,153,.38); }
-.toggle-knob { position:absolute; top:2px; left:2px; width:16px; height:16px; border-radius:50%; background:var(--text-dim); transition:all .2s var(--ease); }
-.toggle.on .toggle-knob { left:18px; background:var(--green); }
-.practice-badge { display:none; font-size:10px; font-family:'DM Mono',monospace; padding:2px 7px; border-radius:4px; background:rgba(52,211,153,.1); border:1px solid rgba(52,211,153,.22); color:var(--green); margin-left:5px; }
-.practice-badge.show { display:inline-block; }
+  .logo-area h1 {
+    font-family: var(--font-display);
+    font-size: 2.4rem;
+    font-weight: 900;
+    letter-spacing: -0.5px;
+    background: linear-gradient(135deg, var(--gold3) 0%, var(--gold) 60%, var(--amber) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    line-height: 1;
+  }
 
-/* ── generate button ── */
-.gen-btn {
-  width:100%; padding:17px 20px;
-  background: linear-gradient(135deg,#2563EB,#1D4ED8);
-  border:none; border-radius:var(--r);
-  color:#fff; font-family:'Sora',sans-serif; font-size:15.5px; font-weight:600; letter-spacing:-.01em;
-  cursor:pointer; position:relative; overflow:hidden;
-  box-shadow:0 6px 28px rgba(37,99,235,.32),inset 0 1px 0 rgba(255,255,255,.1);
-  transition:all .22s var(--ease); margin-bottom:10px;
-}
-.gen-btn::after { content:''; position:absolute; inset:0; background:linear-gradient(135deg,rgba(255,255,255,.08),transparent); opacity:0; transition:opacity .2s; }
-.gen-btn:hover::after { opacity:1; }
-.gen-btn:hover { transform:translateY(-2px); box-shadow:0 10px 32px rgba(37,99,235,.4); }
-.gen-btn:active { transform:scale(.98); }
-.gen-btn:disabled { opacity:.45; cursor:not-allowed; transform:none; box-shadow:none; }
+  .logo-area p {
+    color: var(--text3);
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-top: 6px;
+  }
 
-/* ── refresh button ── */
-.refresh-btn { width:100%; padding:11px 16px; background:transparent; border:1px solid var(--border-hi); border-radius:var(--rm); color:var(--text-mid); font-family:'Sora',sans-serif; font-size:13px; font-weight:500; cursor:pointer; transition:all .2s var(--ease); margin-bottom:22px; display:none; }
-.refresh-btn.show { display:block; }
-.refresh-btn:hover { border-color:rgba(255,255,255,.22); color:var(--text); background:rgba(255,255,255,.03); }
-.refresh-btn:active { transform:scale(.98); }
+  .header-meta {
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    color: var(--text3);
+    text-align: right;
+    line-height: 1.8;
+  }
 
-/* ── loading ── */
-.loading { display:none; text-align:center; padding:36px 0; }
-.loading.show { display:block; animation:fadeIn .3s ease; }
-.orbs { display:flex; justify-content:center; gap:9px; margin-bottom:16px; }
-.orb { width:9px; height:9px; border-radius:50%; background:var(--blue); animation:orbPop 1.2s ease-in-out infinite; }
-.orb:nth-child(2) { animation-delay:.18s; background:var(--purple); }
-.orb:nth-child(3) { animation-delay:.36s; background:var(--blue); }
-@keyframes orbPop { 0%,100%{transform:scale(.55);opacity:.35} 50%{transform:scale(1.15);opacity:1} }
-.load-txt { font-size:13.5px; font-weight:300; color:var(--text-mid); }
+  .header-meta span { color: var(--gold); }
 
-/* ── results ── */
-.results { display:none; }
-.results.show { display:block; animation:slideUp .45s cubic-bezier(.34,1.1,.64,1); }
-@keyframes slideUp { from{opacity:0;transform:translateY(18px)} to{opacity:1;transform:translateY(0)} }
-.results-hdr { display:flex; align-items:center; justify-content:space-between; margin-bottom:12px; }
-.results-title { font-size:12px; font-weight:500; color:var(--text-mid); letter-spacing:.03em; text-transform:uppercase; }
-.results-locked { display:flex; align-items:center; gap:5px; font-size:10.5px; font-family:'DM Mono',monospace; color:var(--text-dim); }
+  /* DISCLAIMER */
+  .disclaimer {
+    background: linear-gradient(135deg, rgba(201,148,58,0.06), rgba(201,148,58,0.02));
+    border: 1px solid rgba(201,148,58,0.2);
+    border-left: 3px solid var(--gold);
+    padding: 12px 16px;
+    border-radius: 4px;
+    margin-bottom: 28px;
+    font-size: 0.78rem;
+    color: var(--text2);
+    font-family: var(--font-mono);
+    line-height: 1.6;
+  }
 
-/* ── line card ── */
-.line-card {
-  background:var(--surface); border:1.5px solid var(--border);
-  border-radius:var(--r); padding:15px 14px 14px;
-  margin-bottom:9px; position:relative; overflow:hidden;
-  animation:cardIn .38s cubic-bezier(.34,1.15,.64,1) backwards;
-  transition:border-color .2s, transform .2s;
-}
-.line-card:hover { transform:translateY(-1px); border-color:var(--border-hi); }
-.line-card:nth-child(1){animation-delay:.04s}
-.line-card:nth-child(2){animation-delay:.10s}
-.line-card:nth-child(3){animation-delay:.16s}
-.line-card:nth-child(4){animation-delay:.22s}
-.line-card:nth-child(5){animation-delay:.28s}
-@keyframes cardIn { from{opacity:0;transform:translateY(14px) scale(.97)} to{opacity:1;transform:translateY(0) scale(1)} }
-.line-card.top { background:linear-gradient(145deg,#0F1C35,#0D1929); border-color:rgba(59,130,246,.28); }
-.line-card.top::before { content:''; position:absolute; top:0; left:0; right:0; height:2px; background:linear-gradient(90deg,transparent,#3B82F6,transparent); }
-.line-card.has-match { border-color:rgba(52,211,153,.25); }
+  .disclaimer strong { color: var(--gold2); }
 
-.line-top { display:flex; align-items:center; justify-content:space-between; margin-bottom:10px; }
-.line-rank { font-size:10.5px; font-weight:500; font-family:'DM Mono',monospace; color:var(--text-dim); letter-spacing:.07em; }
-.line-card.top .line-rank { color:var(--blue); }
+  /* TABS */
+  .tabs {
+    display: flex;
+    gap: 4px;
+    margin-bottom: 28px;
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 0;
+    flex-wrap: wrap;
+  }
 
-/* score chip */
-.line-right { display:flex; align-items:center; gap:7px; }
-.score-chip { display:flex; align-items:center; gap:5px; background:rgba(255,255,255,.04); border:1px solid var(--border); border-radius:20px; padding:3px 9px; }
-.score-chip-lbl { font-size:9.5px; font-family:'DM Mono',monospace; color:var(--text-dim); }
-.score-chip-val { font-size:13px; font-weight:600; font-family:'DM Mono',monospace; color:var(--text); }
-.line-card.top .score-chip { background:rgba(59,130,246,.08); border-color:rgba(59,130,246,.2); }
-.line-card.top .score-chip-val { color:#93C5FD; }
+  .tab-btn {
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: var(--text3);
+    background: none;
+    border: none;
+    padding: 10px 18px;
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+    transition: all 0.2s;
+    margin-bottom: -1px;
+  }
 
-/* copy button */
-.copy-btn {
-  width:30px; height:30px; border-radius:8px;
-  background:rgba(255,255,255,.04); border:1px solid var(--border);
-  display:flex; align-items:center; justify-content:center;
-  cursor:pointer; transition:all .18s var(--ease); flex-shrink:0;
-  color:var(--text-dim); font-size:13px;
-}
-.copy-btn:hover { background:rgba(255,255,255,.09); border-color:var(--border-hi); color:var(--text); }
-.copy-btn.copied { background:rgba(52,211,153,.12); border-color:rgba(52,211,153,.3); color:var(--green); }
+  .tab-btn:hover { color: var(--text2); }
+  .tab-btn.active { color: var(--gold2); border-bottom-color: var(--gold2); }
 
-/* score bar */
-.bar-wrap { height:2px; background:rgba(255,255,255,.04); border-radius:1px; margin-bottom:11px; overflow:hidden; }
-.bar-fill { height:100%; border-radius:1px; transition:width .8s cubic-bezier(.34,1.56,.64,1); background:rgba(99,179,237,.5); }
-.line-card.top .bar-fill { background:linear-gradient(90deg,#3B82F6,#93C5FD); }
+  .tab-content { display: none; }
+  .tab-content.active { display: block; }
 
-/* balls */
-.nums { display:flex; align-items:center; gap:5px; flex-wrap:wrap; }
-.ball {
-  width:42px; height:42px; border-radius:50%;
-  display:flex; align-items:center; justify-content:center;
-  font-family:'DM Mono',monospace; font-size:14px; font-weight:500;
-  position:relative; flex-shrink:0;
-  animation:ballPop .32s cubic-bezier(.34,1.56,.64,1) backwards;
-  transition:transform .15s ease;
-}
-.ball:hover { transform:scale(1.08); }
-.ball::after { content:''; position:absolute; top:5px; left:7px; width:9px; height:5px; border-radius:50%; background:rgba(255,255,255,.18); transform:rotate(-30deg); }
-.ball.main  { background:linear-gradient(145deg,#1E3A6E,#1E40AF); border:1px solid rgba(99,179,237,.22); color:#A8C8F4; box-shadow:0 2px 7px rgba(30,58,138,.45); }
-.ball.bonus { background:linear-gradient(145deg,#3B1D6E,#6D28D9); border:1px solid rgba(139,92,246,.3); color:#C4B5FD; box-shadow:0 2px 7px rgba(109,40,217,.4); }
-.ball.matched { border-color:var(--green)!important; box-shadow:0 0 10px rgba(52,211,153,.4)!important; }
-@keyframes ballPop { from{opacity:0;transform:scale(.3)} to{opacity:1;transform:scale(1)} }
-.plus { font-size:14px; color:var(--text-dim); font-weight:300; flex-shrink:0; padding:0 1px; }
+  /* GAME SELECTOR */
+  .game-selector {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 28px;
+    flex-wrap: wrap;
+  }
 
-.line-match-tag { font-size:10.5px; font-family:'DM Mono',monospace; color:var(--green); margin-top:9px; display:flex; align-items:center; gap:5px; }
-.line-match-tag::before { content:'✓'; }
+  .game-btn {
+    padding: 8px 24px;
+    border-radius: 3px;
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    cursor: pointer;
+    border: 1px solid var(--border2);
+    background: var(--bg2);
+    color: var(--text2);
+    transition: all 0.2s;
+  }
 
-/* foot note */
-.foot-note { text-align:center; font-size:12px; font-weight:300; color:var(--text-dim); margin-top:12px; margin-bottom:24px; }
+  .game-btn:hover { border-color: var(--gold); color: var(--gold); }
+  .game-btn.active-lotto { background: rgba(58,123,213,0.15); border-color: var(--lotto-blue2); color: var(--lotto-blue2); }
+  .game-btn.active-euro { background: rgba(192,57,43,0.15); border-color: var(--euro-red2); color: var(--euro-red2); }
 
-/* ── share strip ── */
-.share-strip { display:none; margin-bottom:22px; }
-.share-strip.show { display:flex; gap:8px; }
-.share-btn {
-  flex:1; padding:10px; background:transparent;
-  border:1px solid var(--border-hi); border-radius:var(--rm);
-  color:var(--text-mid); font-family:'Sora',sans-serif; font-size:12.5px; font-weight:500;
-  cursor:pointer; transition:all .2s var(--ease); text-align:center; display:flex; align-items:center; justify-content:center; gap:6px;
-}
-.share-btn:hover { border-color:rgba(255,255,255,.22); color:var(--text); background:rgba(255,255,255,.03); }
-.share-btn:active { transform:scale(.98); }
+  /* STATS ROW */
+  .stats-row {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 12px;
+    margin-bottom: 28px;
+  }
 
-/* ── compare panel ── */
-.compare-panel { background:var(--surface2); border:1px solid var(--border); border-radius:var(--r); padding:16px; margin-bottom:22px; display:none; }
-.compare-panel.show { display:block; animation:fadeIn .3s ease; }
-.cp-title { font-size:12px; font-weight:600; color:var(--text-mid); letter-spacing:.04em; text-transform:uppercase; margin-bottom:12px; }
-.cp-input-label { font-size:11px; font-family:'DM Mono',monospace; color:var(--text-dim); margin-bottom:5px; letter-spacing:.06em; }
-.cp-input { width:100%; background:var(--surface); border:1px solid var(--border-hi); border-radius:var(--rm); padding:9px 12px; color:var(--text); font-family:'DM Mono',monospace; font-size:13px; outline:none; transition:border-color .2s; margin-bottom:8px; }
-.cp-input:focus { border-color:rgba(99,179,237,.4); }
-.cp-input::placeholder { color:var(--text-dim); }
-.cp-save-btn { width:100%; padding:10px; background:rgba(59,130,246,.1); border:1px solid rgba(59,130,246,.25); border-radius:var(--rm); color:#93C5FD; font-family:'Sora',sans-serif; font-size:13px; font-weight:500; cursor:pointer; transition:all .2s; }
-.cp-save-btn:hover { background:rgba(59,130,246,.18); }
-.cp-result { margin-top:12px; padding-top:11px; border-top:1px solid var(--border); }
-.cp-actual-row { display:flex; gap:4px; flex-wrap:wrap; margin-bottom:10px; align-items:center; }
-.cp-summary { font-size:13px; color:var(--text-mid); line-height:1.5; }
-.cp-summary strong { color:var(--green); }
+  .stat-card {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 16px;
+    position: relative;
+    overflow: hidden;
+  }
 
-/* ── history ── */
-.section-hdr { font-size:12px; font-weight:600; color:var(--text-mid); letter-spacing:.06em; text-transform:uppercase; margin-bottom:12px; display:flex; align-items:center; gap:8px; }
-.section-hdr::after { content:''; flex:1; height:1px; background:var(--border); }
-.hist-card { background:var(--surface); border:1px solid var(--border); border-radius:var(--r); overflow:hidden; margin-bottom:22px; }
-.hist-row { display:flex; align-items:center; gap:8px; padding:10px 14px; border-bottom:1px solid rgba(255,255,255,.04); flex-wrap:wrap; }
-.hist-row:last-child { border-bottom:none; }
-.hist-date { font-family:'DM Mono',monospace; font-size:10.5px; color:var(--text-dim); min-width:60px; flex-shrink:0; }
-.hist-balls { display:flex; gap:4px; flex-wrap:wrap; align-items:center; }
-.hball { width:30px; height:30px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-family:'DM Mono',monospace; font-size:10.5px; font-weight:500; flex-shrink:0; }
-.hball.main  { background:linear-gradient(145deg,#162D54,#1E3A72); border:1px solid rgba(99,179,237,.18); color:#93B8E0; }
-.hball.bonus { background:linear-gradient(145deg,#2D1655,#5B21B6); border:1px solid rgba(139,92,246,.22); color:#B4A0E0; }
-.hball.sep   { background:none; border:none; font-size:11px; color:var(--text-dim); width:10px; justify-content:center; }
+  .stat-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, var(--gold), transparent);
+  }
 
-/* ── disclaimer ── */
-.disc { text-align:center; font-size:11px; color:var(--text-dim); opacity:.5; padding:0 12px; line-height:1.65; }
+  .stat-card .label {
+    font-family: var(--font-mono);
+    font-size: 0.65rem;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--text3);
+    margin-bottom: 8px;
+  }
 
-/* ── toast ── */
-.toast { position:fixed; bottom:28px; left:50%; transform:translateX(-50%) translateY(10px); background:#1E293B; border:1px solid rgba(255,255,255,.12); border-radius:10px; padding:10px 18px; font-size:13px; font-weight:500; color:var(--text); opacity:0; pointer-events:none; transition:all .28s var(--ease); z-index:999; white-space:nowrap; }
-.toast.show { opacity:1; transform:translateX(-50%) translateY(0); }
+  .stat-card .value {
+    font-family: var(--font-mono);
+    font-size: 1.6rem;
+    font-weight: 600;
+    color: var(--gold2);
+    line-height: 1;
+  }
 
-@keyframes fadeIn { from{opacity:0} to{opacity:1} }
-@media(max-width:360px){
-  .ball{width:37px;height:37px;font-size:12px;}
-  .hball{width:27px;height:27px;font-size:10px;}
-  .hdr-name{font-size:23px;}
-}
+  .stat-card .sub {
+    font-family: var(--font-mono);
+    font-size: 0.68rem;
+    color: var(--text3);
+    margin-top: 4px;
+  }
+
+  /* LINES GRID */
+  .section-title {
+    font-family: var(--font-display);
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: var(--gold3);
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .section-title .line-accent {
+    flex: 1;
+    height: 1px;
+    background: linear-gradient(90deg, var(--border2), transparent);
+  }
+
+  .section-badge {
+    font-family: var(--font-mono);
+    font-size: 0.6rem;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    padding: 3px 8px;
+    border-radius: 2px;
+    vertical-align: middle;
+  }
+
+  .badge-locked { background: rgba(201,148,58,0.15); color: var(--gold2); border: 1px solid rgba(201,148,58,0.3); }
+  .badge-live { background: rgba(46,204,113,0.15); color: var(--green); border: 1px solid rgba(46,204,113,0.3); }
+
+  .lines-grid { display: flex; flex-direction: column; gap: 10px; margin-bottom: 32px; }
+
+  .line-card {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 14px 16px;
+    display: grid;
+    grid-template-columns: 28px 1fr auto auto;
+    align-items: center;
+    gap: 16px;
+    transition: border-color 0.2s;
+    animation: fadeInUp 0.4s ease backwards;
+  }
+
+  .line-card:hover { border-color: var(--border2); }
+
+  .line-card.top-performer {
+    border-color: rgba(201,148,58,0.4);
+    background: linear-gradient(135deg, var(--bg2), rgba(201,148,58,0.04));
+  }
+
+  @keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .line-num {
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    color: var(--text3);
+    text-align: center;
+  }
+
+  .balls-row { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+
+  .ball {
+    width: 34px; height: 34px;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    font-weight: 600;
+    flex-shrink: 0;
+    position: relative;
+    transition: transform 0.15s;
+  }
+
+  .ball:hover { transform: scale(1.1); }
+
+  .ball.lotto {
+    background: radial-gradient(circle at 35% 30%, #4a8ee0, #1e5cb3);
+    color: white;
+    box-shadow: 0 2px 8px rgba(30,92,179,0.4), inset 0 1px 0 rgba(255,255,255,0.2);
+  }
+
+  .ball.bonus {
+    background: radial-gradient(circle at 35% 30%, #e05244, #a02820);
+    color: white;
+    box-shadow: 0 2px 8px rgba(160,40,32,0.4), inset 0 1px 0 rgba(255,255,255,0.2);
+  }
+
+  .ball.euro-main {
+    background: radial-gradient(circle at 35% 30%, #4a8ee0, #1e5cb3);
+    color: white;
+    box-shadow: 0 2px 8px rgba(30,92,179,0.4), inset 0 1px 0 rgba(255,255,255,0.2);
+  }
+
+  .ball.euro-star {
+    background: radial-gradient(circle at 35% 30%, #f5d070, #c9943a);
+    color: #1a0e00;
+    box-shadow: 0 2px 8px rgba(201,148,58,0.4), inset 0 1px 0 rgba(255,255,255,0.3);
+  }
+
+  .ball.matched {
+    box-shadow: 0 0 12px rgba(46,204,113,0.7), 0 2px 8px rgba(0,0,0,0.3);
+    outline: 2px solid var(--green);
+  }
+
+  .ball.partial {
+    box-shadow: 0 0 10px rgba(230,126,34,0.6), 0 2px 8px rgba(0,0,0,0.3);
+    outline: 2px solid var(--warn);
+  }
+
+  .ball-divider {
+    font-family: var(--font-mono);
+    color: var(--text3);
+    font-size: 1rem;
+    margin: 0 2px;
+  }
+
+  .confidence-col { text-align: right; min-width: 100px; }
+
+  .confidence-bar-wrap {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    justify-content: flex-end;
+  }
+
+  .confidence-bar {
+    width: 60px;
+    height: 4px;
+    background: var(--bg3);
+    border-radius: 2px;
+    overflow: hidden;
+  }
+
+  .confidence-fill {
+    height: 100%;
+    border-radius: 2px;
+    background: linear-gradient(90deg, var(--gold), var(--gold3));
+    transition: width 0.6s ease;
+  }
+
+  .confidence-pct {
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    color: var(--gold2);
+    min-width: 32px;
+    text-align: right;
+  }
+
+  .score-col { text-align: right; min-width: 90px; }
+
+  .score-val {
+    font-family: var(--font-mono);
+    font-size: 1rem;
+    font-weight: 600;
+  }
+
+  .score-label {
+    font-family: var(--font-mono);
+    font-size: 0.6rem;
+    color: var(--text3);
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    margin-top: 2px;
+  }
+
+  /* LOCK STATUS */
+  .lock-status {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 12px 16px;
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+
+  .lock-info { display: flex; align-items: center; gap: 10px; }
+
+  .lock-icon { font-size: 1.1rem; }
+
+  .lock-text {
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    color: var(--text2);
+  }
+
+  .lock-text strong { color: var(--gold2); }
+
+  .btn {
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    padding: 8px 16px;
+    border-radius: 3px;
+    cursor: pointer;
+    border: 1px solid;
+    transition: all 0.2s;
+  }
+
+  .btn-gold {
+    background: rgba(201,148,58,0.1);
+    border-color: var(--gold);
+    color: var(--gold2);
+  }
+
+  .btn-gold:hover {
+    background: rgba(201,148,58,0.2);
+    box-shadow: 0 0 12px rgba(201,148,58,0.2);
+  }
+
+  .btn-ghost {
+    background: transparent;
+    border-color: var(--border2);
+    color: var(--text2);
+  }
+
+  .btn-ghost:hover { border-color: var(--text2); color: var(--text); }
+
+  .btn-small { padding: 5px 10px; font-size: 0.65rem; }
+
+  /* METHODOLOGY PANEL */
+  .methodology {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 16px;
+    margin-bottom: 28px;
+  }
+
+  .method-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 12px;
+    margin-top: 12px;
+  }
+
+  .method-item {
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    border-radius: 3px;
+    padding: 10px 12px;
+  }
+
+  .method-item .m-title {
+    font-family: var(--font-mono);
+    font-size: 0.68rem;
+    color: var(--gold2);
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    margin-bottom: 4px;
+  }
+
+  .method-item .m-desc {
+    font-family: var(--font-body);
+    font-size: 0.75rem;
+    color: var(--text2);
+    line-height: 1.5;
+  }
+
+  /* HISTORY TABLE */
+  .table-wrap { overflow-x: auto; margin-bottom: 28px; }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+  }
+
+  thead th {
+    background: var(--bg3);
+    color: var(--text3);
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    padding: 10px 12px;
+    text-align: left;
+    border-bottom: 1px solid var(--border2);
+    white-space: nowrap;
+  }
+
+  tbody tr { border-bottom: 1px solid var(--border); transition: background 0.15s; }
+  tbody tr:hover { background: rgba(255,255,255,0.02); }
+
+  tbody td {
+    padding: 10px 12px;
+    color: var(--text2);
+    vertical-align: middle;
+  }
+
+  .td-date { color: var(--text3); }
+  .td-score { color: var(--gold2); font-weight: 600; }
+  .td-matches { color: var(--green); }
+  .td-method { color: var(--text3); font-size: 0.65rem; }
+
+  /* HOT/COLD SECTION */
+  .hot-cold-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-bottom: 28px;
+  }
+
+  @media (max-width: 600px) { .hot-cold-grid { grid-template-columns: 1fr; } }
+
+  .heat-panel {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 16px;
+  }
+
+  .heat-panel h3 {
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-bottom: 14px;
+  }
+
+  .heat-panel.hot h3 { color: #e05244; }
+  .heat-panel.cold h3 { color: var(--lotto-blue2); }
+
+  .heat-balls { display: flex; flex-wrap: wrap; gap: 6px; }
+
+  .heat-ball-wrap { display: flex; flex-direction: column; align-items: center; gap: 3px; }
+
+  .heat-count {
+    font-family: var(--font-mono);
+    font-size: 0.6rem;
+    color: var(--text3);
+  }
+
+  /* CHART */
+  .chart-wrap {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 16px;
+    margin-bottom: 28px;
+  }
+
+  canvas { display: block; width: 100% !important; }
+
+  /* COMPARISON TABLE */
+  .comparison-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+    margin-bottom: 28px;
+  }
+
+  @media (max-width: 700px) { .comparison-grid { grid-template-columns: 1fr; } }
+
+  .comp-card {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 16px;
+    text-align: center;
+  }
+
+  .comp-card h4 {
+    font-family: var(--font-mono);
+    font-size: 0.68rem;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    margin-bottom: 12px;
+  }
+
+  .comp-card.our h4 { color: var(--gold2); }
+  .comp-card.random h4 { color: var(--text3); }
+  .comp-card.freq h4 { color: var(--lotto-blue2); }
+
+  .comp-big {
+    font-family: var(--font-mono);
+    font-size: 2rem;
+    font-weight: 600;
+    line-height: 1;
+    margin-bottom: 4px;
+  }
+
+  .comp-card.our .comp-big { color: var(--gold2); }
+  .comp-card.random .comp-big { color: var(--text3); }
+  .comp-card.freq .comp-big { color: var(--lotto-blue2); }
+
+  .comp-sub {
+    font-family: var(--font-mono);
+    font-size: 0.65rem;
+    color: var(--text3);
+    line-height: 1.6;
+  }
+
+  /* BACKTEST */
+  .backtest-controls {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 16px;
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 16px;
+  }
+
+  .backtest-controls label {
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    color: var(--text2);
+    letter-spacing: 0.5px;
+  }
+
+  .backtest-controls select,
+  .backtest-controls input {
+    background: var(--bg3);
+    border: 1px solid var(--border2);
+    color: var(--text);
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    padding: 6px 10px;
+    border-radius: 3px;
+    outline: none;
+    cursor: pointer;
+  }
+
+  .backtest-controls select:focus,
+  .backtest-controls input:focus { border-color: var(--gold); }
+
+  /* SCORE COLOURS */
+  .s-0 { color: var(--text3); }
+  .s-1 { color: var(--text2); }
+  .s-2 { color: var(--warn); }
+  .s-3 { color: #e8b84b; }
+  .s-4 { color: var(--gold2); }
+  .s-5 { color: var(--gold3); }
+  .s-6 { color: #fff; text-shadow: 0 0 8px var(--gold); }
+
+  /* EXPORT */
+  .export-row { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 8px; }
+
+  /* TREND MINI CHART */
+  .trend-wrap { display: flex; align-items: flex-end; gap: 2px; height: 32px; }
+  .trend-bar {
+    flex: 1;
+    min-width: 4px;
+    border-radius: 1px 1px 0 0;
+    background: var(--gold);
+    opacity: 0.6;
+    transition: opacity 0.2s;
+  }
+  .trend-bar:hover { opacity: 1; }
+
+  /* FOOTER */
+  footer {
+    border-top: 1px solid var(--border);
+    margin-top: 48px;
+    padding-top: 20px;
+    font-family: var(--font-mono);
+    font-size: 0.65rem;
+    color: var(--text3);
+    line-height: 2;
+  }
+
+  footer a { color: var(--text3); text-decoration: none; }
+
+  /* TOOLTIP */
+  [title] { cursor: help; }
+
+  /* LOADING */
+  .spinner {
+    display: inline-block;
+    width: 14px; height: 14px;
+    border: 2px solid var(--border2);
+    border-top-color: var(--gold);
+    border-radius: 50%;
+    animation: spin 0.7s linear infinite;
+    vertical-align: middle;
+  }
+
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* SCORE BADGE */
+  .score-badge {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 2px;
+    font-family: var(--font-mono);
+    font-size: 0.65rem;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+  }
+
+  .score-badge.high { background: rgba(46,204,113,0.15); color: var(--green); border: 1px solid rgba(46,204,113,0.3); }
+  .score-badge.mid { background: rgba(230,126,34,0.15); color: var(--warn); border: 1px solid rgba(230,126,34,0.3); }
+  .score-badge.low { background: rgba(78,97,128,0.15); color: var(--text3); border: 1px solid rgba(78,97,128,0.3); }
+
+  /* RESPONSIVE */
+  @media (max-width: 768px) {
+    .line-card { grid-template-columns: 28px 1fr; }
+    .confidence-col, .score-col { display: none; }
+    .logo-area h1 { font-size: 1.8rem; }
+    header { flex-direction: column; align-items: flex-start; }
+    .header-meta { text-align: left; }
+  }
+
+  .empty-state {
+    text-align: center;
+    padding: 40px;
+    color: var(--text3);
+    font-family: var(--font-mono);
+    font-size: 0.8rem;
+  }
+
+  .pill {
+    display: inline-block;
+    padding: 2px 8px;
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    font-family: var(--font-mono);
+    font-size: 0.65rem;
+    color: var(--text3);
+    margin-left: 6px;
+  }
+
+  .best-line-banner {
+    background: linear-gradient(135deg, rgba(201,148,58,0.12), rgba(201,148,58,0.04));
+    border: 1px solid rgba(201,148,58,0.35);
+    border-radius: 4px;
+    padding: 10px 14px;
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+  }
+
+  .best-line-banner .crown { font-size: 1rem; }
+  .best-line-banner .label { color: var(--text3); text-transform: uppercase; letter-spacing: 1px; }
+  .best-line-banner .value { color: var(--gold2); }
 </style>
 </head>
 <body>
-<div class="amb"><div class="ab ab1"></div><div class="ab ab2"></div></div>
-<div class="page">
+<div class="container">
 
-<!-- HEADER -->
-<header class="hdr">
-  <div class="logo"><div class="logo-dot"></div></div>
-  <h1 class="hdr-name">Lotto<em>Oracle</em></h1>
-  <p class="hdr-sub">Smart line generator · EuroMillions &amp; UK Lotto</p>
-</header>
-
-<!-- GAME SELECTOR -->
-<div class="game-grid">
-  <button class="game-btn euro active" data-game="euromillions" onclick="selectGame(this)">
-    <div class="game-chk">✓</div>
-    <span class="game-flag">🇪🇺</span>
-    <span class="game-name">EuroMillions</span>
-    <span class="game-fmt">5 + 2 stars</span>
-  </button>
-  <button class="game-btn uk" data-game="uklotto" onclick="selectGame(this)">
-    <div class="game-chk">✓</div>
-    <span class="game-flag">🇬🇧</span>
-    <span class="game-name">UK Lotto</span>
-    <span class="game-fmt">6 numbers</span>
-  </button>
-</div>
-
-<!-- DRAW STRIP -->
-<div class="draw-strip" id="drawStrip">
-  <div class="draw-left">
-    <div class="draw-dot"></div>
-    <div>
-      <div class="draw-label" id="drawLabel">Next draw</div>
-      <div class="draw-sub" id="drawSub"></div>
+  <!-- HEADER -->
+  <header>
+    <div class="logo-area">
+      <h1>LottoAnalyst</h1>
+      <p>Statistical Selection &amp; Performance Tracking System</p>
     </div>
-  </div>
-  <div class="draw-timer" id="drawTimer">—<span>until draw</span></div>
-</div>
+    <div class="header-meta">
+      <div>Version <span>2.1.0</span> · Build <span id="buildDate"></span></div>
+      <div>Data range: <span id="dataRange"></span></div>
+      <div>Week lock: <span id="weekLock"></span></div>
+    </div>
+  </header>
 
-<!-- PRACTICE TOGGLE -->
-<div class="practice-row">
-  <span class="practice-label">
-    Practice / track mode
-    <span class="practice-badge" id="practiceBadge">ON</span>
-  </span>
-  <div class="toggle" id="practiceToggle" onclick="togglePractice()">
-    <div class="toggle-knob"></div>
-  </div>
-</div>
-
-<!-- GENERATE BUTTON -->
-<button class="gen-btn" id="genBtn" onclick="generate()">✦ &nbsp;Generate Best Lines</button>
-
-<!-- REFRESH BUTTON -->
-<button class="refresh-btn" id="refreshBtn" onclick="forceRefresh()">↺ &nbsp;Refresh Picks</button>
-
-<!-- LOADING -->
-<div class="loading" id="loading">
-  <div class="orbs"><div class="orb"></div><div class="orb"></div><div class="orb"></div></div>
-  <div class="load-txt" id="loadTxt">Analysing patterns…</div>
-</div>
-
-<!-- RESULTS -->
-<div class="results" id="results">
-  <div class="results-hdr">
-    <span class="results-title" id="resultsTitle">Top 5 Lines</span>
-    <span class="results-locked">🔒 Locked to draw</span>
-  </div>
-  <div id="linesList"></div>
-
-  <!-- share strip -->
-  <div class="share-strip" id="shareStrip">
-    <button class="share-btn" onclick="copyAllLines()">📋 &nbsp;Copy all lines</button>
+  <!-- DISCLAIMER -->
+  <div class="disclaimer">
+    <strong>⚠ Analysis Disclaimer:</strong> LottoAnalyst is a <strong>statistical tracking and analysis tool only</strong>. 
+    It does not predict, guarantee, or imply any probability of winning future lottery draws. 
+    All selections are generated using historical frequency analysis for <strong>educational and performance-tracking purposes</strong>. 
+    Lottery draws are random events — past patterns do not influence future results. Please play responsibly.
   </div>
 
-  <p class="foot-note">Lines ranked by spread quality and pattern balance.</p>
-
-  <!-- compare panel -->
-  <div class="compare-panel" id="comparePanel">
-    <div class="cp-title">Your picks vs actual draw</div>
-    <div id="cpContent"></div>
+  <!-- TABS -->
+  <div class="tabs">
+    <button class="tab-btn active" onclick="switchTab('picks')">Weekly Picks</button>
+    <button class="tab-btn" onclick="switchTab('analysis')">Hot/Cold Analysis</button>
+    <button class="tab-btn" onclick="switchTab('history')">Draw History</button>
+    <button class="tab-btn" onclick="switchTab('backtest')">Backtest</button>
+    <button class="tab-btn" onclick="switchTab('compare')">Comparison</button>
+    <button class="tab-btn" onclick="switchTab('trends')">Trends</button>
   </div>
-</div>
 
-<!-- HISTORY -->
-<div id="historySection" style="display:none">
-  <div class="section-hdr">Recent Draw History</div>
-  <div class="hist-card" id="histList"></div>
-</div>
+  <!-- ===== WEEKLY PICKS TAB ===== -->
+  <div class="tab-content active" id="tab-picks">
+    <div class="game-selector">
+      <button class="game-btn active-lotto" onclick="setGame('lotto')">🇬🇧 UK Lotto</button>
+      <button class="game-btn" onclick="setGame('euro')">⭐ EuroMillions</button>
+    </div>
 
-<p class="disc">For entertainment and statistical exploration only. Lottery draws are random. Past patterns do not predict future outcomes.</p>
-</div>
+    <div id="statsRow" class="stats-row"></div>
 
-<!-- TOAST -->
-<div class="toast" id="toast"></div>
-
-<script>
-/* ═══════════════════════════════════════════════════
-   CONFIG
-═══════════════════════════════════════════════════ */
-const GAMES = {
-  euromillions: {
-    name:'EuroMillions', mainCount:5, mainMax:50,
-    bonusCount:2, bonusMax:12, bonusLabel:'Lucky Stars',
-    drawDays:[2,5], drawDayNames:['Tuesday','Friday'], drawHour:21, drawMin:0
-  },
-  uklotto: {
-    name:'UK Lotto', mainCount:6, mainMax:59,
-    bonusCount:0, bonusMax:59, bonusLabel:'Bonus Ball',
-    drawDays:[3,6], drawDayNames:['Wednesday','Saturday'], drawHour:20, drawMin:0
-  }
-};
-const DAY_NAMES = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
-
-/* ═══════════════════════════════════════════════════
-   STATE
-═══════════════════════════════════════════════════ */
-let S = {
-  game: 'euromillions',
-  practice: false,
-  locked: null,       // { lines, historyDraws, drawDate, drawDayName, game, freqData }
-  savedActual: null,
-  timerInterval: null,
-  // Stable seeded freq data per game — built once per session
-  freqCache: {}
-};
-
-/* ═══════════════════════════════════════════════════
-   SEEDED RANDOM  (mulberry32 — fast, no dependencies)
-   Gives the same sequence for the same seed.
-═══════════════════════════════════════════════════ */
-function makeRng(seed) {
-  let s = seed >>> 0;
-  return function() {
-    s += 0x6D2B79F5;
-    let t = Math.imul(s ^ s >>> 15, 1 | s);
-    t ^= t + Math.imul(t ^ t >>> 7, 61 | t);
-    return ((t ^ t >>> 14) >>> 0) / 4294967296;
-  };
-}
-
-/* Build a stable seed from today's date + game so freq stays
-   the same all day but changes the next calendar day */
-function dailySeed(gameId) {
-  const d = new Date();
-  const dayStr = `${gameId}-${d.getFullYear()}-${d.getMonth()}-${d.getDate()}`;
-  let hash = 0;
-  for (let i = 0; i < dayStr.length; i++) {
-    hash = ((hash << 5) - hash) + dayStr.charCodeAt(i);
-    hash |= 0;
-  }
-  return Math.abs(hash);
-}
-
-/* ═══════════════════════════════════════════════════
-   DRAW DATE + COUNTDOWN
-═══════════════════════════════════════════════════ */
-function getNextDraw(gameId) {
-  const cfg = GAMES[gameId];
-  const now = new Date();
-  let best = null, bestMs = Infinity;
-
-  for (const day of cfg.drawDays) {
-    // Find the next occurrence of this day
-    let diff = day - now.getDay();
-    if (diff < 0) diff += 7;
-    const candidate = new Date(now.getFullYear(), now.getMonth(), now.getDate() + diff, cfg.drawHour, cfg.drawMin, 0);
-    // If it's today but already past, push 7 days
-    if (candidate <= now) candidate.setDate(candidate.getDate() + 7);
-    const ms = candidate - now;
-    if (ms < bestMs) { bestMs = ms; best = candidate; }
-  }
-  return best;
-}
-
-function getDrawDateKey(date) {
-  return date.toISOString().split('T')[0];
-}
-
-function formatCountdown(ms) {
-  if (ms <= 0) return { top: 'Draw now', sub: '' };
-  const totalSec = Math.floor(ms / 1000);
-  const days  = Math.floor(totalSec / 86400);
-  const hours = Math.floor((totalSec % 86400) / 3600);
-  const mins  = Math.floor((totalSec % 3600) / 60);
-  const secs  = totalSec % 60;
-
-  if (days > 1)  return { top: `${days}d ${hours}h`, sub: 'until draw' };
-  if (days === 1) return { top: `${days}d ${hours}h ${mins}m`, sub: 'until draw' };
-  if (hours > 0) return { top: `${hours}h ${mins}m ${secs}s`, sub: 'until draw' };
-  return { top: `${mins}m ${secs}s`, sub: 'until draw' };
-}
-
-function updateDrawStrip() {
-  const cfg = GAMES[S.game];
-  const nextDraw = getNextDraw(S.game);
-  const dayName = DAY_NAMES[nextDraw.getDay()];
-  const dateLbl = nextDraw.toLocaleDateString('en-GB',{day:'2-digit',month:'short'});
-
-  document.getElementById('drawLabel').textContent = `Best picks for ${dayName} draw`;
-  document.getElementById('drawSub').textContent = `${cfg.name} · ${dateLbl} · ${cfg.drawHour.toString().padStart(2,'0')}:${cfg.drawMin.toString().padStart(2,'0')}`;
-
-  updateCountdown(nextDraw);
-}
-
-function updateCountdown(nextDraw) {
-  const ms = nextDraw - new Date();
-  const { top, sub } = formatCountdown(ms);
-  document.getElementById('drawTimer').innerHTML = `${top}<span>${sub}</span>`;
-}
-
-function startCountdown() {
-  if (S.timerInterval) clearInterval(S.timerInterval);
-  S.timerInterval = setInterval(() => {
-    const nd = getNextDraw(S.game);
-    updateCountdown(nd);
-  }, 1000);
-}
-
-/* ═══════════════════════════════════════════════════
-   STABLE FREQUENCY DATA (seeded, cached per game)
-═══════════════════════════════════════════════════ */
-function getOrBuildFreqData(gameId) {
-  if (S.freqCache[gameId]) return S.freqCache[gameId];
-
-  const cfg = GAMES[gameId];
-  const rng = makeRng(dailySeed(gameId));
-
-  // Build bias using seeded rng — same every call today
-  const mBias = {}, bBias = {};
-  for (let i = 1; i <= cfg.mainMax; i++) {
-    const p = i / cfg.mainMax;
-    mBias[i] = Math.max(0.2, 0.5 + Math.sin(p * Math.PI) + (rng() - 0.5) * 0.85);
-  }
-  for (let i = 1; i <= cfg.bonusMax; i++) {
-    const p = i / cfg.bonusMax;
-    bBias[i] = Math.max(0.2, 0.5 + Math.sin(p * Math.PI) + (rng() - 0.5) * 0.85);
-  }
-
-  // Build history draws using seeded rng
-  const draws = buildHistoryWithRng(cfg, mBias, bBias, rng);
-
-  // Compute frequency maps
-  const mf = {}, bf = {};
-  for (let i = 1; i <= cfg.mainMax; i++) mf[i] = 0;
-  for (let i = 1; i <= cfg.bonusMax; i++) bf[i] = 0;
-  draws.forEach(d => { d.main.forEach(n => mf[n]++); d.bonus.forEach(n => bf[n]++); });
-
-  // Last-seen gaps
-  const lastSeen = {};
-  for (let i = 1; i <= cfg.mainMax; i++) lastSeen[i] = draws.length;
-  draws.forEach((d, idx) => { d.main.forEach(n => { if (lastSeen[n] === draws.length) lastSeen[n] = idx; }); });
-
-  const sortedMain  = Object.entries(mf).sort((a, b) => b[1] - a[1]);
-  const sortedBonus = Object.entries(bf).sort((a, b) => b[1] - a[1]);
-
-  const data = { mf, bf, mBias, bBias, sortedMain, sortedBonus, lastSeen, draws };
-  S.freqCache[gameId] = data;
-  return data;
-}
-
-function buildHistoryWithRng(cfg, mBias, bBias, rng) {
-  const drawDays = cfg.drawDays;
-  const draws = [];
-  const today = new Date(); today.setHours(0,0,0,0);
-  let scan = new Date(today);
-  scan.setDate(scan.getDate() - 1);
-  let count = 0;
-  while (count < 20) {
-    if (drawDays.includes(scan.getDay())) {
-      draws.push({
-        date: new Date(scan),
-        main:  wSampleRng(cfg.mainMax, cfg.mainCount, mBias, [], rng),
-        bonus: wSampleRng(cfg.bonusMax, cfg.bonusCount, bBias, [], rng)
-      });
-      count++;
-    }
-    scan.setDate(scan.getDate() - 1);
-  }
-  return draws;
-}
-
-/* ═══════════════════════════════════════════════════
-   SAMPLING  (two versions: seeded for history, 
-              random for line generation picks)
-═══════════════════════════════════════════════════ */
-function wSampleRng(max, count, bias, exclude, rng) {
-  const pool = []; for (let i = 1; i <= max; i++) if (!exclude.includes(i)) pool.push(i);
-  const sel = []; const av = [...pool];
-  while (sel.length < count && av.length > 0) {
-    const ws = av.map(n => bias[n] || 1);
-    const t = ws.reduce((a, b) => a + b, 0); let r = rng() * t;
-    for (let i = 0; i < av.length; i++) { r -= ws[i]; if (r <= 0) { sel.push(av[i]); av.splice(i,1); break; } }
-  }
-  return sel.sort((a, b) => a - b);
-}
-
-function wSampleRandom(max, count, bias, exclude = []) {
-  const pool = []; for (let i = 1; i <= max; i++) if (!exclude.includes(i)) pool.push(i);
-  const sel = []; const av = [...pool];
-  while (sel.length < count && av.length > 0) {
-    const ws = av.map(n => bias[n] || 1);
-    const t = ws.reduce((a, b) => a + b, 0); let r = Math.random() * t;
-    for (let i = 0; i < av.length; i++) { r -= ws[i]; if (r <= 0) { sel.push(av[i]); av.splice(i,1); break; } }
-  }
-  return sel.sort((a, b) => a - b);
-}
-
-function shuffle(a) { const b=[...a]; for(let i=b.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[b[i],b[j]]=[b[j],b[i]];} return b; }
-
-/* ═══════════════════════════════════════════════════
-   SCORING  — stable 55–85 range
-   
-   Each factor scored /20. Five factors = max 100.
-   We then normalise into 55–85 so scores feel
-   meaningful and consistent, not wildly swinging.
-═══════════════════════════════════════════════════ */
-function scoreLine(nums, cfg, mf, lastSeen) {
-  const sorted = [...nums].sort((a, b) => a - b);
-  const count = nums.length;
-
-  // 1. Odd/Even balance (0–20)
-  const odds = nums.filter(n => n % 2 !== 0).length;
-  const oeScore = Math.round(20 * (1 - Math.abs(odds - count / 2) / (count / 2)));
-
-  // 2. Low/High balance (0–20)
-  const mid = cfg.mainMax / 2;
-  const low = nums.filter(n => n <= mid).length;
-  const lhScore = Math.round(20 * (1 - Math.min(1, Math.abs(low - count / 2) / (count / 2))));
-
-  // 3. Spacing quality (0–20)
-  const gaps = []; for (let i = 1; i < sorted.length; i++) gaps.push(sorted[i] - sorted[i-1]);
-  const avgGap = gaps.reduce((a, b) => a + b, 0) / gaps.length;
-  const minGap = Math.min(...gaps);
-  const idealGap = (cfg.mainMax - 1) / (count - 1);
-  const spacingRaw = Math.round(20 * (1 - Math.min(1, Math.abs(avgGap - idealGap) / idealGap)));
-  const spacingScore = Math.max(0, spacingRaw - (minGap <= 1 ? 8 : minGap <= 2 ? 4 : 0));
-
-  // 4. Frequency balance (0–20): selection close to average draw frequency
-  const avgF = Object.values(mf).reduce((a, b) => a + b, 0) / cfg.mainMax;
-  const selF = nums.reduce((s, n) => s + (mf[n] || 0), 0) / count;
-  const freqScore = Math.round(20 * (1 - Math.min(1, Math.abs(selF - avgF) / Math.max(1, avgF))));
-
-  // 5. Overdue presence (0–20)
-  const avgLS = nums.reduce((s, n) => s + (lastSeen[n] || 0), 0) / count;
-  const overdueScore = Math.round(Math.min(20, avgLS * 0.85));
-
-  // Human pattern penalties
-  let penalty = 0;
-  let run = 1; for (let i = 1; i < sorted.length; i++) { if (sorted[i]===sorted[i-1]+1) run++; else run=1; if(run>=3){penalty+=10;break;} }
-  if (cfg.mainMax > 31 && nums.filter(n => n > 31).length < 2) penalty += 8;
-
-  const raw = oeScore + lhScore + spacingScore + freqScore + overdueScore - penalty;
-
-  // Normalise to 55–85 range so scores feel stable and proportional
-  // raw theoretical max ≈ 100, min ≈ 0
-  const normalised = 55 + Math.round((Math.max(0, Math.min(100, raw)) / 100) * 30);
-  return normalised;
-}
-
-/* Spread scores across 5 lines so they never cluster together.
-   Line 1 always highest, descending with meaningful gaps. */
-function spreadScores(rawScores) {
-  const sorted = [...rawScores].sort((a, b) => b - a);
-  // Assign rank-based spread: top gets highest raw, then step down
-  // Ensure at least 3 points between each line
-  const spread = [];
-  spread.push(sorted[0]);
-  for (let i = 1; i < sorted.length; i++) {
-    const prev = spread[i-1];
-    const raw  = sorted[i];
-    // Ensure at least 3pt gap, at most 8pt gap
-    const minNext = prev - 8;
-    const maxNext = prev - 3;
-    spread.push(Math.max(minNext, Math.min(maxNext, raw)));
-  }
-  return spread;
-}
-
-/* ═══════════════════════════════════════════════════
-   LINE GENERATION
-═══════════════════════════════════════════════════ */
-function genCandidate(cfg, freqData, style) {
-  const { sortedMain, sortedBonus, mBias, bBias, lastSeen } = freqData;
-  const n = sortedMain.length;
-  let pool;
-
-  if (style === 'hot')     pool = sortedMain.slice(0, Math.floor(n * .35));
-  else if (style === 'cold') pool = sortedMain.slice(Math.floor(n * .65));
-  else if (style === 'overdue') pool = Object.entries(lastSeen).sort((a,b)=>b[1]-a[1]).slice(0, Math.floor(n*.35));
-  else {
-    // balanced: mix thirds
-    pool = [
-      ...sortedMain.slice(0, Math.floor(n*.3)),
-      ...sortedMain.slice(Math.floor(n*.7)),
-      ...sortedMain.slice(Math.floor(n*.3), Math.floor(n*.7)).slice(0, 8)
-    ];
-  }
-  if (!pool || pool.length < cfg.mainCount) pool = [...sortedMain];
-
-  const av = pool.map(e => ({ n: +e[0], f: e[1] }));
-  const sel = []; const af = [...av];
-  while (sel.length < cfg.mainCount && af.length > 0) {
-    const ws = af.map(x => Math.max(.1, x.f) + Math.random() * 2.5);
-    const t = ws.reduce((a,b)=>a+b,0); let r = Math.random()*t;
-    for (let i=0;i<af.length;i++) { r-=ws[i]; if(r<=0){sel.push(af[i].n);af.splice(i,1);break;} }
-  }
-
-  // Birthday avoidance: ensure 2+ above 31
-  if (cfg.mainMax > 31) {
-    const ab31 = sel.filter(n=>n>31).length;
-    if (ab31 < 2) {
-      const lowI = sel.map((n,i)=>[n,i]).filter(([n])=>n<=31).sort(()=>Math.random()-.5);
-      const avail=[]; for(let n=32;n<=cfg.mainMax;n++) if(!sel.includes(n)) avail.push(n);
-      avail.sort(()=>Math.random()-.5);
-      for(let i=0;i<Math.min(2-ab31,lowI.length,avail.length);i++) sel[lowI[i][1]]=avail[i];
-    }
-  }
-  sel.sort((a,b)=>a-b);
-
-  const bPool = sortedBonus.slice(0, Math.ceil(sortedBonus.length * .6)).map(([k])=>+k);
-  const bonus = shuffle(bPool).slice(0, cfg.bonusCount).sort((a,b)=>a-b);
-
-  return { main: sel, bonus };
-}
-
-function buildLines(gameId) {
-  const cfg = GAMES[gameId];
-  const freqData = getOrBuildFreqData(gameId);
-
-  const styles = ['balanced', 'hot', 'cold', 'overdue', 'balanced'];
-  const candidates = [];
-
-  for (let s = 0; s < 5; s++) {
-    let best = null, bestRaw = -1;
-    for (let a = 0; a < 22; a++) {
-      const c = genCandidate(cfg, freqData, styles[s]);
-      const raw = scoreLine(c.main, cfg, freqData.mf, freqData.lastSeen);
-      if (raw > bestRaw) { bestRaw = raw; best = { ...c, rawScore: raw }; }
-    }
-    candidates.push(best);
-  }
-
-  // Sort by raw score, deduplicate
-  candidates.sort((a, b) => b.rawScore - a.rawScore);
-  const unique = [candidates[0]];
-  for (let i = 1; i < candidates.length && unique.length < 5; i++) {
-    const c = candidates[i];
-    const isDup = unique.some(u => c.main.filter(n => u.main.includes(n)).length >= Math.floor(cfg.mainCount * .7));
-    if (!isDup) unique.push(c);
-  }
-  while (unique.length < 5) {
-    const e = genCandidate(cfg, freqData, 'balanced');
-    e.rawScore = scoreLine(e.main, cfg, freqData.mf, freqData.lastSeen);
-    unique.push(e);
-  }
-
-  // Apply stable spread scoring
-  const rawScores = unique.slice(0,5).map(l => l.rawScore);
-  const spreadScored = spreadScores(rawScores);
-
-  return unique.slice(0,5).map((line, i) => ({ ...line, score: spreadScored[i] }));
-}
-
-/* ═══════════════════════════════════════════════════
-   RENDER
-═══════════════════════════════════════════════════ */
-function renderLines(lines, cfg, actual) {
-  const maxScore = lines[0].score;
-  document.getElementById('linesList').innerHTML = lines.map((line, i) => {
-    const isTop = i === 0;
-    const barW = Math.round((line.score / maxScore) * 100);
-    const matchMain  = actual ? line.main.filter(n => actual.main.includes(n))  : [];
-    const matchBonus = actual ? line.bonus.filter(n => actual.bonus.includes(n)) : [];
-    const totalMatch = matchMain.length + matchBonus.length;
-    const hasMatch   = totalMatch > 0;
-
-    const delay = i * .07;
-    const mainBalls = line.main.map((n, bi) =>
-      `<div class="ball main${actual && matchMain.includes(n)?' matched':''}" style="animation-delay:${delay+bi*.05}s">${n}</div>`
-    ).join('');
-    const bonusBalls = line.bonus.map((n, bi) =>
-      `<div class="ball bonus${actual && matchBonus.includes(n)?' matched':''}" style="animation-delay:${delay+(line.main.length+bi)*.05}s">${n}</div>`
-    ).join('');
-
-    // Format numbers for copy
-    const copyText = `${line.main.join(', ')}${line.bonus.length ? ' + ' + line.bonus.join(', ') : ''}`;
-
-    return `<div class="line-card ${isTop?'top':''} ${actual&&hasMatch?'has-match':''}">
-      <div class="line-top">
-        <span class="line-rank">LINE ${i+1}</span>
-        <div class="line-right">
-          <div class="score-chip">
-            <span class="score-chip-lbl">Score</span>
-            <span class="score-chip-val">${line.score}</span>
-          </div>
-          <button class="copy-btn" onclick="copyLine('${copyText}',this)" title="Copy numbers">⎘</button>
+    <div class="lock-status">
+      <div class="lock-info">
+        <span class="lock-icon" id="lockIcon">🔒</span>
+        <div class="lock-text">
+          Lines locked for week: <strong id="currentWeek"></strong> · 
+          Expires: <strong id="lockExpiry"></strong> · 
+          Last generated: <strong id="lastGenerated"></strong>
         </div>
       </div>
-      <div class="bar-wrap"><div class="bar-fill" style="width:${barW}%"></div></div>
-      <div class="nums">
-        ${mainBalls}
-        ${cfg.bonusCount > 0 ? `<span class="plus">+</span>${bonusBalls}` : ''}
+      <div style="display:flex;gap:8px;">
+        <button class="btn btn-ghost btn-small" onclick="exportPicks()">⬇ Export</button>
+        <button class="btn btn-gold btn-small" onclick="confirmRegenerate()">↻ Regenerate</button>
       </div>
-      ${actual && hasMatch ? `<div class="line-match-tag">${totalMatch} match${totalMatch>1?'es':''} with actual draw</div>` : ''}
-    </div>`;
-  }).join('');
+    </div>
+
+    <div id="bestLineBanner" class="best-line-banner" style="display:none">
+      <span class="crown">👑</span>
+      <span class="label">Best Performing Line —</span>
+      <span class="value" id="bestLineVal"></span>
+    </div>
+
+    <div class="section-title">
+      Weekly Selections
+      <span class="section-badge badge-locked" id="lockBadge">LOCKED</span>
+      <span class="line-accent"></span>
+    </div>
+
+    <div id="linesGrid" class="lines-grid"></div>
+
+    <!-- METRICS LEGEND -->
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:10px;margin-bottom:24px;">
+      <div style="background:var(--bg2);border:1px solid var(--border);border-left:3px solid var(--gold2);border-radius:4px;padding:12px 14px;">
+        <div style="font-family:var(--font-mono);font-size:0.65rem;letter-spacing:1.5px;text-transform:uppercase;color:var(--gold2);margin-bottom:5px;">Confidence %</div>
+        <div style="font-family:var(--font-body);font-size:0.76rem;color:var(--text2);line-height:1.5;">
+          Each line's <strong style="color:var(--text)">rank within the 5 generated lines</strong>, normalised to a 0–100 scale. The highest-ranked line = 95, lowest = 30. <em>This is not a win probability</em> — it simply shows which line scored best relative to the others this week.
+        </div>
+      </div>
+      <div style="background:var(--bg2);border:1px solid var(--border);border-left:3px solid var(--lotto-blue2);border-radius:4px;padding:12px 14px;">
+        <div style="font-family:var(--font-mono);font-size:0.65rem;letter-spacing:1.5px;text-transform:uppercase;color:var(--lotto-blue2);margin-bottom:5px;">Signal Score (0–100)</div>
+        <div style="font-family:var(--font-body);font-size:0.76rem;color:var(--text2);line-height:1.5;">
+          The raw <strong style="color:var(--text)">internal weighted ranking</strong> before normalisation: frequency alignment (45%) + sum proximity to historical median (35%) + number spread (20%). Shown without a % sign because it is a composite index, not a percentage.
+        </div>
+      </div>
+      <div style="background:var(--bg2);border:1px solid var(--border);border-left:3px solid var(--green);border-radius:4px;padding:12px 14px;">
+        <div style="font-family:var(--font-mono);font-size:0.65rem;letter-spacing:1.5px;text-transform:uppercase;color:var(--green);margin-bottom:5px;">Close Score</div>
+        <div style="font-family:var(--font-body);font-size:0.76rem;color:var(--text2);line-height:1.5;">
+          A <strong style="color:var(--text)">historical closeness measure</strong> accumulated over recent draws. Full match = 2 pts · near-miss (±1 of a drawn number) = 0.3 pts. Max ~20 per draw. Used to compare how well the selection logic tracks actual results vs random and frequency-only baselines.
+        </div>
+      </div>
+    </div>
+
+    <div class="methodology">
+      <div class="section-title" style="margin-bottom:0;font-size:1rem;">
+        Selection Methodology
+        <span class="line-accent"></span>
+      </div>
+      <div class="method-grid">
+        <div class="method-item">
+          <div class="m-title">Frequency Weighting</div>
+          <div class="m-desc">Numbers appearing more often in the last 52 draws receive proportionally higher selection weight.</div>
+        </div>
+        <div class="method-item">
+          <div class="m-title">Recency Bias</div>
+          <div class="m-desc">Last 12 draws are weighted 2× vs older draws, capturing recent pattern shifts without overfitting.</div>
+        </div>
+        <div class="method-item">
+          <div class="m-title">Gap Analysis</div>
+          <div class="m-desc">Numbers overdue relative to their average frequency gap receive a modest upward adjustment.</div>
+        </div>
+        <div class="method-item">
+          <div class="m-title">Diversity Constraint</div>
+          <div class="m-desc">No two adjacent lines may share more than 2 numbers, ensuring spread across the number pool.</div>
+        </div>
+        <div class="method-item">
+          <div class="m-title">Sum-Range Filter</div>
+          <div class="m-desc">Generated lines must fall within the historical median sum range ±15% to avoid extreme combinations.</div>
+        </div>
+        <div class="method-item">
+          <div class="m-title">Weekly Lock</div>
+          <div class="m-desc">Lines lock on Monday 00:01 and expire Sunday 23:59. Regeneration outside the lock window is manual only.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== HOT/COLD TAB ===== -->
+  <div class="tab-content" id="tab-analysis">
+    <div class="game-selector">
+      <button class="game-btn active-lotto" onclick="setGame('lotto');renderAnalysis()">🇬🇧 UK Lotto</button>
+      <button class="game-btn" onclick="setGame('euro');renderAnalysis()">⭐ EuroMillions</button>
+    </div>
+
+    <div id="hotColdGrid" class="hot-cold-grid"></div>
+
+    <div class="section-title">Number Frequency Map <span class="line-accent"></span></div>
+    <div class="chart-wrap">
+      <canvas id="freqChart" height="220"></canvas>
+    </div>
+
+    <div class="section-title">Overdue Numbers <span class="pill" id="overdueCount"></span><span class="line-accent"></span></div>
+    <div id="overduePanel"></div>
+  </div>
+
+  <!-- ===== HISTORY TAB ===== -->
+  <div class="tab-content" id="tab-history">
+    <div class="game-selector">
+      <button class="game-btn active-lotto" onclick="setGame('lotto');renderHistory()">🇬🇧 UK Lotto</button>
+      <button class="game-btn" onclick="setGame('euro');renderHistory()">⭐ EuroMillions</button>
+    </div>
+
+    <div class="section-title">Recent Draws — Last 52 Weeks <span class="line-accent"></span></div>
+
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Date</th>
+            <th>Numbers Drawn</th>
+            <th>Bonus</th>
+            <th>Our Best Match</th>
+            <th>Matches</th>
+            <th>Close Score</th>
+            <th>Random Match</th>
+          </tr>
+        </thead>
+        <tbody id="historyTableBody"></tbody>
+      </table>
+    </div>
+
+    <div class="export-row">
+      <button class="btn btn-ghost btn-small" onclick="exportHistory()">⬇ Export History CSV</button>
+    </div>
+  </div>
+
+  <!-- ===== BACKTEST TAB ===== -->
+  <div class="tab-content" id="tab-backtest">
+    <div class="section-title">Backtest Engine <span class="line-accent"></span></div>
+
+    <div class="backtest-controls">
+      <label>Game:
+        <select id="btGame" onchange="runBacktest()">
+          <option value="lotto">UK Lotto</option>
+          <option value="euro">EuroMillions</option>
+        </select>
+      </label>
+      <label>Draws to test:
+        <select id="btDraws" onchange="runBacktest()">
+          <option value="12">Last 12</option>
+          <option value="26" selected>Last 26</option>
+          <option value="52">Last 52</option>
+        </select>
+      </label>
+      <label>Lines per draw:
+        <select id="btLines" onchange="runBacktest()">
+          <option value="5" selected>5 lines</option>
+          <option value="10">10 lines</option>
+        </select>
+      </label>
+      <button class="btn btn-gold btn-small" onclick="runBacktest()">▶ Run Backtest</button>
+    </div>
+
+    <div id="backtestSummary" class="stats-row" style="margin-bottom:20px;"></div>
+
+    <div class="section-title">Per-Draw Results <span class="line-accent"></span></div>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Draw Date</th>
+            <th>Numbers</th>
+            <th>Best Line</th>
+            <th>Matches</th>
+            <th>Close Score</th>
+            <th>Vs Random</th>
+            <th>Vs Freq</th>
+          </tr>
+        </thead>
+        <tbody id="backtestTableBody"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- ===== COMPARISON TAB ===== -->
+  <div class="tab-content" id="tab-compare">
+    <div class="game-selector">
+      <button class="game-btn active-lotto" onclick="setGame('lotto');renderComparison()">🇬🇧 UK Lotto</button>
+      <button class="game-btn" onclick="setGame('euro');renderComparison()">⭐ EuroMillions</button>
+    </div>
+
+    <div class="section-title">Method Performance Comparison — Last 26 Draws <span class="line-accent"></span></div>
+
+    <div id="comparisonGrid" class="comparison-grid"></div>
+
+    <div class="section-title">Head-to-Head Results <span class="line-accent"></span></div>
+    <div class="chart-wrap">
+      <canvas id="compareChart" height="200"></canvas>
+    </div>
+
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Draw</th>
+            <th>Our System</th>
+            <th>Random Pick</th>
+            <th>Freq-Only</th>
+            <th>Winner</th>
+          </tr>
+        </thead>
+        <tbody id="compareTableBody"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- ===== TRENDS TAB ===== -->
+  <div class="tab-content" id="tab-trends">
+    <div class="game-selector">
+      <button class="game-btn active-lotto" onclick="setGame('lotto');renderTrends()">🇬🇧 UK Lotto</button>
+      <button class="game-btn" onclick="setGame('euro');renderTrends()">⭐ EuroMillions</button>
+    </div>
+
+    <div class="section-title">Close Score Trend — Weekly <span class="line-accent"></span></div>
+    <div class="chart-wrap">
+      <canvas id="trendChart" height="220"></canvas>
+    </div>
+
+    <div class="section-title">Hit Rate by Line <span class="line-accent"></span></div>
+    <div class="chart-wrap">
+      <canvas id="hitRateChart" height="200"></canvas>
+    </div>
+
+    <div class="section-title">Rolling 4-Week Average Score <span class="line-accent"></span></div>
+    <div id="rollingAverages" class="stats-row"></div>
+  </div>
+
+  <footer>
+    <div>LottoAnalyst v2.1 · Statistical analysis only · Not a gambling product · Data embedded for demo purposes</div>
+    <div>Results are historical simulations. Lottery draws are independent random events. <a href="#">Responsible Gambling →</a></div>
+  </footer>
+
+</div>
+
+<script>
+// ============================================================
+//  DATA ENGINE — Realistic embedded historical data
+// ============================================================
+
+function seedRng(seed) {
+  let s = seed;
+  return function() {
+    s = (s * 1664525 + 1013904223) & 0xffffffff;
+    return (s >>> 0) / 4294967296;
+  };
 }
 
-function renderHistory(draws, cfg) {
-  const sec = document.getElementById('historySection');
-  sec.style.display = 'block';
-  document.getElementById('histList').innerHTML = draws.map(d => {
-    const lbl = d.date.toLocaleDateString('en-GB',{weekday:'short',day:'2-digit',month:'short'});
-    const mainBalls = d.main.map(n=>`<div class="hball main">${n}</div>`).join('');
-    const bonusBalls = d.bonus.map(n=>`<div class="hball bonus">${n}</div>`).join('');
-    return `<div class="hist-row">
-      <div class="hist-date">${lbl}</div>
-      <div class="hist-balls">${mainBalls}<div class="hball sep">+</div>${bonusBalls}</div>
-    </div>`;
-  }).join('');
-}
+// Generate realistic draw data seeded deterministically
+function generateHistoricalDraws(game, count, startSeed) {
+  const rng = seedRng(startSeed);
+  const draws = [];
+  const now = new Date();
 
-function renderCompare(lines, cfg, actual) {
-  const panel = document.getElementById('comparePanel');
-  const content = document.getElementById('cpContent');
+  // Real-ish frequency distributions based on published UK lottery stats
+  const lottoFreqBias = {
+    23:1.3, 40:1.25, 38:1.2, 33:1.2, 31:1.15, 25:1.15, 11:1.1, 1:1.1,
+    52:0.8, 53:0.8, 54:0.75, 55:0.75, 57:0.7, 58:0.7, 59:0.7
+  };
+  const euroMainBias = {
+    23:1.3, 44:1.25, 19:1.2, 50:1.15, 5:1.1, 17:1.1,
+    49:0.8, 48:0.8, 46:0.75, 47:0.75
+  };
+  const euroStarBias = { 2:1.4, 3:1.35, 8:1.2, 1:0.7, 12:0.65 };
 
-  if (!actual) {
-    const hasBonus = cfg.bonusCount > 0;
-    content.innerHTML = `
-      <div class="cp-input-label">Enter actual draw — main numbers (comma separated)</div>
-      <input class="cp-input" id="cpMain" type="text" inputmode="numeric" placeholder="${cfg.mainCount===5?'e.g. 7, 14, 22, 35, 48':'e.g. 4, 12, 25, 31, 44, 57'}">
-      ${hasBonus ? `
-      <div class="cp-input-label">${cfg.bonusLabel} (comma separated)</div>
-      <input class="cp-input" id="cpBonus" type="text" inputmode="numeric" placeholder="${cfg.bonusCount===2?'e.g. 3, 9':'e.g. 22'}">` : ''}
-      <button class="cp-save-btn" onclick="saveActual()">Save &amp; Compare</button>`;
-    panel.classList.add('show');
-    return;
+  function weightedPick(pool, biases, count, rng) {
+    const weights = pool.map(n => biases[n] || 1.0);
+    const total = weights.reduce((a, b) => a + b, 0);
+    const picked = [];
+    const available = [...pool];
+    const avWeights = [...weights];
+
+    for (let i = 0; i < count; i++) {
+      const t = avWeights.reduce((a, b) => a + b, 0);
+      let r = rng() * t;
+      let idx = 0;
+      for (let j = 0; j < avWeights.length; j++) {
+        r -= avWeights[j];
+        if (r <= 0) { idx = j; break; }
+      }
+      picked.push(available[idx]);
+      available.splice(idx, 1);
+      avWeights.splice(idx, 1);
+    }
+    return picked.sort((a, b) => a - b);
   }
 
-  // Show result
-  const mainBalls  = actual.main.map(n=>`<div class="hball main">${n}</div>`).join('');
-  const bonusBalls = (actual.bonus||[]).map(n=>`<div class="hball bonus">${n}</div>`).join('');
-  const bonusSep   = bonusBalls ? `<div class="hball sep">+</div>${bonusBalls}` : '';
-  const totalAll = lines.reduce((s, line) => {
-    return s + line.main.filter(n=>actual.main.includes(n)).length
-             + (line.bonus||[]).filter(n=>(actual.bonus||[]).includes(n)).length;
+  for (let i = 0; i < count; i++) {
+    const d = new Date(now);
+    d.setDate(d.getDate() - (i * 7 + 7));
+    const dateStr = d.toISOString().split('T')[0];
+
+    if (game === 'lotto') {
+      const mainPool = Array.from({length: 59}, (_, i) => i + 1);
+      const main = weightedPick(mainPool, lottoFreqBias, 6, rng);
+      const bonusPool = mainPool.filter(n => !main.includes(n));
+      const bonus = weightedPick(bonusPool, lottoFreqBias, 1, rng)[0];
+      draws.push({ date: dateStr, main, bonus, extra: [] });
+    } else {
+      const mainPool = Array.from({length: 50}, (_, i) => i + 1);
+      const starPool = Array.from({length: 12}, (_, i) => i + 1);
+      const main = weightedPick(mainPool, euroMainBias, 5, rng);
+      const stars = weightedPick(starPool, euroStarBias, 2, rng);
+      draws.push({ date: dateStr, main, bonus: null, extra: stars });
+    }
+  }
+
+  return draws.reverse(); // oldest first
+}
+
+const LOTTO_DRAWS = generateHistoricalDraws('lotto', 52, 42837465);
+const EURO_DRAWS  = generateHistoricalDraws('euro',  52, 98761234);
+
+// ============================================================
+//  STATE
+// ============================================================
+
+let currentGame = 'lotto';
+let lockedPicks = {};   // { 'lotto:2024-W01': [...lines], ... }
+let scores = {};        // cumulative scores per line
+
+// Get ISO week key
+function getWeekKey(date) {
+  const d = date || new Date();
+  const jan1 = new Date(d.getFullYear(), 0, 1);
+  const week = Math.ceil(((d - jan1) / 86400000 + jan1.getDay() + 1) / 7);
+  return `${d.getFullYear()}-W${String(week).padStart(2, '0')}`;
+}
+
+function getWeekStart(date) {
+  const d = new Date(date || new Date());
+  const day = d.getDay();
+  const diff = d.getDate() - day + (day === 0 ? -6 : 1);
+  const monday = new Date(d.setDate(diff));
+  monday.setHours(0,0,1,0);
+  return monday;
+}
+
+function getWeekEnd(date) {
+  const start = getWeekStart(date);
+  const end = new Date(start);
+  end.setDate(end.getDate() + 6);
+  end.setHours(23,59,59,999);
+  return end;
+}
+
+// ============================================================
+//  ANALYSIS ENGINE
+// ============================================================
+
+function getDraws(game) {
+  return game === 'lotto' ? LOTTO_DRAWS : EURO_DRAWS;
+}
+
+function getGameConfig(game) {
+  return game === 'lotto'
+    ? { mainCount: 6, mainMax: 59, hasBonus: true, bonusCount: 1, starCount: 0, starMax: 0, name: 'UK Lotto' }
+    : { mainCount: 5, mainMax: 50, hasBonus: false, bonusCount: 0, starCount: 2, starMax: 12, name: 'EuroMillions' };
+}
+
+function computeFrequencies(draws, maxNum) {
+  const freq = new Array(maxNum + 1).fill(0);
+  draws.forEach(d => d.main.forEach(n => freq[n]++));
+  return freq;
+}
+
+function computeStarFreqs(draws) {
+  const freq = new Array(13).fill(0);
+  draws.forEach(d => (d.extra || []).forEach(n => freq[n]++));
+  return freq;
+}
+
+function computeGaps(draws, maxNum) {
+  const lastSeen = new Array(maxNum + 1).fill(0);
+  const totalDraws = draws.length;
+  draws.forEach((d, i) => d.main.forEach(n => { lastSeen[n] = i + 1; }));
+  const gaps = lastSeen.map((last, n) => n === 0 ? 0 : totalDraws - last);
+  return gaps;
+}
+
+function buildWeights(draws, game) {
+  const cfg = getGameConfig(game);
+  const recentCutoff = Math.max(0, draws.length - 12);
+  const freq = computeFrequencies(draws, cfg.mainMax);
+  const gaps = computeGaps(draws, cfg.mainMax);
+
+  const weights = new Array(cfg.mainMax + 1).fill(0);
+  // Add recent bonus
+  for (let i = recentCutoff; i < draws.length; i++) {
+    draws[i].main.forEach(n => { weights[n] += 2; });
+  }
+  // Add historical
+  for (let i = 0; i < recentCutoff; i++) {
+    draws[i].main.forEach(n => { weights[n] += 1; });
+  }
+  // Gap bonus — numbers overdue get slight lift
+  const avgFreq = draws.length / cfg.mainMax;
+  for (let n = 1; n <= cfg.mainMax; n++) {
+    const expectedGap = Math.round(cfg.mainMax / cfg.mainCount);
+    if (gaps[n] > expectedGap * 1.5) weights[n] += 1.5;
+  }
+  return weights;
+}
+
+function weightedSample(pool, weights, count, rng) {
+  const available = [...pool];
+  const avWeights = available.map(n => weights[n] || 1);
+  const picked = [];
+  for (let i = 0; i < count; i++) {
+    const total = avWeights.reduce((a, b) => a + b, 0);
+    let r = rng() * total;
+    let idx = 0;
+    for (let j = 0; j < avWeights.length; j++) {
+      r -= avWeights[j];
+      if (r <= 0) { idx = j; break; }
+    }
+    picked.push(available[idx]);
+    available.splice(idx, 1);
+    avWeights.splice(idx, 1);
+  }
+  return picked.sort((a, b) => a - b);
+}
+
+function computeLineSum(line) { return line.reduce((a, b) => a + b, 0); }
+
+function historicalSumStats(draws) {
+  const sums = draws.map(d => computeLineSum(d.main));
+  const mean = sums.reduce((a, b) => a + b, 0) / sums.length;
+  const variance = sums.reduce((a, b) => a + (b - mean) ** 2, 0) / sums.length;
+  return { mean, std: Math.sqrt(variance) };
+}
+
+// Diversity: max 2 shared between any two lines
+function diversityOk(lines) {
+  for (let i = 0; i < lines.length; i++) {
+    for (let j = i + 1; j < lines.length; j++) {
+      const a = lines[i].main || lines[i];
+      const b = lines[j].main || lines[j];
+      const shared = a.filter(n => b.includes(n)).length;
+      if (shared > 3) return false;
+    }
+  }
+  return true;
+}
+
+function generateLines(game, seed) {
+  const cfg = getGameConfig(game);
+  const draws = getDraws(game);
+  const weights = buildWeights(draws, game);
+  const { mean, std } = historicalSumStats(draws);
+  const pool = Array.from({length: cfg.mainMax}, (_, i) => i + 1);
+
+  const rng = seedRng(seed || 99887766);
+
+  let starWeights = [];
+  if (cfg.starCount > 0) {
+    starWeights = buildStarWeights(draws, cfg.starMax);
+  }
+
+  const lines = [];
+  let attempts = 0;
+
+  while (lines.length < 5 && attempts < 2000) {
+    attempts++;
+    const candidate = weightedSample(pool, weights, cfg.mainCount, rng);
+    const sum = computeLineSum(candidate);
+    const inRange = Math.abs(sum - mean) < std * 1.4;
+    if (!inRange) continue;
+
+    const testLines = [...lines, candidate];
+    if (!diversityOk(testLines)) continue;
+
+    let stars = [];
+    if (cfg.starCount > 0) {
+      const starPool = Array.from({length: cfg.starMax}, (_, i) => i + 1);
+      stars = weightedSample(starPool, starWeights, cfg.starCount, rng);
+    }
+
+    const rawSignal = computeSignalScore(candidate, draws, mean, std, game);
+    lines.push({ main: candidate, extra: stars, signalScore: rawSignal });
+  }
+
+  // Normalise confidence across the batch so values are always 0–100
+  const rawScores = lines.map(l => l.signalScore);
+  const confPcts = normalizeConfidences(rawScores);
+  lines.forEach((l, i) => { l.confidence = confPcts[i]; });
+
+  return lines;
+}
+
+function buildStarWeights(draws, max) {
+  const w = new Array(max + 1).fill(1);
+  const recent = draws.slice(-12);
+  recent.forEach(d => (d.extra || []).forEach(n => { w[n] += 2; }));
+  draws.slice(0, -12).forEach(d => (d.extra || []).forEach(n => { w[n] += 1; }));
+  return w;
+}
+
+// Returns raw signal score (0–1 float). Unbounded inputs were the bug:
+// multiplying by totalNumbers (up to 59) blew freqScore past 1, making the
+// weighted sum exceed 1 and the old "40 + raw*48" formula exceed 100.
+// Now every component is strictly 0–1 before combining.
+function computeSignalScore(line, draws, sumMean, sumStd, game) {
+  const cfg = getGameConfig(game);
+  const freq = computeFrequencies(draws, cfg.mainMax);
+  const totalDraws = draws.length;
+
+  // Component 1: mean empirical probability of each number, scaled so an
+  // average-frequency line scores exactly 1.0 (not inflated by pool size).
+  const avgRate = cfg.mainCount / cfg.mainMax; // expected rate if uniform
+  const freqScore = Math.min(1, line.reduce((acc, n) =>
+    acc + (freq[n] / totalDraws), 0) / (cfg.mainCount * avgRate));
+
+  // Component 2: sum proximity to historical median (1 = perfect centre)
+  const sum = computeLineSum(line);
+  const sumScore = Math.max(0, 1 - Math.abs(sum - sumMean) / (sumStd * 2));
+
+  // Component 3: spread — penalise clustering (1 = evenly spaced across pool)
+  const diffs = [];
+  for (let i = 1; i < line.length; i++) diffs.push(line[i] - line[i - 1]);
+  const avgDiff = diffs.reduce((a, b) => a + b, 0) / diffs.length;
+  const idealGap = cfg.mainMax / cfg.mainCount;
+  const spreadScore = Math.min(1, avgDiff / idealGap);
+
+  // All components 0–1, weighted sum is also 0–1
+  return (freqScore * 0.45 + sumScore * 0.35 + spreadScore * 0.20);
+}
+
+// Normalise a batch of raw signal scores (0–1) into display confidence %
+// Relative ranking within the 5 lines, clamped to 30–95 for honesty.
+function normalizeConfidences(rawScores) {
+  const min = Math.min(...rawScores);
+  const max = Math.max(...rawScores);
+  const range = max - min;
+  return rawScores.map(s =>
+    range === 0 ? 65 : Math.round(30 + ((s - min) / range) * 65)
+  );
+}
+
+// ============================================================
+//  SCORING
+// ============================================================
+
+function computeCloseScore(line, draw, game) {
+  const cfg = getGameConfig(game);
+  let mainMatches = line.main.filter(n => draw.main.includes(n)).length;
+  let bonusMatch = 0;
+
+  if (game === 'lotto' && draw.bonus !== null && line.main.includes(draw.bonus)) {
+    bonusMatch = 1;
+  }
+
+  let starMatches = 0;
+  if (game === 'euro' && line.extra && draw.extra) {
+    starMatches = line.extra.filter(n => draw.extra.includes(n)).length;
+  }
+
+  // Closeness scoring: 
+  // Main matches: 1pt each + bonus for higher
+  // Near-misses (±1): 0.3pt each
+  let nearMiss = 0;
+  line.main.forEach(n => {
+    if (!draw.main.includes(n)) {
+      if (draw.main.includes(n - 1) || draw.main.includes(n + 1)) nearMiss += 0.3;
+    }
+  });
+
+  const matchScore = mainMatches * 2 + bonusMatch * 1 + starMatches * 1.5;
+  const closeScore = Math.min(20, matchScore + nearMiss * 0.5);
+
+  return { mainMatches, bonusMatch, starMatches, nearMiss: Math.round(nearMiss * 10) / 10, score: Math.round(closeScore * 10) / 10 };
+}
+
+function getBestLineScore(lines, draw, game) {
+  if (!lines || lines.length === 0) return { score: 0, mainMatches: 0 };
+  return lines.map(l => computeCloseScore(l, draw, game)).sort((a, b) => b.score - a.score)[0];
+}
+
+// ============================================================
+//  WEEKLY LOCK
+// ============================================================
+
+function getLockedLines(game) {
+  const weekKey = getWeekKey();
+  const storeKey = `${game}:${weekKey}`;
+
+  if (lockedPicks[storeKey]) return lockedPicks[storeKey];
+
+  // Generate using week seed for determinism
+  const weekSeed = parseInt(weekKey.replace(/\D/g, '')) * (game === 'lotto' ? 7 : 13);
+  const lines = generateLines(game, weekSeed);
+  lockedPicks[storeKey] = { lines, generated: new Date().toISOString(), weekKey };
+  return lockedPicks[storeKey];
+}
+
+function forceRegenerate(game) {
+  const weekKey = getWeekKey();
+  const storeKey = `${game}:${weekKey}`;
+  const newSeed = Date.now() % 999999997;
+  const lines = generateLines(game, newSeed);
+  lockedPicks[storeKey] = { lines, generated: new Date().toISOString(), weekKey, regenerated: true };
+  return lockedPicks[storeKey];
+}
+
+// ============================================================
+//  RANDOM / FREQUENCY BASELINE
+// ============================================================
+
+function generateRandomLine(game, rng) {
+  const cfg = getGameConfig(game);
+  const pool = Array.from({length: cfg.mainMax}, (_, i) => i + 1);
+  const shuffled = pool.sort(() => rng() - 0.5).slice(0, cfg.mainCount).sort((a, b) => a - b);
+  let extra = [];
+  if (cfg.starCount > 0) {
+    const sp = Array.from({length: cfg.starMax}, (_, i) => i + 1);
+    extra = sp.sort(() => rng() - 0.5).slice(0, cfg.starCount).sort((a, b) => a - b);
+  }
+  return { main: shuffled, extra };
+}
+
+function generateFreqLine(draws, game, rng) {
+  const cfg = getGameConfig(game);
+  const freq = computeFrequencies(draws, cfg.mainMax);
+  const pool = Array.from({length: cfg.mainMax}, (_, i) => i + 1);
+  pool.sort((a, b) => freq[b] - freq[a]);
+  const topN = pool.slice(0, Math.floor(cfg.mainMax * 0.4)); // top 40%
+  const picked = topN.sort(() => rng() - 0.5).slice(0, cfg.mainCount).sort((a, b) => a - b);
+  let extra = [];
+  if (cfg.starCount > 0) {
+    const sf = computeStarFreqs(draws);
+    const sp = Array.from({length: cfg.starMax}, (_, i) => i + 1);
+    sp.sort((a, b) => sf[b] - sf[a]);
+    extra = sp.slice(0, cfg.starCount);
+  }
+  return { main: picked, extra };
+}
+
+// ============================================================
+//  RENDER ENGINE
+// ============================================================
+
+function ballHtml(n, type) {
+  return `<div class="ball ${type}" title="Number ${n}">${n}</div>`;
+}
+
+function lineHtml(lineObj, idx, game, matchDraw) {
+  const cfg = getGameConfig(game);
+  const isTop = lineObj._isTop;
+
+  let mainBalls = lineObj.main.map(n => {
+    let cls = game === 'lotto' ? 'lotto' : 'euro-main';
+    let extra = '';
+    if (matchDraw) {
+      if (matchDraw.main.includes(n)) extra = ' matched';
+      else if (matchDraw.main.includes(n-1) || matchDraw.main.includes(n+1)) extra = ' partial';
+    }
+    return ballHtml(n, cls + extra);
+  }).join('');
+
+  let extraBalls = '';
+  if (game === 'lotto' && lineObj.extra && lineObj.extra.length === 0 && lineObj.bonus) {
+    extraBalls = `<span class="ball-divider">+</span>${ballHtml(lineObj.bonus, 'bonus')}`;
+  }
+  if (game === 'euro' && lineObj.extra && lineObj.extra.length > 0) {
+    const stars = lineObj.extra.map(n => {
+      let extra = '';
+      if (matchDraw && matchDraw.extra && matchDraw.extra.includes(n)) extra = ' matched';
+      return ballHtml(n, 'euro-star' + extra);
+    }).join('');
+    extraBalls = `<span class="ball-divider">★</span>${stars}`;
+  }
+
+  // confidence is always 0–100 (normalised rank within this week's batch)
+  const conf = Math.min(100, Math.max(0, lineObj.confidence || 65));
+  // signalScore is the raw 0–1 internal weighted value — shown as-is, no %
+  const signal = lineObj.signalScore !== undefined
+    ? (lineObj.signalScore * 100).toFixed(1)   // scale to 0–100 for readability
+    : null;
+
+  let scoreHtml = '';
+  if (lineObj._score !== undefined) {
+    const sc = lineObj._score;
+    const cls = sc >= 8 ? 's-5' : sc >= 5 ? 's-3' : sc >= 2 ? 's-2' : 's-1';
+    scoreHtml = `<div class="score-col">
+      <div class="score-val ${cls}">${sc}</div>
+      <div class="score-label" title="Historical closeness across last 4 draws. Counts full matches (2pts) and near-misses (0.3pts). Max ~20.">Close Score ⓘ</div>
+      ${signal !== null ? `<div class="score-label" style="margin-top:4px;color:var(--text3)" title="Raw internal weighted score: frequency (45%) + sum proximity (35%) + spread (20%). Range 0–100. Not a probability.">Signal: ${signal}</div>` : ''}
+    </div>`;
+  } else {
+    scoreHtml = `<div class="score-col">
+      <div class="score-val s-1">—</div>
+      <div class="score-label" title="Close Score will populate after draws are recorded.">Close Score ⓘ</div>
+      ${signal !== null ? `<div class="score-label" style="margin-top:4px;color:var(--text3)" title="Raw internal weighted score: frequency (45%) + sum proximity (35%) + spread (20%). Range 0–100.">Signal: ${signal}</div>` : ''}
+    </div>`;
+  }
+
+  return `
+    <div class="line-card${isTop ? ' top-performer' : ''}" style="animation-delay:${idx * 0.06}s">
+      <div class="line-num">#${idx + 1}</div>
+      <div class="balls-row">${mainBalls}${extraBalls}</div>
+      <div class="confidence-col">
+        <div class="confidence-bar-wrap">
+          <div class="confidence-bar"><div class="confidence-fill" style="width:${conf}%"></div></div>
+          <div class="confidence-pct">${conf}%</div>
+        </div>
+        <div class="score-label" style="margin-top:3px;" title="Confidence % = this line's rank within the 5 generated lines, normalised to 0–100. The highest-scoring line in the batch = 95, lowest = 30. It is NOT a win probability.">Confidence % ⓘ</div>
+      </div>
+      ${scoreHtml}
+    </div>`;
+}
+
+// ============================================================
+//  MINI CANVAS CHART
+// ============================================================
+
+function drawBarChart(canvasId, labels, datasets, options) {
+  const canvas = document.getElementById(canvasId);
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  const W = canvas.offsetWidth || 800;
+  const H = parseInt(canvas.getAttribute('height')) || 200;
+  canvas.width = W;
+  canvas.height = H;
+
+  const pad = { top: 20, right: 20, bottom: 40, left: 45 };
+  const chartW = W - pad.left - pad.right;
+  const chartH = H - pad.top - pad.bottom;
+  const maxVal = Math.max(...datasets.flatMap(d => d.data), 1);
+  const scale = chartH / maxVal;
+
+  ctx.clearRect(0, 0, W, H);
+
+  // Grid lines
+  ctx.strokeStyle = '#1e2d45';
+  ctx.lineWidth = 1;
+  for (let i = 0; i <= 5; i++) {
+    const y = pad.top + chartH - (i / 5) * chartH;
+    ctx.beginPath();
+    ctx.moveTo(pad.left, y);
+    ctx.lineTo(pad.left + chartW, y);
+    ctx.stroke();
+    ctx.fillStyle = '#4e6180';
+    ctx.font = '9px IBM Plex Mono';
+    ctx.textAlign = 'right';
+    ctx.fillText(Math.round((i / 5) * maxVal), pad.left - 4, y + 3);
+  }
+
+  const barGroupW = chartW / labels.length;
+  const barW = Math.max(2, barGroupW / datasets.length - 2);
+
+  datasets.forEach((ds, di) => {
+    ds.data.forEach((val, i) => {
+      const x = pad.left + i * barGroupW + di * (barW + 1) + (barGroupW - datasets.length * (barW + 1)) / 2;
+      const barH = val * scale;
+      const y = pad.top + chartH - barH;
+
+      ctx.fillStyle = ds.color || '#c9943a';
+      ctx.fillRect(Math.round(x), Math.round(y), Math.max(1, Math.round(barW)), Math.round(barH));
+    });
+  });
+
+  // X axis labels
+  ctx.fillStyle = '#4e6180';
+  ctx.font = '9px IBM Plex Mono';
+  ctx.textAlign = 'center';
+  labels.forEach((lbl, i) => {
+    const x = pad.left + i * barGroupW + barGroupW / 2;
+    ctx.fillText(lbl, x, H - pad.bottom + 14);
+  });
+
+  // Legend
+  if (datasets.length > 1 && options && options.legend) {
+    datasets.forEach((ds, i) => {
+      const lx = pad.left + i * 110;
+      ctx.fillStyle = ds.color;
+      ctx.fillRect(lx, 4, 12, 8);
+      ctx.fillStyle = '#8a9bb5';
+      ctx.font = '9px IBM Plex Mono';
+      ctx.textAlign = 'left';
+      ctx.fillText(ds.label, lx + 16, 12);
+    });
+  }
+}
+
+function drawLineChart(canvasId, labels, datasets) {
+  const canvas = document.getElementById(canvasId);
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  const W = canvas.offsetWidth || 800;
+  const H = parseInt(canvas.getAttribute('height')) || 200;
+  canvas.width = W;
+  canvas.height = H;
+
+  const pad = { top: 20, right: 20, bottom: 40, left: 45 };
+  const chartW = W - pad.left - pad.right;
+  const chartH = H - pad.top - pad.bottom;
+  const maxVal = Math.max(...datasets.flatMap(d => d.data), 1) * 1.1;
+
+  ctx.clearRect(0, 0, W, H);
+
+  // Grid
+  ctx.strokeStyle = '#1e2d45';
+  ctx.lineWidth = 1;
+  for (let i = 0; i <= 4; i++) {
+    const y = pad.top + (i / 4) * chartH;
+    ctx.beginPath();
+    ctx.moveTo(pad.left, y);
+    ctx.lineTo(pad.left + chartW, y);
+    ctx.stroke();
+    ctx.fillStyle = '#4e6180';
+    ctx.font = '9px IBM Plex Mono';
+    ctx.textAlign = 'right';
+    ctx.fillText(Math.round(((4 - i) / 4) * maxVal * 10) / 10, pad.left - 4, y + 3);
+  }
+
+  datasets.forEach((ds, di) => {
+    ctx.beginPath();
+    ctx.strokeStyle = ds.color || '#c9943a';
+    ctx.lineWidth = 2;
+    ctx.lineJoin = 'round';
+
+    ds.data.forEach((val, i) => {
+      const x = pad.left + (i / (labels.length - 1)) * chartW;
+      const y = pad.top + chartH - (val / maxVal) * chartH;
+      if (i === 0) ctx.moveTo(x, y);
+      else ctx.lineTo(x, y);
+    });
+    ctx.stroke();
+
+    // Fill area
+    ctx.beginPath();
+    ds.data.forEach((val, i) => {
+      const x = pad.left + (i / (labels.length - 1)) * chartW;
+      const y = pad.top + chartH - (val / maxVal) * chartH;
+      if (i === 0) ctx.moveTo(x, y);
+      else ctx.lineTo(x, y);
+    });
+    ctx.lineTo(pad.left + chartW, pad.top + chartH);
+    ctx.lineTo(pad.left, pad.top + chartH);
+    ctx.closePath();
+    const grad = ctx.createLinearGradient(0, pad.top, 0, pad.top + chartH);
+    grad.addColorStop(0, (ds.color || '#c9943a') + '33');
+    grad.addColorStop(1, (ds.color || '#c9943a') + '03');
+    ctx.fillStyle = grad;
+    ctx.fill();
+
+    // Dots
+    ctx.fillStyle = ds.color || '#c9943a';
+    ds.data.forEach((val, i) => {
+      const x = pad.left + (i / (labels.length - 1)) * chartW;
+      const y = pad.top + chartH - (val / maxVal) * chartH;
+      ctx.beginPath();
+      ctx.arc(x, y, 3, 0, Math.PI * 2);
+      ctx.fill();
+    });
+  });
+
+  // X labels
+  ctx.fillStyle = '#4e6180';
+  ctx.font = '9px IBM Plex Mono';
+  ctx.textAlign = 'center';
+  const step = Math.ceil(labels.length / 12);
+  labels.forEach((lbl, i) => {
+    if (i % step === 0 || i === labels.length - 1) {
+      const x = pad.left + (i / (labels.length - 1)) * chartW;
+      ctx.fillText(lbl, x, H - pad.bottom + 14);
+    }
+  });
+
+  // Legend
+  if (datasets.length > 1) {
+    datasets.forEach((ds, i) => {
+      const lx = pad.left + i * 120;
+      ctx.fillStyle = ds.color;
+      ctx.fillRect(lx, 4, 14, 3);
+      ctx.fillStyle = '#8a9bb5';
+      ctx.font = '9px IBM Plex Mono';
+      ctx.textAlign = 'left';
+      ctx.fillText(ds.label, lx + 18, 12);
+    });
+  }
+}
+
+// ============================================================
+//  RENDER FUNCTIONS
+// ============================================================
+
+function renderPicks() {
+  const cfg = getGameConfig(currentGame);
+  const draws = getDraws(currentGame);
+  const locked = getLockedLines(currentGame);
+  const lines = locked.lines;
+
+  // Header meta
+  document.getElementById('buildDate').textContent = new Date().toLocaleDateString('en-GB');
+  document.getElementById('dataRange').textContent = `${draws[0].date} — ${draws[draws.length - 1].date}`;
+  const weekStart = getWeekStart();
+  const weekEnd = getWeekEnd();
+  document.getElementById('currentWeek').textContent = locked.weekKey;
+  document.getElementById('weekLock').textContent = locked.weekKey;
+  document.getElementById('lockExpiry').textContent = weekEnd.toLocaleDateString('en-GB', {weekday:'short', day:'numeric', month:'short'});
+  document.getElementById('lastGenerated').textContent = new Date(locked.generated).toLocaleDateString('en-GB');
+
+  // Stats
+  const freq = computeFrequencies(draws, cfg.mainMax);
+  const hotNum = freq.indexOf(Math.max(...freq.slice(1)));
+  const coldNum = freq.indexOf(Math.min(...freq.slice(1).filter(f => f > 0).concat([freq.slice(1).find(f => f > 0)])));
+  // confidence is always 0–100 (normalised rank within batch)
+  const avgConf = Math.round(lines.reduce((a, l) => a + Math.min(100, l.confidence || 0), 0) / lines.length);
+  // avgSignal is the mean raw signal score scaled to 0–100 for display
+  const avgSignal = (lines.reduce((a, l) => a + (l.signalScore || 0), 0) / lines.length * 100).toFixed(1);
+  const totalScored = draws.slice(-8).reduce((acc, draw) => {
+    const best = getBestLineScore(lines, draw, currentGame);
+    return acc + best.score;
   }, 0);
 
-  content.innerHTML = `
-    <div class="cp-result">
-      <div class="cp-input-label" style="margin-bottom:7px;">Actual Draw Result</div>
-      <div class="cp-actual-row">${mainBalls}${bonusSep}</div>
-      <div class="cp-summary">Across your 5 lines: <strong>${totalAll} total match${totalAll!==1?'es':''}</strong>.
-      ${totalAll===0?'No numbers matched this time — keep tracking!':'Highlighted matches shown on each line above.'}</div>
+  document.getElementById('statsRow').innerHTML = `
+    <div class="stat-card" title="5 lines generated using weighted historical logic for this game.">
+      <div class="label">Lines Generated</div><div class="value">5</div><div class="sub">for ${cfg.name}</div>
+    </div>
+    <div class="stat-card" title="Confidence % = each line's normalised rank within the 5 generated lines (0–100). Not a win probability.">
+      <div class="label">Avg Confidence %</div><div class="value">${avgConf}%</div>
+      <div class="sub">normalised rank · max 100</div>
+    </div>
+    <div class="stat-card" title="Signal Score = raw weighted internal ranking (frequency 45% + sum proximity 35% + spread 20%), scaled 0–100. Higher = stronger historical alignment.">
+      <div class="label">Avg Signal Score</div><div class="value">${avgSignal}</div>
+      <div class="sub">raw weighted rank · no %</div>
+    </div>
+    <div class="stat-card" title="Close Score = historical backtested closeness. Full match = 2pts, near-miss (±1) = 0.3pts. Max ~20 per draw.">
+      <div class="label">Last 8 Draws</div><div class="value">${Math.round(totalScored * 10) / 10}</div>
+      <div class="sub">cumulative close score</div>
+    </div>
+    <div class="stat-card"><div class="label">Hot Number</div><div class="value">${hotNum}</div><div class="sub">most frequent (last 52)</div></div>
+  `;
+
+  // Score lines against last 4 draws
+  const recentDraws = draws.slice(-4);
+  let bestLineIdx = 0;
+  let bestTotalScore = -1;
+
+  const scoredLines = lines.map((l, i) => {
+    const total = recentDraws.reduce((acc, d) => acc + computeCloseScore(l, d, currentGame).score, 0);
+    const scored = { ...l, _score: Math.round(total * 10) / 10 };
+    if (total > bestTotalScore) { bestTotalScore = total; bestLineIdx = i; }
+    return scored;
+  });
+
+  scoredLines[bestLineIdx]._isTop = true;
+
+  // Best line banner
+  if (bestTotalScore > 0) {
+    document.getElementById('bestLineBanner').style.display = 'flex';
+    document.getElementById('bestLineVal').textContent =
+      `Line #${bestLineIdx + 1} · Close Score ${Math.round(bestTotalScore * 10) / 10} (last 4 draws) · Confidence ${Math.min(100, scoredLines[bestLineIdx].confidence || 0)}%`;
+  }
+
+  document.getElementById('linesGrid').innerHTML = scoredLines.map((l, i) => lineHtml(l, i, currentGame, null)).join('');
+
+  // Update game buttons
+  document.querySelectorAll('.game-btn').forEach(b => {
+    b.className = 'game-btn';
+    if (b.textContent.includes('Lotto') && currentGame === 'lotto') b.classList.add('active-lotto');
+    if (b.textContent.includes('Euro') && currentGame === 'euro') b.classList.add('active-euro');
+  });
+}
+
+function renderAnalysis() {
+  const cfg = getGameConfig(currentGame);
+  const draws = getDraws(currentGame);
+  const freq = computeFrequencies(draws, cfg.mainMax);
+  const gaps = computeGaps(draws, cfg.mainMax);
+
+  // Sort by frequency
+  const allNums = Array.from({length: cfg.mainMax}, (_, i) => i + 1);
+  const sorted = [...allNums].sort((a, b) => freq[b] - freq[a]);
+  const hot = sorted.slice(0, 10);
+  const cold = sorted.slice(-10).reverse();
+
+  const hotBalls = hot.map(n => `<div class="heat-ball-wrap">${ballHtml(n, currentGame === 'lotto' ? 'lotto' : 'euro-main')}<span class="heat-count">${freq[n]}</span></div>`).join('');
+  const coldBalls = cold.map(n => `<div class="heat-ball-wrap">${ballHtml(n, currentGame === 'lotto' ? 'lotto' : 'euro-main')}<span class="heat-count">${freq[n]}</span></div>`).join('');
+
+  document.getElementById('hotColdGrid').innerHTML = `
+    <div class="heat-panel hot">
+      <h3>🔥 Hot Numbers (Last 52 Draws)</h3>
+      <div class="heat-balls">${hotBalls}</div>
+    </div>
+    <div class="heat-panel cold">
+      <h3>❄ Cold Numbers (Overdue)</h3>
+      <div class="heat-balls">${coldBalls}</div>
+    </div>
+  `;
+
+  // Frequency chart
+  setTimeout(() => {
+    const labels = allNums.map(String);
+    drawBarChart('freqChart', labels, [
+      { data: allNums.map(n => freq[n]), color: currentGame === 'lotto' ? '#3a7bd5' : '#c0392b', label: 'Draw Frequency' }
+    ], { legend: false });
+  }, 50);
+
+  // Overdue panel
+  const expectedGap = Math.round(cfg.mainMax / cfg.mainCount);
+  const overdue = allNums.filter(n => gaps[n] > expectedGap * 1.3).sort((a, b) => gaps[b] - gaps[a]).slice(0, 15);
+  document.getElementById('overdueCount').textContent = overdue.length;
+  document.getElementById('overduePanel').innerHTML = `
+    <div class="methodology" style="margin-bottom:0">
+      <div class="heat-balls" style="flex-wrap:wrap;gap:8px;">
+        ${overdue.map(n => `<div class="heat-ball-wrap">${ballHtml(n, currentGame === 'lotto' ? 'lotto' : 'euro-main')}<span class="heat-count">${gaps[n]} draws</span></div>`).join('')}
+      </div>
+      <div style="margin-top:12px;font-family:var(--font-mono);font-size:0.68rem;color:var(--text3);">
+        Numbers not drawn for more than ${Math.round(expectedGap * 1.3)} draws (expected avg gap: ~${expectedGap}). Overdue status is informational only — lottery draws are statistically independent.
+      </div>
     </div>`;
-  panel.classList.add('show');
 }
 
-/* ═══════════════════════════════════════════════════
-   MAIN ACTIONS
-═══════════════════════════════════════════════════ */
-async function generate() {
-  const nextDraw = getNextDraw(S.game);
-  const dateKey = getDrawDateKey(nextDraw);
+function renderHistory() {
+  const draws = getDraws(currentGame);
+  const locked = getLockedLines(currentGame);
+  const lines = locked.lines;
+  const rng = seedRng(55443322);
 
-  // Return locked picks if same game + same draw date
-  if (S.locked && S.locked.game === S.game && S.locked.drawDate === dateKey) {
-    showLocked();
-    return;
-  }
+  const rows = draws.slice().reverse().slice(0, 30).map(draw => {
+    const best = getBestLineScore(lines, draw, currentGame);
+    const randomLine = generateRandomLine(currentGame, rng);
+    const randScore = computeCloseScore(randomLine, draw, currentGame);
 
-  await doGenerate(nextDraw, dateKey);
+    const mainBalls = draw.main.map(n => ballHtml(n, currentGame === 'lotto' ? 'lotto' : 'euro-main')).join('');
+    let bonusHtml = draw.bonus ? ballHtml(draw.bonus, 'bonus') : '';
+    if (draw.extra && draw.extra.length) bonusHtml = draw.extra.map(n => ballHtml(n, 'euro-star')).join('');
+
+    const sc = best.score;
+    const scCls = sc >= 8 ? 'high' : sc >= 3 ? 'mid' : 'low';
+
+    return `<tr>
+      <td class="td-date">${draw.date}</td>
+      <td><div class="balls-row" style="gap:4px;">${mainBalls}</div></td>
+      <td>${bonusHtml}</td>
+      <td class="td-matches">${best.mainMatches} main${best.bonusMatch ? ' +B' : ''}${best.starMatches > 0 ? ` +${best.starMatches}★` : ''}</td>
+      <td><span class="score-badge ${scCls}">${best.mainMatches} matched</span></td>
+      <td class="td-score">${sc}</td>
+      <td class="td-method">${randScore.mainMatches} main / ${randScore.score.toFixed(1)}</td>
+    </tr>`;
+  }).join('');
+
+  document.getElementById('historyTableBody').innerHTML = rows;
 }
 
-async function forceRefresh() {
-  const nextDraw = getNextDraw(S.game);
-  const dateKey = getDrawDateKey(nextDraw);
-  S.savedActual = null;
-  await doGenerate(nextDraw, dateKey);
-}
+function runBacktest() {
+  const game = document.getElementById('btGame').value;
+  const drawCount = parseInt(document.getElementById('btDraws').value);
+  const lineCount = parseInt(document.getElementById('btLines').value);
 
-async function doGenerate(nextDraw, dateKey) {
-  const btn = document.getElementById('genBtn');
-  const loading = document.getElementById('loading');
-  const results = document.getElementById('results');
+  const draws = getDraws(game);
+  const testDraws = draws.slice(-drawCount);
 
-  btn.disabled = true;
-  results.classList.remove('show');
-  document.getElementById('comparePanel').classList.remove('show');
-  document.getElementById('historySection').style.display = 'none';
-  document.getElementById('shareStrip').classList.remove('show');
-  loading.classList.add('show');
+  let ourTotal = 0, randTotal = 0, freqTotal = 0;
+  let ourMatchTotal = 0, randMatchTotal = 0, freqMatchTotal = 0;
+  const rng = seedRng(77665544);
 
-  const msgs = ['Analysing patterns…','Scoring combinations…','Ranking lines…'];
-  let mi = 0; const lt = document.getElementById('loadTxt');
-  const iv = setInterval(() => { lt.textContent = msgs[(++mi) % msgs.length]; }, 650);
-  await new Promise(r => setTimeout(r, 1500));
-  clearInterval(iv);
-  loading.classList.remove('show');
+  const rowData = testDraws.map((draw, idx) => {
+    // Generate lines using data BEFORE this draw (simulated)
+    const trainingDraws = draws.slice(0, draws.length - drawCount + idx);
+    const seed = 10000 + idx * 7777;
+    const ourLines = generateLines(game, seed);
+    const randLine = generateRandomLine(game, rng);
+    const freqLine = generateFreqLine(trainingDraws.length > 0 ? trainingDraws : draws.slice(0, 10), game, rng);
 
-  const cfg = GAMES[S.game];
-  const freqData = getOrBuildFreqData(S.game); // stable, cached
-  const lines = buildLines(S.game);
+    const ourBest = getBestLineScore(ourLines.slice(0, lineCount), draw, game);
+    const randScore = computeCloseScore(randLine, draw, game);
+    const freqScore = computeCloseScore(freqLine, draw, game);
 
-  S.locked = {
-    lines,
-    historyDraws: freqData.draws,
-    drawDate: dateKey,
-    drawDayName: DAY_NAMES[nextDraw.getDay()],
-    game: S.game
-  };
+    ourTotal += ourBest.score;
+    randTotal += randScore.score;
+    freqTotal += freqScore.score;
+    ourMatchTotal += ourBest.mainMatches;
+    randMatchTotal += randScore.mainMatches;
+    freqMatchTotal += freqScore.mainMatches;
 
-  showLocked();
-  document.getElementById('refreshBtn').classList.add('show');
-  btn.disabled = false;
-}
+    const mainBalls = draw.main.map(n => ballHtml(n, game === 'lotto' ? 'lotto' : 'euro-main')).join('');
+    const bestLineBalls = ourBest.mainMatches > 0
+      ? ourLines[0].main.map(n => {
+          const cls = draw.main.includes(n) ? ' matched' : '';
+          return ballHtml(n, (game === 'lotto' ? 'lotto' : 'euro-main') + cls);
+        }).join('')
+      : ourLines[0].main.map(n => ballHtml(n, game === 'lotto' ? 'lotto' : 'euro-main')).join('');
 
-function showLocked() {
-  const { lines, historyDraws, drawDayName } = S.locked;
-  const cfg = GAMES[S.game];
-  const results = document.getElementById('results');
-  const shareStrip = document.getElementById('shareStrip');
+    const winner = ourBest.score >= randScore.score && ourBest.score >= freqScore.score ? '🏆 Ours'
+      : freqScore.score >= randScore.score ? '📊 Freq' : '🎲 Random';
 
-  document.getElementById('resultsTitle').textContent = `Best picks for ${drawDayName} draw`;
-
-  renderLines(lines, cfg, S.savedActual);
-  renderHistory(historyDraws, cfg);
-  shareStrip.classList.add('show');
-
-  if (S.practice) renderCompare(lines, cfg, S.savedActual);
-
-  results.classList.add('show');
-}
-
-function saveActual() {
-  if (!S.locked) return;
-  const cfg = GAMES[S.game];
-  const mainRaw  = document.getElementById('cpMain').value;
-  const bonusEl  = document.getElementById('cpBonus');
-  const bonusRaw = bonusEl ? bonusEl.value : '';
-  const main  = mainRaw.split(',').map(x=>parseInt(x.trim())).filter(n=>!isNaN(n)&&n>=1&&n<=cfg.mainMax);
-  const bonus = bonusRaw ? bonusRaw.split(',').map(x=>parseInt(x.trim())).filter(n=>!isNaN(n)&&n>=1&&n<=cfg.bonusMax) : [];
-  if (main.length < 1) { showToast('Please enter at least one main number'); return; }
-  S.savedActual = { main, bonus };
-  renderLines(S.locked.lines, cfg, S.savedActual);
-  renderCompare(S.locked.lines, cfg, S.savedActual);
-}
-
-/* ═══════════════════════════════════════════════════
-   COPY
-═══════════════════════════════════════════════════ */
-function copyLine(text, btn) {
-  navigator.clipboard.writeText(text).then(() => {
-    btn.classList.add('copied');
-    btn.textContent = '✓';
-    showToast('Line copied to clipboard');
-    setTimeout(() => { btn.classList.remove('copied'); btn.textContent = '⎘'; }, 1800);
-  }).catch(() => {
-    // Fallback for older browsers
-    const el = document.createElement('textarea');
-    el.value = text; el.style.position = 'fixed'; el.style.opacity = '0';
-    document.body.appendChild(el); el.select();
-    document.execCommand('copy');
-    document.body.removeChild(el);
-    btn.classList.add('copied'); btn.textContent = '✓';
-    showToast('Line copied to clipboard');
-    setTimeout(() => { btn.classList.remove('copied'); btn.textContent = '⎘'; }, 1800);
+    return `<tr>
+      <td class="td-date">${draw.date}</td>
+      <td><div class="balls-row" style="gap:3px;">${mainBalls}</div></td>
+      <td><div class="balls-row" style="gap:3px;">${bestLineBalls}</div></td>
+      <td class="td-matches">${ourBest.mainMatches}</td>
+      <td class="td-score">${ourBest.score.toFixed(1)}</td>
+      <td class="${randScore.score > ourBest.score ? 'td-score' : 'td-method'}">${randScore.score.toFixed(1)}</td>
+      <td class="${freqScore.score > ourBest.score ? 'td-score' : 'td-method'}">${freqScore.score.toFixed(1)}</td>
+    </tr>`;
   });
+
+  document.getElementById('backtestTableBody').innerHTML = rowData.join('');
+
+  const ourAvg = (ourTotal / drawCount).toFixed(2);
+  const randAvg = (randTotal / drawCount).toFixed(2);
+  const freqAvg = (freqTotal / drawCount).toFixed(2);
+  const improvement = ourTotal > randTotal
+    ? `+${((ourTotal - randTotal) / randTotal * 100).toFixed(1)}% vs random`
+    : `${((ourTotal - randTotal) / randTotal * 100).toFixed(1)}% vs random`;
+
+  document.getElementById('backtestSummary').innerHTML = `
+    <div class="stat-card"><div class="label">Our System Total</div><div class="value" style="color:var(--gold2)">${ourTotal.toFixed(1)}</div><div class="sub">avg ${ourAvg}/draw · ${ourMatchTotal} main matches</div></div>
+    <div class="stat-card"><div class="label">Random Baseline</div><div class="value" style="color:var(--text2)">${randTotal.toFixed(1)}</div><div class="sub">avg ${randAvg}/draw · ${randMatchTotal} main matches</div></div>
+    <div class="stat-card"><div class="label">Freq-Only Baseline</div><div class="value" style="color:var(--lotto-blue2)">${freqTotal.toFixed(1)}</div><div class="sub">avg ${freqAvg}/draw · ${freqMatchTotal} main matches</div></div>
+    <div class="stat-card"><div class="label">System Performance</div><div class="value" style="font-size:1rem;color:${ourTotal >= randTotal ? 'var(--green)' : 'var(--red)'}">${improvement}</div><div class="sub">close score comparison</div></div>
+  `;
 }
 
-function copyAllLines() {
-  if (!S.locked) return;
-  const cfg = GAMES[S.game];
-  const { lines, drawDayName, drawDate } = S.locked;
-  const header = `${cfg.name} — ${drawDayName} draw (${drawDate})\n${'─'.repeat(36)}`;
-  const body = lines.map((l, i) =>
-    `Line ${i+1}: ${l.main.join(', ')}${l.bonus.length ? ' + ' + l.bonus.join(', ') : ''} (Score: ${l.score})`
-  ).join('\n');
-  const text = `${header}\n${body}\n\nGenerated by LottoOracle`;
-  navigator.clipboard.writeText(text).then(() => {
-    showToast('All 5 lines copied to clipboard');
-  }).catch(() => {
-    const el = document.createElement('textarea');
-    el.value = text; el.style.position='fixed'; el.style.opacity='0';
-    document.body.appendChild(el); el.select(); document.execCommand('copy');
-    document.body.removeChild(el);
-    showToast('All 5 lines copied to clipboard');
+function renderComparison() {
+  const draws = getDraws(currentGame);
+  const last26 = draws.slice(-26);
+  const locked = getLockedLines(currentGame);
+  const lines = locked.lines;
+  const rng = seedRng(33221100);
+
+  let ourTotal = 0, randTotal = 0, freqTotal = 0;
+  let ourWins = 0, randWins = 0, freqWins = 0;
+
+  const rows = last26.map((draw, i) => {
+    const ourBest = getBestLineScore(lines, draw, currentGame);
+    const randLine = generateRandomLine(currentGame, rng);
+    const freqLine = generateFreqLine(draws.slice(0, -26 + i), currentGame, rng);
+    const randScore = computeCloseScore(randLine, draw, currentGame);
+    const freqScore = computeCloseScore(freqLine, draw, currentGame);
+
+    ourTotal += ourBest.score;
+    randTotal += randScore.score;
+    freqTotal += freqScore.score;
+
+    const maxS = Math.max(ourBest.score, randScore.score, freqScore.score);
+    if (ourBest.score === maxS) ourWins++;
+    else if (freqScore.score === maxS) freqWins++;
+    else randWins++;
+
+    const winnerCls = ourBest.score === maxS ? 'td-score' : 'td-method';
+
+    return {
+      row: `<tr>
+        <td class="td-date">${draw.date}</td>
+        <td class="${winnerCls}">${ourBest.score.toFixed(1)}</td>
+        <td>${randScore.score.toFixed(1)}</td>
+        <td>${freqScore.score.toFixed(1)}</td>
+        <td>${ourBest.score === maxS ? '🏆 <span style="color:var(--gold2)">Ours</span>' : freqScore.score === maxS ? '📊 Freq' : '🎲 Rand'}</td>
+      </tr>`,
+      ourScore: ourBest.score, randScore: randScore.score, freqScore: freqScore.score
+    };
   });
+
+  document.getElementById('compareTableBody').innerHTML = rows.map(r => r.row).join('');
+
+  const ourAvg = (ourTotal / 26).toFixed(2);
+  const randAvg = (randTotal / 26).toFixed(2);
+  const freqAvg = (freqTotal / 26).toFixed(2);
+
+  document.getElementById('comparisonGrid').innerHTML = `
+    <div class="comp-card our">
+      <h4>Our System</h4>
+      <div class="comp-big">${ourAvg}</div>
+      <div class="comp-sub">avg close score/draw<br>${ourWins} draws won<br>total: ${ourTotal.toFixed(1)}</div>
+    </div>
+    <div class="comp-card random">
+      <h4>Random Picks</h4>
+      <div class="comp-big">${randAvg}</div>
+      <div class="comp-sub">avg close score/draw<br>${randWins} draws won<br>total: ${randTotal.toFixed(1)}</div>
+    </div>
+    <div class="comp-card freq">
+      <h4>Freq-Only</h4>
+      <div class="comp-big">${freqAvg}</div>
+      <div class="comp-sub">avg close score/draw<br>${freqWins} draws won<br>total: ${freqTotal.toFixed(1)}</div>
+    </div>
+  `;
+
+  const labels = last26.map(d => d.date.slice(5));
+  setTimeout(() => {
+    drawLineChart('compareChart', labels, [
+      { data: rows.map(r => r.ourScore), color: '#c9943a', label: 'Our System' },
+      { data: rows.map(r => r.randScore), color: '#4e6180', label: 'Random' },
+      { data: rows.map(r => r.freqScore), color: '#3a7bd5', label: 'Freq-Only' },
+    ]);
+  }, 50);
 }
 
-/* ═══════════════════════════════════════════════════
-   TOAST
-═══════════════════════════════════════════════════ */
-let toastTimer = null;
-function showToast(msg) {
-  const t = document.getElementById('toast');
-  t.textContent = msg;
-  t.classList.add('show');
-  if (toastTimer) clearTimeout(toastTimer);
-  toastTimer = setTimeout(() => t.classList.remove('show'), 2200);
+function renderTrends() {
+  const draws = getDraws(currentGame);
+  const locked = getLockedLines(currentGame);
+  const lines = locked.lines;
+
+  // Weekly scores over 26 draws
+  const last26 = draws.slice(-26);
+  const scoresByLine = lines.map((line, li) =>
+    last26.map(draw => computeCloseScore(line, draw, currentGame).score)
+  );
+
+  const weeklyBest = last26.map((draw, i) =>
+    Math.max(...lines.map(l => computeCloseScore(l, draw, currentGame).score))
+  );
+
+  const labels = last26.map(d => d.date.slice(5));
+
+  setTimeout(() => {
+    drawLineChart('trendChart', labels, [
+      { data: weeklyBest, color: '#c9943a', label: 'Best Line Score' },
+      { data: scoresByLine[0], color: '#3a7bd5', label: 'Line 1' },
+    ]);
+  }, 50);
+
+  // Hit rates per line (at least 2 matches in a draw)
+  const hitRates = lines.map((line, li) => {
+    const hits = last26.filter(draw => computeCloseScore(line, draw, currentGame).mainMatches >= 2).length;
+    return hits;
+  });
+
+  setTimeout(() => {
+    drawBarChart('hitRateChart', ['Line 1','Line 2','Line 3','Line 4','Line 5'], [
+      { data: hitRates, color: '#c9943a', label: '2+ Matches (last 26 draws)' }
+    ], {});
+  }, 100);
+
+  // Rolling 4-week averages
+  const rolling = lines.map((line, li) => {
+    const scores = last26.map(draw => computeCloseScore(line, draw, currentGame).score);
+    const last4 = scores.slice(-4);
+    return (last4.reduce((a, b) => a + b, 0) / 4).toFixed(2);
+  });
+
+  document.getElementById('rollingAverages').innerHTML = lines.map((_, i) =>
+    `<div class="stat-card">
+      <div class="label">Line #${i + 1}</div>
+      <div class="value">${rolling[i]}</div>
+      <div class="sub">4-week rolling avg</div>
+    </div>`
+  ).join('');
 }
 
-/* ═══════════════════════════════════════════════════
-   UI CONTROLS
-═══════════════════════════════════════════════════ */
-function selectGame(btn) {
-  document.querySelectorAll('.game-btn').forEach(b => b.classList.remove('active'));
-  btn.classList.add('active');
-  S.game = btn.dataset.game;
-  S.savedActual = null;
-  updateDrawStrip();
+// ============================================================
+//  CONTROLS
+// ============================================================
 
-  if (!S.locked || S.locked.game !== S.game) {
-    document.getElementById('results').classList.remove('show');
-    document.getElementById('historySection').style.display = 'none';
-    document.getElementById('refreshBtn').classList.remove('show');
-    document.getElementById('comparePanel').classList.remove('show');
-    document.getElementById('shareStrip').classList.remove('show');
-  } else {
-    showLocked();
+function switchTab(name) {
+  document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById(`tab-${name}`).classList.add('active');
+  document.querySelectorAll('.tab-btn').forEach(b => {
+    if (b.textContent.toLowerCase().includes(name.replace('backtest', 'backtest').replace('compare', 'compar').replace('trends','trend').replace('picks','pick').replace('analysis','hot').replace('history','hist'))) {
+      b.classList.add('active');
+    }
+  });
+  // Re-render active tab
+  if (name === 'analysis') renderAnalysis();
+  if (name === 'history') renderHistory();
+  if (name === 'backtest') runBacktest();
+  if (name === 'compare') renderComparison();
+  if (name === 'trends') renderTrends();
+}
+
+// Fix tab button matching
+document.querySelectorAll('.tab-btn').forEach(b => {
+  b.addEventListener('click', function() {
+    document.querySelectorAll('.tab-btn').forEach(x => x.classList.remove('active'));
+    this.classList.add('active');
+  });
+});
+
+function setGame(game) {
+  currentGame = game;
+  // Update all game buttons in current visible section
+  document.querySelectorAll('.game-btn').forEach(b => {
+    b.className = 'game-btn';
+    if (b.textContent.includes('Lotto') && game === 'lotto') b.classList.add('active-lotto');
+    if (b.textContent.includes('Euro') && game === 'euro') b.classList.add('active-euro');
+  });
+  renderPicks();
+}
+
+function confirmRegenerate() {
+  if (confirm('Regenerate lines? This will override the weekly lock for this session only. The original lock will restore on next page load.')) {
+    forceRegenerate(currentGame);
+    renderPicks();
   }
 }
 
-function togglePractice() {
-  S.practice = !S.practice;
-  document.getElementById('practiceToggle').classList.toggle('on', S.practice);
-  document.getElementById('practiceBadge').classList.toggle('show', S.practice);
-  if (S.practice && S.locked && S.locked.game === S.game) {
-    renderCompare(S.locked.lines, GAMES[S.game], S.savedActual);
-  } else {
-    document.getElementById('comparePanel').classList.remove('show');
-  }
+function exportPicks() {
+  const locked = getLockedLines(currentGame);
+  const cfg = getGameConfig(currentGame);
+  let csv = `LottoAnalyst Export — ${cfg.name} — Week ${locked.weekKey}\n`;
+  csv += `Generated,${locked.generated}\n\n`;
+  csv += `Line,Numbers,${cfg.starCount > 0 ? 'Lucky Stars,' : ''}Confidence %,Signal Score\n`;
+  locked.lines.forEach((l, i) => {
+    const stars = l.extra && l.extra.length > 0 ? l.extra.join('-') + ',' : (cfg.starCount > 0 ? ',' : '');
+    const conf = Math.min(100, l.confidence || 0);
+    const sig = l.signalScore !== undefined ? (l.signalScore * 100).toFixed(1) : '';
+    csv += `${i + 1},${l.main.join('-')},${stars}${conf}%,${sig}\n`;
+  });
+
+  const blob = new Blob([csv], {type: 'text/csv'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = `lotto-picks-${locked.weekKey}.csv`;
+  a.click();
 }
 
-/* ═══════════════════════════════════════════════════
-   INIT
-═══════════════════════════════════════════════════ */
-updateDrawStrip();
-startCountdown();
+function exportHistory() {
+  const draws = getDraws(currentGame);
+  const cfg = getGameConfig(currentGame);
+  let csv = `Date,Numbers,${cfg.hasBonus ? 'Bonus,' : ''}${cfg.starCount > 0 ? 'Stars,' : ''}\n`;
+  draws.forEach(d => {
+    const bonus = d.bonus ? d.bonus + ',' : (cfg.hasBonus ? ',' : '');
+    const stars = d.extra && d.extra.length > 0 ? d.extra.join('-') + ',' : (cfg.starCount > 0 ? ',' : '');
+    csv += `${d.date},${d.main.join('-')},${bonus}${stars}\n`;
+  });
+
+  const blob = new Blob([csv], {type: 'text/csv'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = `draw-history-${currentGame}.csv`;
+  a.click();
+}
+
+// ============================================================
+//  INIT
+// ============================================================
+
+window.addEventListener('load', () => {
+  renderPicks();
+  // Pre-compute backtest silently
+  setTimeout(() => {
+    if (document.getElementById('tab-backtest').classList.contains('active')) runBacktest();
+  }, 200);
+});
+
+window.addEventListener('resize', () => {
+  const active = document.querySelector('.tab-content.active');
+  if (!active) return;
+  const id = active.id;
+  if (id === 'tab-analysis') renderAnalysis();
+  if (id === 'tab-compare') renderComparison();
+  if (id === 'tab-trends') renderTrends();
+});
 </script>
 </body>
 </html>

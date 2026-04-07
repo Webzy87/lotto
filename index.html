@@ -1024,6 +1024,10 @@
     <!-- METRICS LEGEND -->
     <div style="background:var(--bg2);border:1px solid var(--border);border-radius:4px;padding:14px 16px;margin-bottom:24px;">
       <div style="font-family:var(--font-mono);font-size:0.65rem;letter-spacing:2px;text-transform:uppercase;color:var(--text3);margin-bottom:10px;">How to read these cards</div>
+      <div style="font-family:var(--font-mono);font-size:0.68rem;color:var(--warn);background:rgba(230,126,34,0.08);border:1px solid rgba(230,126,34,0.2);border-radius:3px;padding:7px 10px;margin-bottom:10px;">
+        ⚠ Scores are measured against <strong style="color:var(--text)">simulated historical data</strong>, not real draw results.
+        There will always be a "best" line because it is a relative ranking — it does not mean those numbers are more likely to win.
+      </div>
       <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px;">
         <div>
           <div style="font-family:var(--font-mono);font-size:0.72rem;color:var(--gold2);font-weight:600;margin-bottom:4px;">Big number = Close Score</div>
@@ -1316,11 +1320,16 @@ function seedRng(seed) {
   };
 }
 
-// Generate realistic draw data seeded deterministically
+// Generate realistic draw data seeded deterministically.
+// IMPORTANT: uses a FIXED anchor date so the dataset is identical
+// on every page load regardless of what day it is today.
+// Changing this date would invalidate all stored localStorage picks.
+const DRAW_DATA_ANCHOR = new Date('2026-04-07T00:00:00Z');
+
 function generateHistoricalDraws(game, count, startSeed) {
   const rng = seedRng(startSeed);
   const draws = [];
-  const now = new Date();
+  const now = DRAW_DATA_ANCHOR; // fixed — never changes
 
   // Real-ish frequency distributions based on published UK lottery stats
   const lottoFreqBias = {
@@ -2038,10 +2047,10 @@ function lineHtml(lineObj, idx, game, matchDraw) {
   let scoreDisplay, scoreLabel;
   if (closeScore !== undefined) {
     scoreDisplay = closeScore;
-    scoreLabel   = 'close score (last 4 draws)';
+    scoreLabel   = 'vs last 4 simulated draws';
   } else {
     scoreDisplay = '—';
-    scoreLabel   = 'no draws scored yet';
+    scoreLabel   = 'not yet scored';
   }
 
   // ── Secondary metrics ─────────────────────────────────────────
@@ -2060,7 +2069,7 @@ function lineHtml(lineObj, idx, game, matchDraw) {
   return `
     <div class="line-card rank-${rank}${lineObj._isTop ? ' top-performer' : ''}"
          style="animation-delay:${idx * 0.06}s"
-         title="Close Score = how close this line got to the last 4 actual draws (higher is better). Confidence = this line's rank among the 5 generated lines. Signal = internal frequency/spread score.">
+         title="Close Score = how well this line fits the last 4 draws in the simulated dataset. Higher = closer fit. This is a RELATIVE ranking across 5 lines only. Confidence = rank during generation. Signal = internal frequency/spread score. None of these predict future lottery results.">
       <div class="line-num"><span class="ln-n">#${idx + 1}</span></div>
       <div>
         <div><span class="rank-badge ${rank}">${badgeLabel}</span></div>
@@ -2331,9 +2340,11 @@ function renderPicks() {
     <div class="stat-card"><div class="label">Hot Number</div><div class="value">${hotNum}</div><div class="sub">most frequent (last 52)</div></div>
   `;
 
-  // ── Score every line against the last 4 actual draws ─────────────────────
-  // Close Score = sum of per-draw closeness (full match = 2pts, near-miss = 0.3pts)
-  // Higher Close Score = line got closer to real results = better
+  // ── Score every line against the last 4 draws in the embedded dataset ──────
+  // NOTE: This app uses simulated historical data (seeded, deterministic).
+  // Close Score = how well the locked numbers fit that simulated history.
+  // It is a relative ranking across the 5 lines — not a prediction.
+  // Higher Close Score = line was closer to those simulated draws = ranked higher.
   const recentDraws = draws.slice(-4);
   let bestTotalScore = -1;
 
@@ -2367,7 +2378,7 @@ function renderPicks() {
   if (bestLine && bestTotalScore > 0) {
     document.getElementById('bestLineBanner').style.display = 'flex';
     document.getElementById('bestLineVal').textContent =
-      `Line #${bestIdx + 1} scored highest — Close Score ${bestLine._score} across the last 4 draws. Higher is better.`;
+      `Line #${bestIdx + 1} has the highest Close Score (${bestLine._score}) against the last 4 simulated draws. This is a relative ranking only — it does not predict future results.`;
   } else {
     document.getElementById('bestLineBanner').style.display = 'none';
   }
@@ -3387,6 +3398,16 @@ function exportHistory() {
 // ============================================================
 
 window.addEventListener('load', () => {
+  // ── One-time migration: clear picks stored before the fixed-anchor fix ──────
+  // Picks generated before v2.2 used a date-relative draw dataset, so their
+  // numbers were unstable across days. Clear them so correct picks regenerate.
+  const DATA_VERSION = 'v2.2_fixed_anchor';
+  if (localStorage.getItem('lottoanalyst_data_version') !== DATA_VERSION) {
+    window.__devClearAll && window.__devClearAll();
+    localStorage.setItem('lottoanalyst_data_version', DATA_VERSION);
+    console.log('[LottoAnalyst] Data version upgraded to', DATA_VERSION, '— picks regenerated.');
+  }
+
   pruneOldPicks();   // clean up entries older than 5 weeks on every load
   renderPicks();
   // Pre-compute backtest silently

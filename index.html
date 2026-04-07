@@ -790,6 +790,107 @@
   .mt-btn.active-6m  { background:rgba(201,148,58,.1);border-color:var(--gold2);color:var(--gold2); }
   .mt-btn.active-12m { background:rgba(58,123,213,.1);border-color:var(--lotto-blue2);color:var(--lotto-blue2); }
 
+
+  /* ── REDESIGNED LINE CARD ─────────────────────────────────── */
+  .line-card {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 14px 16px;
+    display: grid;
+    grid-template-columns: 36px 1fr auto;
+    align-items: center;
+    gap: 14px;
+    transition: border-color 0.2s;
+    animation: fadeInUp 0.4s ease backwards;
+    border-left: 4px solid var(--border);
+  }
+  .line-card:hover { border-color: var(--border2); }
+
+  /* rank-coloured left border */
+  .line-card.rank-best  { border-left-color: var(--gold2); }
+  .line-card.rank-good  { border-left-color: var(--lotto-blue2); }
+  .line-card.rank-fair  { border-left-color: var(--text3); }
+
+  .line-card.top-performer {
+    background: linear-gradient(135deg, var(--bg2), rgba(201,148,58,0.05));
+  }
+
+  /* rank badge */
+  .rank-badge {
+    display: inline-block;
+    font-family: var(--font-mono);
+    font-size: 0.58rem;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    padding: 2px 7px;
+    border-radius: 2px;
+    margin-bottom: 6px;
+  }
+  .rank-badge.best { background: rgba(201,148,58,.18); color: var(--gold2);       border: 1px solid rgba(201,148,58,.4); }
+  .rank-badge.good { background: rgba(91,156,240,.14); color: var(--lotto-blue2); border: 1px solid rgba(91,156,240,.3); }
+  .rank-badge.fair { background: rgba(78,97,128,.15);  color: var(--text3);       border: 1px solid rgba(78,97,128,.3); }
+
+  /* right-side score panel */
+  .line-score-panel {
+    text-align: right;
+    min-width: 120px;
+  }
+  .close-score-num {
+    font-family: var(--font-mono);
+    font-size: 1.55rem;
+    font-weight: 700;
+    line-height: 1;
+    margin-bottom: 3px;
+  }
+  .close-score-num.rank-best { color: var(--gold2); }
+  .close-score-num.rank-good { color: var(--lotto-blue2); }
+  .close-score-num.rank-fair { color: var(--text3); }
+  .close-score-num.rank-none { color: var(--text3); }
+
+  .close-score-label {
+    font-family: var(--font-mono);
+    font-size: 0.6rem;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: var(--text3);
+    margin-bottom: 8px;
+  }
+  .secondary-metrics {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    align-items: flex-end;
+  }
+  .metric-row {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-family: var(--font-mono);
+    font-size: 0.65rem;
+  }
+  .metric-row .mk { color: var(--text3); }
+  .metric-row .mv { color: var(--text2); font-weight: 500; }
+  .conf-bar-wrap { display: flex; align-items: center; gap: 5px; }
+  .conf-bar-mini { width: 42px; height: 3px; background: var(--bg3); border-radius: 2px; overflow: hidden; }
+  .conf-bar-fill { height: 100%; border-radius: 2px; background: linear-gradient(90deg, var(--gold), var(--gold3)); }
+
+  /* line number */
+  .line-num {
+    font-family: var(--font-mono);
+    font-size: 0.68rem;
+    color: var(--text3);
+    text-align: center;
+    line-height: 1.3;
+  }
+  .line-num .ln-n {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--text2);
+    display: block;
+  }
+
   /* RESPONSIVE */
   @media (max-width: 768px) {
     .line-card { grid-template-columns: 28px 1fr; }
@@ -880,18 +981,20 @@
 
     <div id="statsRow" class="stats-row"></div>
 
-    <!-- WEEKLY LOCK STATUS — no regenerate button by design -->
+    <!-- PICK LOCK STATUS — no regenerate button by design -->
     <div class="lock-status" id="lockStatusBar">
       <div class="lock-info">
         <span class="lock-icon">🔒</span>
         <div class="lock-text">
-          <strong style="color:var(--gold2);" id="lockStatusLabel">Locked for this week</strong>
+          <strong style="color:var(--gold2);" id="lockStatusLabel">Locked for next draw</strong>
           <span style="color:var(--text3);margin:0 6px;">·</span>
-          Draw key: <strong id="currentWeek"></strong>
-          <span style="color:var(--text3);margin:0 6px;">·</span>
+          <span id="lockTargetDrawRow">
+            Target draw: <strong id="lockTargetDraw"></strong>
+            <span style="color:var(--text3);margin:0 6px;">·</span>
+          </span>
           Generated: <strong id="lastGenerated"></strong>
           <span style="color:var(--text3);margin:0 6px;">·</span>
-          Next refresh after: <strong id="lockExpiry"></strong>
+          Locked until: <strong id="lockExpiry"></strong>
         </div>
       </div>
       <div style="display:flex;gap:8px;align-items:center;">
@@ -911,7 +1014,7 @@
     </div>
 
     <div class="section-title">
-      Weekly Selections
+      <span id="picksHeading">Weekly Selections</span>
       <span class="section-badge badge-locked" id="lockBadge">LOCKED</span>
       <span class="line-accent"></span>
     </div>
@@ -919,23 +1022,31 @@
     <div id="linesGrid" class="lines-grid"></div>
 
     <!-- METRICS LEGEND -->
-    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:10px;margin-bottom:24px;">
-      <div style="background:var(--bg2);border:1px solid var(--border);border-left:3px solid var(--gold2);border-radius:4px;padding:12px 14px;">
-        <div style="font-family:var(--font-mono);font-size:0.65rem;letter-spacing:1.5px;text-transform:uppercase;color:var(--gold2);margin-bottom:5px;">Confidence %</div>
-        <div style="font-family:var(--font-body);font-size:0.76rem;color:var(--text2);line-height:1.5;">
-          Each line's <strong style="color:var(--text)">rank within the 5 generated lines</strong>, normalised to a 0–100 scale. The highest-ranked line = 95, lowest = 30. <em>This is not a win probability</em> — it simply shows which line scored best relative to the others this week.
+    <div style="background:var(--bg2);border:1px solid var(--border);border-radius:4px;padding:14px 16px;margin-bottom:24px;">
+      <div style="font-family:var(--font-mono);font-size:0.65rem;letter-spacing:2px;text-transform:uppercase;color:var(--text3);margin-bottom:10px;">How to read these cards</div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px;">
+        <div>
+          <div style="font-family:var(--font-mono);font-size:0.72rem;color:var(--gold2);font-weight:600;margin-bottom:4px;">Big number = Close Score</div>
+          <div style="font-family:var(--font-body);font-size:0.75rem;color:var(--text2);line-height:1.5;">
+            How close this line got to <strong style="color:var(--text)">real draw results</strong> over the last 4 draws.
+            Each full number match = 2 pts. Each number ±1 away = 0.3 pts.
+            <strong style="color:var(--text)">Higher is better.</strong>
+          </div>
         </div>
-      </div>
-      <div style="background:var(--bg2);border:1px solid var(--border);border-left:3px solid var(--lotto-blue2);border-radius:4px;padding:12px 14px;">
-        <div style="font-family:var(--font-mono);font-size:0.65rem;letter-spacing:1.5px;text-transform:uppercase;color:var(--lotto-blue2);margin-bottom:5px;">Signal Score (0–100)</div>
-        <div style="font-family:var(--font-body);font-size:0.76rem;color:var(--text2);line-height:1.5;">
-          The raw <strong style="color:var(--text)">internal weighted ranking</strong> before normalisation: frequency alignment (45%) + sum proximity to historical median (35%) + number spread (20%). Shown without a % sign because it is a composite index, not a percentage.
+        <div>
+          <div style="font-family:var(--font-mono);font-size:0.72rem;color:var(--gold2);font-weight:600;margin-bottom:4px;">★ Best / ✓ Good / Fair badges</div>
+          <div style="font-family:var(--font-body);font-size:0.75rem;color:var(--text2);line-height:1.5;">
+            Ranks the 5 lines by Close Score. The line with the <strong style="color:var(--text)">highest Close Score gets ★ Best</strong>.
+            Badges update each week as new draw results come in.
+          </div>
         </div>
-      </div>
-      <div style="background:var(--bg2);border:1px solid var(--border);border-left:3px solid var(--green);border-radius:4px;padding:12px 14px;">
-        <div style="font-family:var(--font-mono);font-size:0.65rem;letter-spacing:1.5px;text-transform:uppercase;color:var(--green);margin-bottom:5px;">Close Score</div>
-        <div style="font-family:var(--font-body);font-size:0.76rem;color:var(--text2);line-height:1.5;">
-          A <strong style="color:var(--text)">historical closeness measure</strong> accumulated over recent draws. Full match = 2 pts · near-miss (±1 of a drawn number) = 0.3 pts. Max ~20 per draw. Used to compare how well the selection logic tracks actual results vs random and frequency-only baselines.
+        <div>
+          <div style="font-family:var(--font-mono);font-size:0.72rem;color:var(--text2);font-weight:600;margin-bottom:4px;">Confidence % &amp; Signal</div>
+          <div style="font-family:var(--font-body);font-size:0.75rem;color:var(--text2);line-height:1.5;">
+            Secondary metrics. Confidence = how this line ranked during <em>generation</em> (frequency + sum + spread).
+            Signal = the raw internal score before normalisation.
+            <strong style="color:var(--text)">Neither is a win probability.</strong>
+          </div>
         </div>
       </div>
     </div>
@@ -967,8 +1078,8 @@
           <div class="m-desc">Generated lines must fall within the historical median sum range ±15% to avoid extreme combinations.</div>
         </div>
         <div class="method-item">
-          <div class="m-title">Weekly Lock</div>
-          <div class="m-desc">Lines lock on Monday 00:01 and expire Sunday 23:59. Regeneration outside the lock window is manual only.</div>
+          <div class="m-title" id="methodLockTitle">Draw Lock</div>
+          <div class="m-desc" id="methodLockDesc">EuroMillions picks lock per draw (Tue/Fri) and expire at 20:00 on draw day. UK Lotto picks lock per calendar week. Numbers are stored in localStorage and never regenerated mid-cycle.</div>
         </div>
       </div>
     </div>
@@ -1277,25 +1388,73 @@ const EURO_DRAWS  = generateHistoricalDraws('euro',  52, 98761234);
 let currentGame = 'lotto';
 let scores = {};  // cumulative scores per line (runtime only)
 
-// ── Draw-cycle week key ──────────────────────────────────────────────────────
-// Returns a stable string like "lotto_2026_week_14" or "euro_2026_week_14".
-// UK Lotto draws Wed + Sat; EuroMillions draws Tue + Fri.
-// A "draw week" starts on the day after the last draw of the previous cycle.
-// For simplicity we use ISO calendar week — same as before but namespaced per
-// game so each game gets its own independent lock.
+// ── Utility: format a Date as YYYY-MM-DD ─────────────────────────────────────
+function dateStr(d) {
+  return d.toISOString().slice(0, 10);
+}
+
+// ── Utility: display-friendly date ───────────────────────────────────────────
+function dateFmt(d, opts) {
+  return d.toLocaleDateString('en-GB', opts || { weekday:'short', day:'numeric', month:'short', year:'numeric' });
+}
+
+// ── EuroMillions: find the target draw date ───────────────────────────────────
+// EuroMillions draws on Tuesday (2) and Friday (5).
+// Draw cutoff: 20:00 UK time on draw day (after which we target the NEXT draw).
+// Returns a Date object set to midnight of the target draw date.
+const EURO_DRAW_DAYS = [2, 5]; // Tuesday=2, Friday=5
+const EURO_DRAW_CUTOFF_HOUR = 20; // 20:00 local time
+
+function getEuroNextDrawDate(from) {
+  const now = from ? new Date(from) : new Date();
+  const dayOfWeek = now.getDay(); // 0=Sun … 6=Sat
+  const hour      = now.getHours();
+
+  // Is today a draw day and are we before the cutoff?
+  const isDrawDay = EURO_DRAW_DAYS.includes(dayOfWeek);
+  const beforeCutoff = hour < EURO_DRAW_CUTOFF_HOUR;
+
+  if (isDrawDay && beforeCutoff) {
+    // Today IS the target draw
+    const d = new Date(now);
+    d.setHours(0, 0, 0, 0);
+    return d;
+  }
+
+  // Advance day-by-day until we land on a draw day
+  const next = new Date(now);
+  next.setHours(0, 0, 0, 0);
+  next.setDate(next.getDate() + 1); // always move at least one day forward
+  for (let i = 0; i < 7; i++) {
+    if (EURO_DRAW_DAYS.includes(next.getDay())) return next;
+    next.setDate(next.getDate() + 1);
+  }
+  return next; // fallback (never reached)
+}
+
+// ── Draw key functions ────────────────────────────────────────────────────────
+// Lotto: week-based key  → "lotto_2026_week_14"
+// Euro:  draw-date key   → "euro_2026_draw_2026-04-07"
+// These keys are stable — same call on same day = same key.
 function getDrawKey(game, date) {
+  if (game === 'euro') {
+    const drawDate = getEuroNextDrawDate(date);
+    return `euro_${drawDate.getFullYear()}_draw_${dateStr(drawDate)}`;
+  }
+  // Lotto — week-based (draws Wed + Sat, no time-sensitive cutoff needed)
   const d = date ? new Date(date) : new Date();
   const jan1 = new Date(d.getFullYear(), 0, 1);
   const week = Math.ceil(((d - jan1) / 86400000 + jan1.getDay() + 1) / 7);
   const weekNum = String(week).padStart(2, '0');
-  return `${game}_${d.getFullYear()}_week_${weekNum}`;
+  return `lotto_${d.getFullYear()}_week_${weekNum}`;
 }
 
-// localStorage key for a given game + week
+// ── localStorage key ─────────────────────────────────────────────────────────
 function lsKey(game, drawKey) {
   return `lottoanalyst_picks_v1__${game}__${drawKey}`;
 }
 
+// ── Week helpers (used for Lotto expiry display) ──────────────────────────────
 function getWeekStart(date) {
   const d = new Date(date || new Date());
   const day = d.getDay();
@@ -1330,28 +1489,42 @@ function lsDelete(key) {
   try { localStorage.removeItem(key); } catch(e) { /* ignore */ }
 }
 
-// ── Prune stale entries (keep only current + last 4 weeks per game) ──────────
+// ── Prune stale entries ───────────────────────────────────────────────────────
+// Handles both key formats:
+//   lotto: …lotto_2026_week_14   → age in weeks
+//   euro:  …euro_2026_draw_2026-04-07 → age in days
 function pruneOldPicks() {
   try {
     const prefix = 'lottoanalyst_picks_v1__';
-    const keysToDelete = [];
+    const now    = new Date();
+    const toDelete = [];
+
     for (let i = 0; i < localStorage.length; i++) {
       const k = localStorage.key(i);
       if (!k || !k.startsWith(prefix)) continue;
-      // Extract year_week from key: lottoanalyst_picks_v1__lotto__lotto_2026_week_14
-      const m = k.match(/_(\d{4})_week_(\d{2})$/);
-      if (!m) continue;
-      const keyYear = parseInt(m[1]), keyWeek = parseInt(m[2]);
-      const now = new Date();
-      const jan1 = new Date(now.getFullYear(), 0, 1);
-      const curWeek = Math.ceil(((now - jan1) / 86400000 + jan1.getDay() + 1) / 7);
-      const curYear = now.getFullYear();
-      // Delete if older than 5 weeks
-      const weekAge = (curYear - keyYear) * 52 + (curWeek - keyWeek);
-      if (weekAge > 5) keysToDelete.push(k);
+
+      // Euro draw key: ends with _draw_YYYY-MM-DD
+      const drawMatch = k.match(/_draw_(\d{4}-\d{2}-\d{2})$/);
+      if (drawMatch) {
+        const drawDate = new Date(drawMatch[1]);
+        const ageMs    = now - drawDate;
+        if (ageMs > 10 * 24 * 60 * 60 * 1000) toDelete.push(k); // >10 days old
+        continue;
+      }
+
+      // Lotto week key: ends with _week_NN
+      const weekMatch = k.match(/_(\d{4})_week_(\d{2})$/);
+      if (weekMatch) {
+        const keyYear = parseInt(weekMatch[1]), keyWeek = parseInt(weekMatch[2]);
+        const jan1    = new Date(now.getFullYear(), 0, 1);
+        const curWeek = Math.ceil(((now - jan1) / 86400000 + jan1.getDay() + 1) / 7);
+        const weekAge = (now.getFullYear() - keyYear) * 52 + (curWeek - keyWeek);
+        if (weekAge > 5) toDelete.push(k);
+      }
     }
-    keysToDelete.forEach(k => localStorage.removeItem(k));
-  } catch(e) { /* localStorage may be unavailable in some contexts */ }
+
+    toDelete.forEach(k => localStorage.removeItem(k));
+  } catch(e) { /* localStorage unavailable */ }
 }
 
 // ============================================================
@@ -1688,69 +1861,96 @@ function getBestLineScore(lines, draw, game) {
 }
 
 // ============================================================
-//  WEEKLY LOCK  (localStorage-backed, survives page refresh)
+//  PICK LOCK  (localStorage-backed, survives page refresh)
 // ============================================================
+//
+//  Lotto:        drawKey = "lotto_2026_week_14"
+//                Lock expires end of that ISO calendar week.
+//
+//  EuroMillions: drawKey = "euro_2026_draw_2026-04-07"
+//                Lock expires at 20:00 on the target draw date.
+//                A new key is computed after each draw, so picks
+//                are always for the NEXT upcoming draw only.
+//
+//  In both cases the flow is:
+//    1. Compute drawKey for right now
+//    2. Check localStorage for that exact key
+//    3. Found → return stored picks (no recalculation, no drift)
+//    4. Not found → generate, save, return
 
-// Returns the locked picks for the current draw week.
-// Flow:
-//   1. Compute drawKey for today (e.g. "lotto_2026_week_14")
-//   2. Look up localStorage for that exact key
-//   3. If found → return stored data (no regeneration)
-//   4. If not found → generate now, save, return
-//   A new week's drawKey will never match the old one, so picks
-//   are automatically replaced when the week rolls over.
 function getLockedLines(game) {
   const drawKey = getDrawKey(game);
   const key     = lsKey(game, drawKey);
 
-  // ── Try to load from localStorage first ──────────────────────
+  // ── Try stored picks for this exact draw period ───────────────
   const stored = lsLoad(key);
   if (stored && stored.drawKey === drawKey && Array.isArray(stored.lines) && stored.lines.length > 0) {
-    return stored;  // exact same picks as when first generated — no drift
+    return stored;  // unchanged from when first locked — no drift possible
   }
 
-  // ── Nothing stored for this week: generate fresh and lock ────
-  const weekSeed = drawKey.replace(/\D/g, '').split('').reduce(
+  // ── Nothing stored: generate, then lock ──────────────────────
+  // Seed is derived entirely from the drawKey string so the same
+  // drawKey always produces the same lines (deterministic fallback).
+  const seedNum = drawKey.replace(/[^0-9]/g, '').split('').reduce(
     (acc, c, i) => acc + parseInt(c) * (i + 1), 0
-  ) * (game === 'lotto' ? 997 : 1009);  // stable, game-specific seed
+  ) * (game === 'lotto' ? 997 : 1009);
 
-  const lines = generateLines(game, weekSeed);
+  const lines = generateLines(game, seedNum);
+
+  // ── Build expiry label ────────────────────────────────────────
+  let lockUntil, targetDrawLabel;
+  if (game === 'euro') {
+    const targetDate = getEuroNextDrawDate();
+    // Lock expires at draw cutoff time on the target draw day
+    const expiryDate = new Date(targetDate);
+    expiryDate.setHours(EURO_DRAW_CUTOFF_HOUR, 0, 0, 0);
+    lockUntil        = dateFmt(expiryDate, { weekday:'short', day:'numeric', month:'short', year:'numeric', hour:'2-digit', minute:'2-digit' });
+    targetDrawLabel  = dateFmt(targetDate, { weekday:'long', day:'numeric', month:'long', year:'numeric' });
+  } else {
+    lockUntil       = dateFmt(getWeekEnd(), { weekday:'short', day:'numeric', month:'short', year:'numeric' });
+    targetDrawLabel = null; // Lotto doesn't target a single draw date
+  }
 
   const record = {
     game,
     drawKey,
     lines,
-    generatedAt:  new Date().toISOString(),
-    generatedDate: new Date().toLocaleDateString('en-GB'),
-    weekEnd:       getWeekEnd().toLocaleDateString('en-GB', { weekday:'short', day:'numeric', month:'short', year:'numeric' }),
+    generatedAt:     new Date().toISOString(),
+    generatedDate:   new Date().toLocaleDateString('en-GB'),
+    lockUntil,
+    targetDrawLabel, // null for Lotto, "Friday 11 April 2026" for Euro
+    // Legacy field kept so old stored records don't break
+    weekEnd: lockUntil,
   };
 
-  lsSave(key, record);   // persist — survives refresh and browser restart
-  pruneOldPicks();       // tidy up entries older than 5 weeks
+  lsSave(key, record);
+  pruneOldPicks();
   return record;
 }
 
-// ── DEVELOPER RESET (hidden — not shown in UI) ───────────────────────────────
-// Call window.__devResetPicks('lotto') or window.__devResetPicks('euro')
-// from the browser console to clear the current week's lock and regenerate.
+// ── DEVELOPER RESET (hidden — not visible in UI) ──────────────────────────────
+// Open browser console and run:
+//   window.__devResetPicks('euro')   → clears Euro picks for current draw
+//   window.__devResetPicks('lotto')  → clears Lotto picks for current week
+//   window.__devClearAll()           → wipes all stored picks
 window.__devResetPicks = function(game) {
-  const drawKey = getDrawKey(game || 'lotto');
-  const key     = lsKey(game || 'lotto', drawKey);
+  const g       = game || 'lotto';
+  const drawKey = getDrawKey(g);
+  const key     = lsKey(g, drawKey);
   lsDelete(key);
-  console.log(`[DevReset] Cleared picks for ${key}. Reload the page to regenerate.`);
-  if (game === currentGame) renderPicks();
+  console.log('[DevReset] Cleared:', key, '— reload to regenerate.');
+  if (g === currentGame) renderPicks();
 };
 
-// window.__devClearAll() wipes ALL lottoanalyst picks from localStorage
 window.__devClearAll = function() {
-  const prefix = 'lottoanalyst_picks_v1__';
+  const prefix   = 'lottoanalyst_picks_v1__';
   const toDelete = [];
   for (let i = 0; i < localStorage.length; i++) {
     const k = localStorage.key(i);
     if (k && k.startsWith(prefix)) toDelete.push(k);
   }
   toDelete.forEach(k => localStorage.removeItem(k));
-  console.log(`[DevReset] Cleared ${toDelete.length} pick entries.`);
+  console.log('[DevReset] Cleared', toDelete.length, 'pick entries.');
   renderPicks();
 };
 
@@ -1796,17 +1996,15 @@ function ballHtml(n, type) {
 }
 
 function lineHtml(lineObj, idx, game, matchDraw) {
-  const cfg = getGameConfig(game);
-  const isTop = lineObj._isTop;
-
+  // ── Balls ─────────────────────────────────────────────────────
   let mainBalls = lineObj.main.map(n => {
     let cls = game === 'lotto' ? 'lotto' : 'euro-main';
-    let extra = '';
     if (matchDraw) {
-      if (matchDraw.main.includes(n)) extra = ' matched';
-      else if (matchDraw.main.includes(n-1) || matchDraw.main.includes(n+1)) extra = ' partial';
+      if (matchDraw.main.includes(n))         cls += ' matched';
+      else if (matchDraw.main.includes(n-1) ||
+               matchDraw.main.includes(n+1))  cls += ' partial';
     }
-    return ballHtml(n, cls + extra);
+    return ballHtml(n, cls);
   }).join('');
 
   let extraBalls = '';
@@ -1815,49 +2013,64 @@ function lineHtml(lineObj, idx, game, matchDraw) {
   }
   if (game === 'euro' && lineObj.extra && lineObj.extra.length > 0) {
     const stars = lineObj.extra.map(n => {
-      let extra = '';
-      if (matchDraw && matchDraw.extra && matchDraw.extra.includes(n)) extra = ' matched';
-      return ballHtml(n, 'euro-star' + extra);
+      let cls = 'euro-star';
+      if (matchDraw && matchDraw.extra && matchDraw.extra.includes(n)) cls += ' matched';
+      return ballHtml(n, cls);
     }).join('');
     extraBalls = `<span class="ball-divider">★</span>${stars}`;
   }
 
-  // confidence is always 0–100 (normalised rank within this week's batch)
-  const conf = Math.min(100, Math.max(0, lineObj.confidence || 65));
-  // signalScore is the raw 0–1 internal weighted value — shown as-is, no %
-  const signal = lineObj.signalScore !== undefined
-    ? (lineObj.signalScore * 100).toFixed(1)   // scale to 0–100 for readability
-    : null;
+  // ── Scores ────────────────────────────────────────────────────
+  const closeScore = lineObj._score;               // number or undefined
+  const conf       = Math.min(100, Math.max(0, lineObj.confidence || 65));
+  const signal     = lineObj.signalScore !== undefined
+    ? (lineObj.signalScore * 100).toFixed(1) : null;
 
-  let scoreHtml = '';
-  if (lineObj._score !== undefined) {
-    const sc = lineObj._score;
-    const cls = sc >= 8 ? 's-5' : sc >= 5 ? 's-3' : sc >= 2 ? 's-2' : 's-1';
-    scoreHtml = `<div class="score-col">
-      <div class="score-val ${cls}">${sc}</div>
-      <div class="score-label" title="Historical closeness across last 4 draws. Counts full matches (2pts) and near-misses (0.3pts). Max ~20.">Close Score ⓘ</div>
-      ${signal !== null ? `<div class="score-label" style="margin-top:4px;color:var(--text3)" title="Raw internal weighted score: frequency (45%) + sum proximity (35%) + spread (20%). Range 0–100. Not a probability.">Signal: ${signal}</div>` : ''}
-    </div>`;
+  // ── Rank ──────────────────────────────────────────────────────
+  // Rank is determined by Close Score (higher = better).
+  // Assigned by renderPicks before calling lineHtml via _rank field.
+  const rank = lineObj._rank || 'fair';  // 'best' | 'good' | 'fair'
+
+  const badgeLabel = rank === 'best' ? '★ Best line' : rank === 'good' ? '✓ Good' : 'Fair';
+  const rankNumCls = closeScore !== undefined ? `rank-${rank}` : 'rank-none';
+
+  // ── Close score display ───────────────────────────────────────
+  let scoreDisplay, scoreLabel;
+  if (closeScore !== undefined) {
+    scoreDisplay = closeScore;
+    scoreLabel   = 'close score (last 4 draws)';
   } else {
-    scoreHtml = `<div class="score-col">
-      <div class="score-val s-1">—</div>
-      <div class="score-label" title="Close Score will populate after draws are recorded.">Close Score ⓘ</div>
-      ${signal !== null ? `<div class="score-label" style="margin-top:4px;color:var(--text3)" title="Raw internal weighted score: frequency (45%) + sum proximity (35%) + spread (20%). Range 0–100.">Signal: ${signal}</div>` : ''}
-    </div>`;
+    scoreDisplay = '—';
+    scoreLabel   = 'no draws scored yet';
   }
 
-  return `
-    <div class="line-card${isTop ? ' top-performer' : ''}" style="animation-delay:${idx * 0.06}s">
-      <div class="line-num">#${idx + 1}</div>
-      <div class="balls-row">${mainBalls}${extraBalls}</div>
-      <div class="confidence-col">
-        <div class="confidence-bar-wrap">
-          <div class="confidence-bar"><div class="confidence-fill" style="width:${conf}%"></div></div>
-          <div class="confidence-pct">${conf}%</div>
+  // ── Secondary metrics ─────────────────────────────────────────
+  const secondaryHtml = `
+    <div class="secondary-metrics">
+      <div class="metric-row">
+        <span class="mk">Confidence</span>
+        <div class="conf-bar-wrap">
+          <div class="conf-bar-mini"><div class="conf-bar-fill" style="width:${conf}%"></div></div>
+          <span class="mv">${conf}%</span>
         </div>
-        <div class="score-label" style="margin-top:3px;" title="Confidence % = this line's rank within the 5 generated lines, normalised to 0–100. The highest-scoring line in the batch = 95, lowest = 30. It is NOT a win probability.">Confidence % ⓘ</div>
       </div>
-      ${scoreHtml}
+      ${signal !== null ? `<div class="metric-row"><span class="mk">Signal</span><span class="mv">${signal}</span></div>` : ''}
+    </div>`;
+
+  return `
+    <div class="line-card rank-${rank}${lineObj._isTop ? ' top-performer' : ''}"
+         style="animation-delay:${idx * 0.06}s"
+         title="Close Score = how close this line got to the last 4 actual draws (higher is better). Confidence = this line's rank among the 5 generated lines. Signal = internal frequency/spread score.">
+      <div class="line-num"><span class="ln-n">#${idx + 1}</span></div>
+      <div>
+        <div><span class="rank-badge ${rank}">${badgeLabel}</span></div>
+        <div class="balls-row">${mainBalls}${extraBalls}</div>
+      </div>
+      <div class="line-score-panel">
+        <div class="close-score-num ${rankNumCls}">${scoreDisplay}</div>
+        <div class="close-score-label">${scoreLabel}</div>
+        ${secondaryHtml}
+      </div>
     </div>`;
 }
 
@@ -2043,18 +2256,42 @@ function renderPicks() {
   const locked = getLockedLines(currentGame);
   const lines = locked.lines;
 
-  // Header meta
+  // ── Lock status display ────────────────────────────────────────────────────
   document.getElementById('buildDate').textContent = new Date().toLocaleDateString('en-GB');
   document.getElementById('dataRange').textContent = `${draws[0].date} — ${draws[draws.length - 1].date}`;
-  // drawKey is the stable identifier — e.g. "lotto_2026_week_14"
-  const drawKey = locked.drawKey || locked.weekKey || getDrawKey(currentGame);
-  document.getElementById('currentWeek').textContent = drawKey;
-  document.getElementById('weekLock').textContent     = drawKey;
-  // Show the exact stored expiry or compute from current week-end
-  document.getElementById('lockExpiry').textContent   = locked.weekEnd || getWeekEnd().toLocaleDateString('en-GB', {weekday:'short', day:'numeric', month:'short', year:'numeric'});
-  // Show the date the picks were first created (not today's date)
-  document.getElementById('lastGenerated').textContent = locked.generatedDate || new Date(locked.generatedAt || locked.generated || Date.now()).toLocaleDateString('en-GB');
-  // Update the storage tag to confirm it came from localStorage
+
+  const drawKey = locked.drawKey || getDrawKey(currentGame);
+  // 'weekLock' is the header span; 'currentWeek' was removed from HTML — write only to weekLock
+  document.getElementById('weekLock').textContent = drawKey;
+
+  // Generated date — the exact moment the lock was first created
+  document.getElementById('lastGenerated').textContent =
+    locked.generatedDate || new Date(locked.generatedAt || Date.now()).toLocaleDateString('en-GB');
+
+  // Locked-until / expiry
+  document.getElementById('lockExpiry').textContent =
+    locked.lockUntil || locked.weekEnd ||
+    getWeekEnd().toLocaleDateString('en-GB', { weekday:'short', day:'numeric', month:'short', year:'numeric' });
+
+  // Target draw row — shown for Euro, hidden for Lotto
+  const targetDrawRow = document.getElementById('lockTargetDrawRow');
+  const targetDrawEl  = document.getElementById('lockTargetDraw');
+  const isEuro = currentGame === 'euro';
+  if (targetDrawRow) targetDrawRow.style.display = isEuro ? 'inline' : 'none';
+  if (targetDrawEl && isEuro) {
+    targetDrawEl.textContent = locked.targetDrawLabel ||
+      dateFmt(getEuroNextDrawDate(), { weekday:'long', day:'numeric', month:'long', year:'numeric' });
+  }
+
+  // Status label: "Locked for next draw" vs "Locked for this week"
+  const statusLabel = document.getElementById('lockStatusLabel');
+  if (statusLabel) statusLabel.textContent = isEuro ? 'Locked for next draw' : 'Locked for this week';
+
+  // Section heading
+  const picksHeading = document.getElementById('picksHeading');
+  if (picksHeading) picksHeading.textContent = isEuro ? 'Next Draw Selections' : 'Weekly Selections';
+
+  // Storage tag
   const storageTag = document.getElementById('lockStorageTag');
   if (storageTag) {
     const fromStorage = !!localStorage.getItem(lsKey(currentGame, drawKey));
@@ -2094,25 +2331,45 @@ function renderPicks() {
     <div class="stat-card"><div class="label">Hot Number</div><div class="value">${hotNum}</div><div class="sub">most frequent (last 52)</div></div>
   `;
 
-  // Score lines against last 4 draws
+  // ── Score every line against the last 4 actual draws ─────────────────────
+  // Close Score = sum of per-draw closeness (full match = 2pts, near-miss = 0.3pts)
+  // Higher Close Score = line got closer to real results = better
   const recentDraws = draws.slice(-4);
-  let bestLineIdx = 0;
   let bestTotalScore = -1;
 
   const scoredLines = lines.map((l, i) => {
     const total = recentDraws.reduce((acc, d) => acc + computeCloseScore(l, d, currentGame).score, 0);
-    const scored = { ...l, _score: Math.round(total * 10) / 10 };
-    if (total > bestTotalScore) { bestTotalScore = total; bestLineIdx = i; }
-    return scored;
+    const rounded = Math.round(total * 10) / 10;
+    if (total > bestTotalScore) bestTotalScore = total;
+    return { ...l, _score: rounded, _rawScore: total };
   });
 
-  scoredLines[bestLineIdx]._isTop = true;
+  // ── Assign rank based on Close Score (not Confidence) ──────────────────────
+  // Sort descending by Close Score to determine rank tiers
+  const sortedScores = scoredLines.map(l => l._rawScore).sort((a, b) => b - a);
+  const topScore  = sortedScores[0] || 0;
+  const midCutoff = topScore * 0.6;  // ≥60% of best = "good"
 
-  // Best line banner
-  if (bestTotalScore > 0) {
+  scoredLines.forEach((l, i) => {
+    if (l._rawScore === topScore && topScore > 0) {
+      l._rank   = 'best';
+      l._isTop  = true;
+    } else if (l._rawScore >= midCutoff && midCutoff > 0) {
+      l._rank = 'good';
+    } else {
+      l._rank = 'fair';
+    }
+  });
+
+  // ── Best line banner — written in plain English ─────────────────────────────
+  const bestLine = scoredLines.find(l => l._isTop);
+  const bestIdx  = scoredLines.indexOf(bestLine);
+  if (bestLine && bestTotalScore > 0) {
     document.getElementById('bestLineBanner').style.display = 'flex';
     document.getElementById('bestLineVal').textContent =
-      `Line #${bestLineIdx + 1} · Close Score ${Math.round(bestTotalScore * 10) / 10} (last 4 draws) · Confidence ${Math.min(100, scoredLines[bestLineIdx].confidence || 0)}%`;
+      `Line #${bestIdx + 1} scored highest — Close Score ${bestLine._score} across the last 4 draws. Higher is better.`;
+  } else {
+    document.getElementById('bestLineBanner').style.display = 'none';
   }
 
   document.getElementById('linesGrid').innerHTML = scoredLines.map((l, i) => lineHtml(l, i, currentGame, null)).join('');
@@ -3057,17 +3314,23 @@ function confirmRegenerate() {
 }
 
 function exportPicks() {
-  const locked = getLockedLines(currentGame);
-  const cfg    = getGameConfig(currentGame);
-  const drawKey = locked.drawKey || locked.weekKey || getDrawKey(currentGame);
+  const locked  = getLockedLines(currentGame);
+  const cfg     = getGameConfig(currentGame);
+  const drawKey = locked.drawKey || getDrawKey(currentGame);
+  const isEuro  = currentGame === 'euro';
 
-  let csv = `LottoAnalyst Weekly Picks Export\n`;
+  let csv = `LottoAnalyst Picks Export\n`;
   csv += `Game,${cfg.name}\n`;
   csv += `Draw Key,${drawKey}\n`;
-  csv += `Generated At,${locked.generatedAt || locked.generated || ''}\n`;
+  if (isEuro) {
+    csv += `Target Draw,${locked.targetDrawLabel || dateFmt(getEuroNextDrawDate())}\n`;
+    csv += `Locked Until,${locked.lockUntil || ''}\n`;
+  } else {
+    csv += `Lock Period,${locked.lockUntil || locked.weekEnd || ''}\n`;
+  }
+  csv += `Generated At,${locked.generatedAt || ''}\n`;
   csv += `Generated Date,${locked.generatedDate || ''}\n`;
-  csv += `Lock Expires,${locked.weekEnd || ''}\n`;
-  csv += `Storage,localStorage (persists across browser sessions)\n\n`;
+  csv += `Storage,localStorage — persists across browser sessions\n\n`;
   csv += `Line,Numbers,${cfg.starCount > 0 ? 'Lucky Stars,' : ''}Confidence %,Signal Score,Game,Draw Key,Generated At\n`;
   locked.lines.forEach((l, i) => {
     const stars = l.extra && l.extra.length > 0 ? l.extra.join('-') + ',' : (cfg.starCount > 0 ? ',' : '');
@@ -3077,8 +3340,8 @@ function exportPicks() {
   });
 
   const blob = new Blob([csv], {type: 'text/csv'});
-  const a = document.createElement('a');
-  a.href = URL.createObjectURL(blob);
+  const a    = document.createElement('a');
+  a.href     = URL.createObjectURL(blob);
   a.download = `lottoanalyst-picks-${drawKey}.csv`;
   a.click();
 }

@@ -3,6 +3,9 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
 <title>LottoAnalyst — Statistical Tracking System</title>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=IBM+Plex+Mono:wght@300;400;500;600&family=IBM+Plex+Sans:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
@@ -950,7 +953,8 @@
     <div class="header-meta">
       <div>Version <span>2.1.0</span> · Build <span id="buildDate"></span></div>
       <div>Data range: <span id="dataRange"></span></div>
-      <div>Draw key: <span id="weekLock"></span></div>
+      <div>Draw key: <span id="weekLock" style="color:var(--gold2);"></span></div>
+      <div id="headerTargetDraw" style="display:none;">Target draw: <span id="headerTargetDrawVal" style="color:var(--gold2);"></span></div>
     </div>
   </header>
 
@@ -1892,10 +1896,13 @@ function getLockedLines(game) {
   const key     = lsKey(game, drawKey);
 
   // ── Try stored picks for this exact draw period ───────────────
+  console.log('[LottoAnalyst] getLockedLines:', game, '| drawKey:', drawKey, '| lsKey:', key);
   const stored = lsLoad(key);
   if (stored && stored.drawKey === drawKey && Array.isArray(stored.lines) && stored.lines.length > 0) {
+    console.log('[LottoAnalyst] Loaded from localStorage ✓ generated:', stored.generatedDate);
     return stored;  // unchanged from when first locked — no drift possible
   }
+  console.log('[LottoAnalyst] No stored picks for this draw period — generating fresh.');
 
   // ── Nothing stored: generate, then lock ──────────────────────
   // Seed is derived entirely from the drawKey string so the same
@@ -2272,6 +2279,18 @@ function renderPicks() {
   const drawKey = locked.drawKey || getDrawKey(currentGame);
   // 'weekLock' is the header span; 'currentWeek' was removed from HTML — write only to weekLock
   document.getElementById('weekLock').textContent = drawKey;
+  // Show target draw in header for Euro
+  const hdrTarget = document.getElementById('headerTargetDraw');
+  const hdrTargetVal = document.getElementById('headerTargetDrawVal');
+  if (hdrTarget && hdrTargetVal) {
+    if (currentGame === 'euro') {
+      hdrTarget.style.display = 'block';
+      hdrTargetVal.textContent = locked.targetDrawLabel ||
+        dateFmt(getEuroNextDrawDate(), { weekday:'long', day:'numeric', month:'long', year:'numeric' });
+    } else {
+      hdrTarget.style.display = 'none';
+    }
+  }
 
   // Generated date — the exact moment the lock was first created
   document.getElementById('lastGenerated').textContent =
@@ -3401,7 +3420,7 @@ window.addEventListener('load', () => {
   // ── One-time migration: clear picks stored before the fixed-anchor fix ──────
   // Picks generated before v2.2 used a date-relative draw dataset, so their
   // numbers were unstable across days. Clear them so correct picks regenerate.
-  const DATA_VERSION = 'v2.2_fixed_anchor';
+  const DATA_VERSION = 'v2.3_stable_anchor';
   if (localStorage.getItem('lottoanalyst_data_version') !== DATA_VERSION) {
     window.__devClearAll && window.__devClearAll();
     localStorage.setItem('lottoanalyst_data_version', DATA_VERSION);

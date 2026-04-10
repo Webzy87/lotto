@@ -985,6 +985,33 @@
 
     <div id="statsRow" class="stats-row"></div>
 
+    <!-- DATA STATUS PANEL -->
+    <div id="dataStatusPanel" style="
+      background:var(--bg2);border:1px solid var(--border);border-radius:6px;
+      padding:14px 16px;margin-bottom:16px;
+      display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;">
+      <div style="display:flex;align-items:center;gap:12px;">
+        <span id="dataStatusIcon" style="font-size:1.2rem;">📡</span>
+        <div>
+          <div style="font-family:var(--font-mono);font-size:0.68rem;color:var(--text2);margin-bottom:3px;">
+            <span id="dataStatusText">Checking for latest draw data...</span>
+          </div>
+          <div style="font-family:var(--font-mono);font-size:0.62rem;color:var(--text3);">
+            Latest draw in dataset: <strong id="latestDrawDate" style="color:var(--text2);">—</strong>
+            &nbsp;·&nbsp;
+            Next expected draw: <strong id="nextDrawDate" style="color:var(--gold2);">—</strong>
+          </div>
+        </div>
+      </div>
+      <div id="dataFetchBadge" style="
+        font-family:var(--font-mono);font-size:0.65rem;
+        padding:4px 12px;border-radius:3px;
+        background:rgba(78,97,128,0.15);color:var(--text3);
+        border:1px solid rgba(78,97,128,0.3);">
+        Loading...
+      </div>
+    </div>
+
     <!-- PICK LOCK STATUS — no regenerate button by design -->
     <div class="lock-status" id="lockStatusBar">
       <div class="lock-info">
@@ -2972,20 +2999,26 @@ function renderHistory() {
         ? generateLinesN(currentGame, seed, trainingDraws, m.window, 5)
         : [];
 
-      // rep is the displayed line — scoring MUST come from this same line
-      const rep = lines[0] || null;
-
-      // Compute match info directly from rep vs this draw's actual numbers
-      // using Number() coercion throughout (no string/int mismatch possible)
-      let scoring;
-      if (rep) {
-        scoring = computeCloseScore(rep, draw, currentGame);
-      } else {
-        scoring = { mainMatches:0, matchedMains:[], bonusMatch:0,
-                    starMatches:0, matchedStars:[], nearMiss:0, score:0 };
+      // ── Score ALL 5 lines — pick the best across the set ─────────────────────
+      // Correct behaviour: you're playing all 5 lines, any match on any counts.
+      // bestLine = the line with the highest close score for display.
+      // allMatchedMains = every unique main number matched across all 5 lines.
+      if (!lines.length) {
+        return { ...m, lines, rep: null,
+          scoring: { mainMatches:0, matchedMains:[], bonusMatch:0,
+                     starMatches:0, matchedStars:[], nearMiss:0, score:0 },
+          allMatchedMains: [] };
       }
 
-      return { ...m, lines, rep, scoring };
+      const allScores = lines.map(l => computeCloseScore(l, draw, currentGame));
+      const bestSc    = allScores.reduce((best, sc) =>
+        sc.score > best.score ? sc : best, allScores[0]);
+      const bestLine  = lines[allScores.indexOf(bestSc)];
+      const allMatchedMains = [...new Set(
+        allScores.flatMap(sc => sc.matchedMains)
+      )].sort((a,b) => a-b);
+
+      return { ...m, lines, rep: bestLine, scoring: bestSc, allMatchedMains };
     });
 
     // ── Drawn numbers display ─────────────────────────────────────────────────
@@ -3024,26 +3057,36 @@ function renderHistory() {
       }
 
       // Match display: Main X | Stars Y  (or Main X | +Bonus for Lotto)
+      // mainM = best single line matches; allM = combined across all 5 lines
       const mainM = sc.mainMatches;
-      const mCls  = mainM >= 3 ? 'td-score' : mainM >= 1 ? 'td-matches' : 'td-method';
+      const allM  = mr.allMatchedMains ? mr.allMatchedMains.length : mainM;
+      const mCls  = allM >= 3 ? 'td-score' : allM >= 1 ? 'td-matches' : 'td-method';
       const bonusTag  = sc.bonusMatch  ? ' <span style="color:var(--warn);font-size:0.62rem;">+B</span>'  : '';
       const starTag   = currentGame === 'euro'
         ? ` <span style="color:var(--text3);font-size:0.62rem;">★${sc.starMatches}</span>` : '';
+      // Show best-line / all-lines if they differ
+      const matchDisplay = allM > mainM
+        ? `<strong>${mainM}</strong><span style="color:var(--text3);font-size:0.6rem;"> (${allM} across all)</span>`
+        : `<strong>${mainM}</strong>`;
       const totalTag  = currentGame === 'euro'
         ? ` <span style="color:var(--text3);font-size:0.62rem;">/ ${mainM + sc.starMatches}</span>` : '';
 
       // Debug column: matched main and star numbers
-      const debugMains = sc.matchedMains.length ? sc.matchedMains.join(', ') : '—';
-      const debugStars = sc.matchedStars.length  ? sc.matchedStars.join(', ') : '—';
+      // Show best-line matches AND combined matches across all 5 lines
+      const debugBest  = sc.matchedMains.length ? sc.matchedMains.join(', ') : '—';
+      const debugAll   = mr.allMatchedMains && mr.allMatchedMains.length
+                         ? mr.allMatchedMains.join(', ') : '—';
+      const debugStars = sc.matchedStars.length ? sc.matchedStars.join(', ') : '—';
       const debugHtml = `
-        <div style="font-family:var(--font-mono);font-size:0.6rem;line-height:1.6;color:var(--text3);white-space:nowrap;">
-          <span style="color:var(--text2);">Mains:</span> [${debugMains}]<br>
+        <div style="font-family:var(--font-mono);font-size:0.6rem;line-height:1.8;color:var(--text3);white-space:nowrap;">
+          <span style="color:var(--text2);">Best line:</span> [${debugBest}]<br>
+          <span style="color:var(--gold2);">All 5 lines:</span> [${debugAll}]<br>
           ${currentGame==='euro'?`<span style="color:var(--text2);">Stars:</span> [${debugStars}]`:''}
         </div>`;
 
       modelCells += `<td><div class="gen-balls">${genHtml}</div></td>`;
       modelCells += `<td class="${mCls}" style="white-space:nowrap;">
-        Main&nbsp;<strong>${mainM}</strong>${bonusTag}${starTag}${totalTag}
+        Main&nbsp;${matchDisplay}${bonusTag}${starTag}${totalTag}
       </td>`;
       modelCells += `<td style="font-family:var(--font-mono);font-size:0.75rem;color:var(--text2);">${sc.score.toFixed(1)}</td>`;
       modelCells += `<td>${debugHtml}</td>`;  // debug column
@@ -3131,20 +3174,33 @@ function runBacktest() {
       const seed  = m.seedBase + idx * m.seedStep;
       const lines = generateLinesN(game, seed, trainingDraws, m.window, lineCount);
 
-      // rep = lines[0] is the line we display; score it directly.
-      // Aggregate stats are now consistent with what the drill-down shows.
-      const rep = lines[0] || null;
-      const sc  = rep
-        ? computeCloseScore(rep, draw, game)
-        : { mainMatches:0, matchedMains:[], bonusMatch:0, starMatches:0, matchedStars:[], score:0 };
+      if (!lines.length) {
+        results[m.id].push(null);
+        return;
+      }
+
+      // ── Score ALL lines, pick the best across the full set ──────────────────
+      // This is correct: if you play 5 lines, any match on any line counts.
+      // We store the best-scoring line as `bestLine` for display in drill-down.
+      const allScores = lines.map(l => computeCloseScore(l, draw, game));
+      const bestSc    = allScores.reduce((best, sc) =>
+        sc.score > best.score ? sc : best, allScores[0]);
+      const bestLine  = lines[allScores.indexOf(bestSc)];
+
+      // Also collect combined unique matched numbers across ALL lines
+      const allMatchedMains = [...new Set(
+        allScores.flatMap(sc => sc.matchedMains)
+      )].sort((a,b) => a-b);
 
       results[m.id].push({
         draw, date: draw.date,
-        matches:    sc.mainMatches,
-        starMatches:sc.starMatches,
-        bonusMatch: sc.bonusMatch,
-        score:      sc.score,
-        rep
+        matches:         bestSc.mainMatches,
+        starMatches:     bestSc.starMatches,
+        bonusMatch:      bestSc.bonusMatch,
+        score:           bestSc.score,
+        allMatchedMains, // across all 5 lines combined
+        rep:             bestLine,  // best line for display
+        allLines:        lines,     // all 5 for reference
       });
     });
   });
@@ -3824,7 +3880,37 @@ function apiDrawToInternal(d) {
 }
 
 // Main fetch function — called once on load
+function updateDataStatusPanel(icon, statusText, badgeText, badgeColour, badgeBg) {
+  const iconEl   = document.getElementById('dataStatusIcon');
+  const textEl   = document.getElementById('dataStatusText');
+  const badgeEl  = document.getElementById('dataFetchBadge');
+  const latestEl = document.getElementById('latestDrawDate');
+  const nextEl   = document.getElementById('nextDrawDate');
+
+  if (iconEl)   iconEl.textContent   = icon;
+  if (textEl)   textEl.textContent   = statusText;
+  if (badgeEl) {
+    badgeEl.textContent   = badgeText;
+    badgeEl.style.color   = badgeColour;
+    badgeEl.style.background  = badgeBg;
+    badgeEl.style.borderColor = badgeColour + '55';
+  }
+  if (latestEl) {
+    const latest = EURO_DRAWS.length ? EURO_DRAWS[EURO_DRAWS.length-1].date : '—';
+    latestEl.textContent = latest;
+  }
+  if (nextEl) {
+    try {
+      const next = getEuroNextDrawDate();
+      nextEl.textContent = dateFmt(next, { weekday:'short', day:'numeric', month:'short', year:'numeric' });
+    } catch(e) { nextEl.textContent = '—'; }
+  }
+}
+
 async function autoFetchEuroDraws() {
+  // Show "checking" state immediately
+  updateDataStatusPanel('📡', 'Checking for latest draw data...', 'Checking...', 'var(--text3)', 'rgba(78,97,128,0.15)');
+
   try {
     // ── Check cache: did we already fetch this draw cycle? ──────
     const latestEmbedded = getLatestEmbeddedDate();
@@ -3835,6 +3921,17 @@ async function autoFetchEuroDraws() {
         EURO_DRAWS = [...EURO_DRAWS, ...cached.draws];
         EURO_DRAWS.sort((a, b) => a.date.localeCompare(b.date));
         console.log(`[AutoFetch] Applied ${cached.draws.length} cached new draw(s) from localStorage.`);
+        const fetchTime = cached.fetchedAt ? new Date(cached.fetchedAt).toLocaleString('en-GB') : 'recently';
+        updateDataStatusPanel('✅',
+          `Data current · Last fetched: ${fetchTime}`,
+          `Up to date · ${cached.draws.length} new draw${cached.draws.length>1?'s':''} loaded`,
+          'var(--green)', 'rgba(46,204,113,0.1)');
+      } else {
+        const fetchTime = cached.fetchedAt ? new Date(cached.fetchedAt).toLocaleString('en-GB') : 'recently';
+        updateDataStatusPanel('✅',
+          `Data current · Last checked: ${fetchTime}`,
+          'Up to date',
+          'var(--green)', 'rgba(46,204,113,0.1)');
       }
       return;
     }
@@ -3863,8 +3960,14 @@ async function autoFetchEuroDraws() {
     if (newDraws.length > 0) {
       EURO_DRAWS = [...EURO_DRAWS, ...newDraws];
       EURO_DRAWS.sort((a, b) => a.date.localeCompare(b.date));
-      console.log(`[AutoFetch] Added ${newDraws.length} new draw(s):`, newDraws.map(d => d.date));
-      // Show "Live data ✓" badge in UI
+      const newDates = newDraws.map(d => d.date).join(', ');
+      console.log(`[AutoFetch] Added ${newDraws.length} new draw(s):`, newDates);
+      const fetchTime = new Date().toLocaleString('en-GB');
+      updateDataStatusPanel('🆕',
+        `New draw${newDraws.length>1?'s':''} loaded: ${newDates} · Fetched: ${fetchTime}`,
+        `✓ ${newDraws.length} new draw${newDraws.length>1?'s':''} · ${fetchTime}`,
+        'var(--lotto-blue2)', 'rgba(91,156,240,0.1)');
+      // Also update the small liveDataTag badge if present
       const liveTag = document.getElementById('liveDataTag');
       if (liveTag) {
         liveTag.style.display = 'inline';
@@ -3879,11 +3982,21 @@ async function autoFetchEuroDraws() {
       console.log('[AutoFetch] Cleared Euro picks to rebuild from updated data.');
     } else {
       console.log('[AutoFetch] No new draws found — dataset is current.');
+      const now = new Date().toLocaleString('en-GB');
+      updateDataStatusPanel('✅',
+        `Data current · Last checked: ${now}`,
+        'Up to date',
+        'var(--green)', 'rgba(46,204,113,0.1)');
     }
 
   } catch(e) {
-    // API down, timeout, CORS, or parse error — fail silently
+    // API down, timeout, CORS, or parse error — fail silently, show fallback state
     console.warn('[AutoFetch] Could not fetch new draws (falling back to embedded data):', e.message);
+    const latest = EURO_DRAWS.length ? EURO_DRAWS[EURO_DRAWS.length-1].date : '—';
+    updateDataStatusPanel('📦',
+      `Using embedded data · Live fetch unavailable · Latest draw: ${latest}`,
+      'Offline — embedded data',
+      'var(--warn)', 'rgba(230,126,34,0.1)');
   }
 }
 

@@ -894,6 +894,87 @@
     display: block;
   }
 
+
+  /* ── JOURNAL TAB ─────────────────────────────────────────────── */
+  .journal-entry {
+    background:var(--bg2);border:1px solid var(--border);border-radius:6px;
+    padding:14px 16px;margin-bottom:10px;animation:fadeInUp .3s ease backwards;
+  }
+  .journal-entry.has-win  { border-left:4px solid var(--green); }
+  .journal-entry.has-prize { border-left:4px solid var(--gold2); background:linear-gradient(135deg,var(--bg2),rgba(201,148,58,.04)); }
+  .journal-entry.no-match { border-left:4px solid var(--border); opacity:.75; }
+
+  .je-header { display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;margin-bottom:10px; }
+  .je-date { font-family:var(--font-mono);font-size:0.8rem;font-weight:600;color:var(--text); }
+  .je-prize { font-family:var(--font-mono);font-size:0.72rem;font-weight:700; }
+  .je-prize.won    { color:var(--gold2); }
+  .je-prize.close  { color:var(--warn); }
+  .je-prize.miss   { color:var(--text3); }
+
+  .je-drawn { display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-bottom:8px; }
+  .je-label { font-family:var(--font-mono);font-size:0.6rem;letter-spacing:1px;text-transform:uppercase;color:var(--text3);min-width:52px; }
+
+  .je-lines { display:flex;flex-direction:column;gap:6px; }
+  .je-line  { display:flex;align-items:center;gap:8px;flex-wrap:wrap; }
+  .je-line-num { font-family:var(--font-mono);font-size:0.6rem;color:var(--text3);min-width:38px; }
+  .je-match-badge {
+    font-family:var(--font-mono);font-size:0.6rem;font-weight:600;
+    padding:1px 7px;border-radius:2px;white-space:nowrap;
+  }
+  .jmb-3plus { background:rgba(201,148,58,.18);color:var(--gold2);border:1px solid rgba(201,148,58,.35); }
+  .jmb-2     { background:rgba(91,156,240,.15);color:var(--lotto-blue2);border:1px solid rgba(91,156,240,.3); }
+  .jmb-1     { background:rgba(78,97,128,.15);color:var(--text2);border:1px solid rgba(78,97,128,.3); }
+  .jmb-0     { background:transparent;color:var(--text3);border:1px solid rgba(78,97,128,.2); }
+
+  /* Performance chart bars */
+  .perf-chart { display:flex;align-items:flex-end;gap:3px;height:60px;margin:12px 0 4px; }
+  .perf-bar-wrap { display:flex;flex-direction:column;align-items:center;flex:1;gap:2px; }
+  .perf-bar {
+    width:100%;border-radius:2px 2px 0 0;min-height:2px;
+    transition:height .3s;cursor:default;
+  }
+  .perf-bar.won   { background:var(--gold2); }
+  .perf-bar.hit   { background:var(--lotto-blue2); }
+  .perf-bar.miss  { background:var(--border2); }
+  .perf-bar-date  { font-family:var(--font-mono);font-size:0.52rem;color:var(--text3);transform:rotate(-45deg);white-space:nowrap; }
+
+  /* Stats summary row */
+  .journal-stats { display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px;margin-bottom:20px; }
+  .js-card { background:var(--bg2);border:1px solid var(--border);border-radius:4px;padding:12px 14px;text-align:center; }
+  .js-card .jsc-val { font-family:var(--font-mono);font-size:1.5rem;font-weight:700;line-height:1;margin-bottom:4px; }
+  .js-card .jsc-lbl { font-family:var(--font-mono);font-size:0.6rem;letter-spacing:1px;text-transform:uppercase;color:var(--text3); }
+
+  /* Number hit heatmap */
+  .num-heatmap { display:flex;flex-wrap:wrap;gap:4px;margin-top:8px; }
+  .nhm-ball {
+    width:30px;height:30px;display:flex;align-items:center;justify-content:center;
+    border-radius:50%;font-family:var(--font-mono);font-size:0.6rem;font-weight:600;
+    cursor:default;transition:transform .15s;position:relative;
+  }
+  .nhm-ball:hover { transform:scale(1.15); }
+
+  /* Log draw form */
+  .log-form { background:var(--bg2);border:1px solid var(--border);border-radius:6px;padding:16px;margin-bottom:20px; }
+  .log-form h3 { font-family:var(--font-mono);font-size:0.7rem;letter-spacing:1.5px;text-transform:uppercase;color:var(--gold2);margin-bottom:12px; }
+  .lf-row { display:flex;gap:10px;flex-wrap:wrap;align-items:flex-end;margin-bottom:10px; }
+  .lf-group { display:flex;flex-direction:column;gap:4px; }
+  .lf-group label { font-family:var(--font-mono);font-size:0.62rem;color:var(--text3);letter-spacing:.5px; }
+  .lf-group input {
+    background:var(--bg3);border:1px solid var(--border2);color:var(--text);
+    font-family:var(--font-mono);font-size:0.78rem;padding:6px 10px;border-radius:3px;
+    width:56px;outline:none;text-align:center;
+  }
+  .lf-group input:focus { border-color:var(--gold); }
+  .lf-group input.star-input { border-color:rgba(201,148,58,.4); }
+  .lf-date { width:130px !important;text-align:left !important; }
+  .lf-sep { font-family:var(--font-mono);color:var(--text3);padding-bottom:8px;font-size:1rem; }
+
+  /* Prize tier table */
+  .prize-tier-table { width:100%;border-collapse:collapse;font-family:var(--font-mono);font-size:0.7rem;margin-top:8px; }
+  .prize-tier-table th { background:var(--bg3);color:var(--text3);padding:6px 10px;text-align:left;border-bottom:1px solid var(--border2); }
+  .prize-tier-table td { padding:6px 10px;border-bottom:1px solid var(--border);color:var(--text2); }
+  .prize-tier-table tr.highlight td { color:var(--gold2);font-weight:600;background:rgba(201,148,58,.06); }
+
   /* RESPONSIVE */
   @media (max-width: 768px) {
     .line-card { grid-template-columns: 28px 1fr; }
@@ -969,6 +1050,7 @@
   <!-- TABS -->
   <div class="tabs">
     <button class="tab-btn active" onclick="switchTab('picks')">Weekly Picks</button>
+    <button class="tab-btn" onclick="switchTab('journal')">📓 My Results</button>
     <button class="tab-btn" onclick="switchTab('analysis')">Hot/Cold Analysis</button>
     <button class="tab-btn" onclick="switchTab('history')">Draw History</button>
     <button class="tab-btn" onclick="switchTab('backtest')">Backtest</button>
@@ -1122,6 +1204,86 @@
           <div class="m-desc" id="methodLockDesc">EuroMillions picks lock per draw (Tue/Fri) and expire at 20:00 on draw day. UK Lotto picks lock per calendar week. Numbers are stored in localStorage and never regenerated mid-cycle.</div>
         </div>
       </div>
+    </div>
+  </div>
+
+  <!-- ===== MY RESULTS / JOURNAL TAB ===== -->
+  <div class="tab-content" id="tab-journal">
+
+    <div class="game-selector">
+      <button class="game-btn active-lotto" onclick="setJournalGame('lotto')">🇬🇧 UK Lotto</button>
+      <button class="game-btn active-euro" onclick="setJournalGame('euro')">⭐ EuroMillions</button>
+    </div>
+
+    <!-- LOG A DRAW RESULT -->
+    <div class="log-form">
+      <h3>➕ Log a Draw Result</h3>
+
+      <!-- YOUR LOCKED PICKS — shown automatically, no switching tabs needed -->
+      <div style="font-family:var(--font-mono);font-size:0.62rem;letter-spacing:1px;text-transform:uppercase;color:var(--text3);margin-bottom:8px;">
+        Your locked lines for this draw
+      </div>
+      <div id="jLockedLines" style="margin-bottom:14px;">
+        <div style="font-family:var(--font-mono);font-size:0.68rem;color:var(--text3);">Loading your picks...</div>
+      </div>
+
+      <!-- WINNING NUMBERS INPUT -->
+      <div style="font-family:var(--font-mono);font-size:0.62rem;letter-spacing:1px;text-transform:uppercase;color:var(--text3);margin-bottom:8px;">
+        Enter the actual winning numbers
+      </div>
+      <div class="lf-row">
+        <div class="lf-group">
+          <label>Draw Date</label>
+          <input type="date" id="jDrawDate" class="lf-date" style="width:140px;">
+        </div>
+        <span class="lf-sep" style="padding-bottom:6px;">—</span>
+        <div class="lf-group"><label>N1</label><input type="number" id="jN1" min="1" max="50" placeholder="—"></div>
+        <div class="lf-group"><label>N2</label><input type="number" id="jN2" min="1" max="50" placeholder="—"></div>
+        <div class="lf-group"><label>N3</label><input type="number" id="jN3" min="1" max="50" placeholder="—"></div>
+        <div class="lf-group"><label>N4</label><input type="number" id="jN4" min="1" max="50" placeholder="—"></div>
+        <div class="lf-group"><label>N5</label><input type="number" id="jN5" min="1" max="50" placeholder="—"></div>
+        <span id="jStarInputs">
+          <span class="lf-sep" style="padding-bottom:6px;">★</span>
+          <div class="lf-group"><label>Star 1</label><input type="number" id="jS1" min="1" max="12" placeholder="—" class="star-input"></div>
+          <div class="lf-group"><label>Star 2</label><input type="number" id="jS2" min="1" max="12" placeholder="—" class="star-input"></div>
+        </span>
+      </div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;">
+        <button class="btn btn-gold btn-small" onclick="logDrawResult()">✓ Log This Draw</button>
+        <span id="jLogMsg" style="font-family:var(--font-mono);font-size:0.68rem;color:var(--text3);"></span>
+      </div>
+    </div>
+
+    <!-- PERFORMANCE SUMMARY STATS -->
+    <div class="section-title">My Performance Summary <span class="line-accent"></span></div>
+    <div id="journalStats" class="journal-stats"></div>
+
+    <!-- PERFORMANCE CHART -->
+    <div style="background:var(--bg2);border:1px solid var(--border);border-radius:6px;padding:14px 16px;margin-bottom:20px;">
+      <div style="font-family:var(--font-mono);font-size:0.65rem;letter-spacing:1.5px;text-transform:uppercase;color:var(--text3);margin-bottom:4px;">Match Count Per Draw</div>
+      <div id="journalChart" class="perf-chart"></div>
+      <div style="display:flex;gap:16px;font-family:var(--font-mono);font-size:0.6rem;color:var(--text3);margin-top:8px;">
+        <span><span style="display:inline-block;width:8px;height:8px;background:var(--gold2);border-radius:1px;margin-right:4px;"></span>Prize</span>
+        <span><span style="display:inline-block;width:8px;height:8px;background:var(--lotto-blue2);border-radius:1px;margin-right:4px;"></span>2+ matches</span>
+        <span><span style="display:inline-block;width:8px;height:8px;background:var(--border2);border-radius:1px;margin-right:4px;"></span>0–1 matches</span>
+      </div>
+    </div>
+
+    <!-- NUMBER HIT HEATMAP -->
+    <div style="background:var(--bg2);border:1px solid var(--border);border-radius:6px;padding:14px 16px;margin-bottom:20px;">
+      <div style="font-family:var(--font-mono);font-size:0.65rem;letter-spacing:1.5px;text-transform:uppercase;color:var(--text3);margin-bottom:8px;">
+        Your Number Hit Rate — how often each number in your lines matched a real draw
+      </div>
+      <div id="numHeatmap" class="num-heatmap"></div>
+    </div>
+
+    <!-- DRAW LOG ENTRIES -->
+    <div class="section-title">Draw Log <span id="journalCount" class="pill">0 entries</span><span class="line-accent"></span></div>
+    <div id="journalEntries"></div>
+
+    <div class="export-row" style="margin-top:12px;">
+      <button class="btn btn-ghost btn-small" onclick="exportJournal()">⬇ Export Journal CSV</button>
+      <button class="btn btn-ghost btn-small" style="color:var(--red);border-color:var(--red);" onclick="clearJournal()">🗑 Clear All Entries</button>
     </div>
   </div>
 
@@ -2153,8 +2315,29 @@ function generateLines(game, seed) {
 function buildStarWeights(draws, max) {
   const w = new Array(max + 1).fill(1);
   const recent = draws.slice(-12);
+  // Base recency weighting
   recent.forEach(d => (d.extra || []).forEach(n => { w[n] += 2; }));
   draws.slice(0, -12).forEach(d => (d.extra || []).forEach(n => { w[n] += 1; }));
+
+  // ── Pair frequency bonus ─────────────────────────────────────────────────
+  // Count how often each pair of stars appears together
+  const pairCount = {};
+  draws.forEach(d => {
+    const ex = (d.extra || []).map(Number).sort((a,b)=>a-b);
+    if (ex.length >= 2) {
+      const key = `${ex[0]}_${ex[1]}`;
+      pairCount[key] = (pairCount[key] || 0) + 1;
+    }
+  });
+  // Add a bonus to stars that appear in frequently seen pairs
+  const maxPairCount = Math.max(...Object.values(pairCount), 1);
+  Object.entries(pairCount).forEach(([key, count]) => {
+    const [a, b] = key.split('_').map(Number);
+    const bonus = (count / maxPairCount) * 1.5; // up to +1.5 for most common pair
+    if (a >= 1 && a <= max) w[a] += bonus;
+    if (b >= 1 && b <= max) w[b] += bonus;
+  });
+
   return w;
 }
 
@@ -2439,7 +2622,9 @@ function lineHtml(lineObj, idx, game, matchDraw) {
   let scoreDisplay, scoreLabel;
   if (closeScore !== undefined) {
     scoreDisplay = closeScore;
-    scoreLabel   = 'vs last 4 simulated draws';
+    scoreLabel   = currentGame === 'euro'
+      ? 'close score vs last 4 real draws'
+      : 'close score vs last 4 draws';
   } else {
     scoreDisplay = '—';
     scoreLabel   = 'not yet scored';
@@ -2748,10 +2933,10 @@ function renderPicks() {
   `;
 
   // ── Score every line against the last 4 draws in the embedded dataset ──────
-  // NOTE: This app uses simulated historical data (seeded, deterministic).
-  // Close Score = how well the locked numbers fit that simulated history.
+  // NOTE: EuroMillions uses 341 real draw results (Jan 2023–Apr 2026).
+  // UK Lotto uses simulated data until real results are provided.
+  // Close Score = how well the locked numbers fit historical draws.
   // It is a relative ranking across the 5 lines — not a prediction.
-  // Higher Close Score = line was closer to those simulated draws = ranked higher.
   const recentDraws = draws.slice(-4);
   let bestTotalScore = -1;
 
@@ -2785,7 +2970,7 @@ function renderPicks() {
   if (bestLine && bestTotalScore > 0) {
     document.getElementById('bestLineBanner').style.display = 'flex';
     document.getElementById('bestLineVal').textContent =
-      `Line #${bestIdx + 1} has the highest Close Score (${bestLine._score}) against the last 4 simulated draws. This is a relative ranking only — it does not predict future results.`;
+      `Line #${bestIdx + 1} has the highest Close Score (${bestLine._score}) against the last 4 ${currentGame === 'euro' ? 'real' : 'draws in dataset'}. Relative ranking only — does not predict future results.`;
   } else {
     document.getElementById('bestLineBanner').style.display = 'none';
   }
@@ -3736,16 +3921,17 @@ function switchTab(name) {
   document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
   document.getElementById(`tab-${name}`).classList.add('active');
   document.querySelectorAll('.tab-btn').forEach(b => {
-    if (b.textContent.toLowerCase().includes(name.replace('backtest', 'backtest').replace('compare', 'compar').replace('trends','trend').replace('picks','pick').replace('analysis','hot').replace('history','hist'))) {
+    if (b.textContent.toLowerCase().includes(name.replace('backtest', 'backtest').replace('compare', 'compar').replace('trends','trend').replace('picks','pick').replace('analysis','hot').replace('history','hist').replace('journal','results'))) {
       b.classList.add('active');
     }
   });
   // Re-render active tab
   if (name === 'analysis') renderAnalysis();
-  if (name === 'history') renderHistory();
+  if (name === 'history')  renderHistory();
   if (name === 'backtest') runBacktest();
-  if (name === 'compare') renderComparison();
-  if (name === 'trends') renderTrends();
+  if (name === 'compare')  renderComparison();
+  if (name === 'trends')   renderTrends();
+  if (name === 'journal')  renderJournal();
 }
 
 // Fix tab button matching
@@ -3846,6 +4032,378 @@ function exportHistory() {
 // ============================================================
 //  INIT
 // ============================================================
+
+// ============================================================
+//  RESULTS JOURNAL
+// ============================================================
+
+const JOURNAL_LS_KEY = 'lottoanalyst_journal_v1';
+let journalGame = 'euro';
+
+// ── EuroMillions prize tiers ─────────────────────────────────────────────────
+// Format: { main, stars, label, approxPrize }
+// Prize amounts are approximate averages — actual prizes vary by jackpot size
+const EURO_PRIZE_TIERS = [
+  { main:5, stars:2, label:'Jackpot 🎉',        prize:'Jackpot'   },
+  { main:5, stars:1, label:'Match 5 + 1 Star',  prize:'~£500,000' },
+  { main:5, stars:0, label:'Match 5',            prize:'~£50,000'  },
+  { main:4, stars:2, label:'Match 4 + 2 Stars',  prize:'~£2,000'   },
+  { main:4, stars:1, label:'Match 4 + 1 Star',   prize:'~£130'     },
+  { main:3, stars:2, label:'Match 3 + 2 Stars',  prize:'~£80'      },
+  { main:4, stars:0, label:'Match 4',            prize:'~£40'      },
+  { main:2, stars:2, label:'Match 2 + 2 Stars',  prize:'~£14'      },
+  { main:3, stars:1, label:'Match 3 + 1 Star',   prize:'~£12'      },
+  { main:3, stars:0, label:'Match 3',            prize:'~£8'       },
+  { main:1, stars:2, label:'Match 1 + 2 Stars',  prize:'~£7'       },
+  { main:2, stars:1, label:'Match 2 + 1 Star',   prize:'~£5'       },
+  { main:2, stars:0, label:'Match 2',            prize:'~£3'       },
+];
+
+const LOTTO_PRIZE_TIERS = [
+  { main:6, bonus:0, label:'Jackpot 🎉',      prize:'Jackpot'   },
+  { main:5, bonus:1, label:'Match 5 + Bonus', prize:'~£1m'      },
+  { main:5, bonus:0, label:'Match 5',         prize:'~£1,750'   },
+  { main:4, bonus:0, label:'Match 4',         prize:'~£140'     },
+  { main:3, bonus:0, label:'Match 3',         prize:'£30'       },
+  { main:2, bonus:0, label:'Match 2',         prize:'Free Lucky Dip' },
+];
+
+function getPrizeTier(mainMatches, starMatches, bonusMatch, game) {
+  if (game === 'euro') {
+    return EURO_PRIZE_TIERS.find(t => t.main === mainMatches && t.stars === starMatches) || null;
+  } else {
+    if (mainMatches === 5 && bonusMatch) return LOTTO_PRIZE_TIERS.find(t => t.main===5 && t.bonus===1);
+    return LOTTO_PRIZE_TIERS.find(t => t.main === mainMatches && t.bonus === 0) || null;
+  }
+}
+
+// ── Journal storage ───────────────────────────────────────────────────────────
+function loadJournal() {
+  return lsLoad(JOURNAL_LS_KEY) || [];
+}
+
+function saveJournal(entries) {
+  lsSave(JOURNAL_LS_KEY, entries);
+}
+
+// ── Show locked picks in the journal form ────────────────────────────────────
+// Renders the 5 locked lines right inside the log form so you never need
+// to switch to the Weekly Picks tab to check your numbers.
+function renderJournalLockedLines() {
+  const el = document.getElementById('jLockedLines');
+  if (!el) return;
+
+  const locked  = getLockedLines(journalGame);
+  const lines   = locked ? locked.lines : [];
+  const ballCls = journalGame === 'lotto' ? 'lotto' : 'euro-main';
+  const cfg     = getGameConfig(journalGame);
+
+  if (!lines || !lines.length) {
+    el.innerHTML = `<div style="font-family:var(--font-mono);font-size:0.68rem;color:var(--text3);">
+      No locked picks found for ${cfg.name}.
+    </div>`;
+    return;
+  }
+
+  el.innerHTML = lines.map((line, i) => {
+    const mainBalls = line.main.map(n => ballHtml(n, ballCls)).join('');
+    let extraBalls = '';
+    if (journalGame === 'euro' && line.extra && line.extra.length) {
+      extraBalls = `<span class="ball-divider">★</span>` +
+        line.extra.map(n => ballHtml(n, 'euro-star')).join('');
+    }
+    return `<div style="display:flex;align-items:center;gap:10px;margin-bottom:6px;">
+      <span style="font-family:var(--font-mono);font-size:0.65rem;color:var(--text3);min-width:46px;">Line ${i+1}</span>
+      <div class="balls-row" style="gap:4px;">${mainBalls}${extraBalls}</div>
+    </div>`;
+  }).join('') + `<div style="font-family:var(--font-mono);font-size:0.6rem;color:var(--text3);margin-top:6px;">
+    Draw key: ${locked.drawKey || '—'} · Generated: ${locked.generatedDate || '—'}
+  </div>`;
+}
+
+// ── Log a draw result ─────────────────────────────────────────────────────────
+function logDrawResult() {
+  const dateVal = document.getElementById('jDrawDate').value;
+  const n1 = parseInt(document.getElementById('jN1').value);
+  const n2 = parseInt(document.getElementById('jN2').value);
+  const n3 = parseInt(document.getElementById('jN3').value);
+  const n4 = parseInt(document.getElementById('jN4').value);
+  const n5 = parseInt(document.getElementById('jN5').value);
+
+  const msg = document.getElementById('jLogMsg');
+
+  // Validation
+  if (!dateVal) { msg.textContent = '⚠ Please enter a draw date.'; msg.style.color='var(--warn)'; return; }
+  const mainNums = [n1,n2,n3,n4,n5];
+  if (mainNums.some(n => isNaN(n) || n < 1 || n > 50)) {
+    msg.textContent = '⚠ Enter 5 valid main numbers (1–50).'; msg.style.color='var(--warn)'; return;
+  }
+  if (new Set(mainNums).size !== 5) {
+    msg.textContent = '⚠ Main numbers must all be different.'; msg.style.color='var(--warn)'; return;
+  }
+
+  let stars = [];
+  if (journalGame === 'euro') {
+    const s1 = parseInt(document.getElementById('jS1').value);
+    const s2 = parseInt(document.getElementById('jS2').value);
+    if (isNaN(s1)||s1<1||s1>12||isNaN(s2)||s2<1||s2>12) {
+      msg.textContent = '⚠ Enter 2 valid Lucky Stars (1–12).'; msg.style.color='var(--warn)'; return;
+    }
+    if (s1 === s2) { msg.textContent = '⚠ Stars must be different.'; msg.style.color='var(--warn)'; return; }
+    stars = [s1, s2].sort((a,b)=>a-b);
+  }
+
+  const drawnMain = mainNums.sort((a,b)=>a-b);
+  const drawObj   = { main: drawnMain, extra: stars, bonus: null, date: dateVal };
+
+  // Get locked picks for this game to check against
+  const locked = getLockedLines(journalGame);
+  const myLines = locked.lines || [];
+
+  // Score all lines against the draw
+  const lineResults = myLines.map((line, li) => {
+    const sc = computeCloseScore(line, drawObj, journalGame);
+    const prize = getPrizeTier(sc.mainMatches, sc.starMatches, sc.bonusMatch, journalGame);
+    return {
+      lineNum:      li + 1,
+      main:         line.main,
+      extra:        line.extra || [],
+      matchedMains: sc.matchedMains,
+      matchedStars: sc.matchedStars,
+      mainMatches:  sc.mainMatches,
+      starMatches:  sc.starMatches,
+      bonusMatch:   sc.bonusMatch,
+      score:        sc.score,
+      prize:        prize ? prize.label : null,
+      prizeAmt:     prize ? prize.prize : null,
+    };
+  });
+
+  // Best line summary
+  const bestLine   = lineResults.reduce((b,l) => l.score > b.score ? l : b, lineResults[0]);
+  const anyPrize   = lineResults.find(l => l.prize);
+  const allMatched = [...new Set(lineResults.flatMap(l => l.matchedMains))].sort((a,b)=>a-b);
+
+  const entry = {
+    id:          Date.now(),
+    date:        dateVal,
+    game:        journalGame,
+    drawn:       { main: drawnMain, extra: stars },
+    lineResults,
+    bestMainMatches: bestLine.mainMatches,
+    allMatchedMains: allMatched,
+    bestScore:   bestLine.score,
+    anyPrize:    anyPrize ? anyPrize.prize : null,
+    anyPrizeAmt: anyPrize ? anyPrize.prizeAmt : null,
+    lockedDrawKey: locked.drawKey || '',
+  };
+
+  const journal = loadJournal();
+  // Prevent duplicate dates for same game
+  const existing = journal.findIndex(e => e.date === dateVal && e.game === journalGame);
+  if (existing >= 0) journal.splice(existing, 1);
+  journal.push(entry);
+  journal.sort((a,b) => a.date.localeCompare(b.date));
+  saveJournal(journal);
+
+  msg.textContent = `✓ Logged! Best line hit ${bestLine.mainMatches} main${bestLine.mainMatches!==1?'s':''}${anyPrize?' — '+anyPrize.prize:'.'} `;
+  msg.style.color = anyPrize ? 'var(--gold2)' : bestLine.mainMatches >= 2 ? 'var(--green)' : 'var(--text2)';
+
+  // Clear inputs
+  ['jN1','jN2','jN3','jN4','jN5','jS1','jS2'].forEach(id => {
+    const el = document.getElementById(id); if (el) el.value = '';
+  });
+
+  renderJournal();
+}
+
+// ── Render the full journal tab ───────────────────────────────────────────────
+function setJournalGame(game) {
+  journalGame = game;
+  document.querySelectorAll('#tab-journal .game-btn').forEach(b => {
+    b.className = 'game-btn';
+    if (b.textContent.includes('Lotto') && game==='lotto') b.classList.add('active-lotto');
+    if (b.textContent.includes('Euro')  && game==='euro')  b.classList.add('active-euro');
+  });
+  // Show/hide star inputs
+  const si = document.getElementById('jStarInputs');
+  if (si) si.style.display = game === 'euro' ? 'contents' : 'none';
+  // Set max for main numbers
+  ['jN1','jN2','jN3','jN4','jN5'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.max = game === 'lotto' ? 59 : 50;
+  });
+  renderJournalLockedLines();
+  renderJournal();
+}
+
+function renderJournal() {
+  renderJournalLockedLines(); // always refresh locked lines display at top of form
+  const journal   = loadJournal().filter(e => e.game === journalGame);
+  const cfg        = getGameConfig(journalGame);
+  const ballCls    = journalGame === 'lotto' ? 'lotto' : 'euro-main';
+  const recent     = [...journal].reverse(); // newest first
+
+  // ── Stats summary ─────────────────────────────────────────────
+  const totalDraws  = journal.length;
+  const totalWith2  = journal.filter(e => e.bestMainMatches >= 2).length;
+  const totalWith3  = journal.filter(e => e.bestMainMatches >= 3).length;
+  const prizes      = journal.filter(e => e.anyPrize).length;
+  const avgMatches  = totalDraws
+    ? (journal.reduce((s,e)=>s+e.bestMainMatches,0)/totalDraws).toFixed(2) : '—';
+  const hit2Rate    = totalDraws ? Math.round(totalWith2/totalDraws*100) : 0;
+
+  document.getElementById('journalStats').innerHTML = [
+    { val: totalDraws, lbl: 'Draws Logged',     col: 'var(--text)' },
+    { val: avgMatches, lbl: 'Avg Matches/Draw',  col: 'var(--gold2)' },
+    { val: `${totalWith2}`,lbl:'2+ Match Draws', col: 'var(--lotto-blue2)' },
+    { val: `${totalWith3}`,lbl:'3+ Match Draws', col: 'var(--gold2)' },
+    { val: prizes,     lbl: 'Prize Hits',         col: 'var(--green)' },
+    { val: `${hit2Rate}%`, lbl:'2+ Hit Rate',    col: hit2Rate>=40?'var(--green)':'var(--text2)' },
+  ].map(s=>`<div class="js-card">
+    <div class="jsc-val" style="color:${s.col};">${s.val}</div>
+    <div class="jsc-lbl">${s.lbl}</div>
+  </div>`).join('');
+
+  // ── Performance chart ─────────────────────────────────────────
+  const chartEl = document.getElementById('journalChart');
+  if (chartEl) {
+    const last20 = journal.slice(-20);
+    if (last20.length === 0) {
+      chartEl.innerHTML = `<div style="font-family:var(--font-mono);font-size:0.7rem;color:var(--text3);padding:16px;">Log some draws to see your chart</div>`;
+    } else {
+      const maxM = Math.max(...last20.map(e=>e.bestMainMatches), 1);
+      chartEl.innerHTML = last20.map(e => {
+        const h    = Math.max(4, Math.round((e.bestMainMatches/maxM)*56));
+        const cls  = e.anyPrize ? 'won' : e.bestMainMatches>=2 ? 'hit' : 'miss';
+        const tip  = `${e.date}: ${e.bestMainMatches} match${e.bestMainMatches!==1?'es':''}${e.anyPrize?' — '+e.anyPrize:''}`;
+        return `<div class="perf-bar-wrap" title="${tip}">
+          <div class="perf-bar ${cls}" style="height:${h}px;"></div>
+          <div class="perf-bar-date">${e.date.slice(5)}</div>
+        </div>`;
+      }).join('');
+    }
+  }
+
+  // ── Number hit heatmap ───────────────────────────────────────
+  const hmEl = document.getElementById('numHeatmap');
+  if (hmEl) {
+    if (journal.length === 0) {
+      hmEl.innerHTML = `<div style="font-family:var(--font-mono);font-size:0.7rem;color:var(--text3);">No data yet</div>`;
+    } else {
+      // Count how many times each number appeared in YOUR lines AND got matched
+      const hitCount  = new Array(cfg.mainMax+1).fill(0);
+      const playCount = new Array(cfg.mainMax+1).fill(0);
+      journal.forEach(e => {
+        e.lineResults.forEach(lr => {
+          lr.main.forEach(n => { playCount[n]++; });
+          lr.matchedMains.forEach(n => { hitCount[n]++; });
+        });
+      });
+      const maxHit = Math.max(...hitCount.slice(1), 1);
+      const nums   = Array.from({length:cfg.mainMax},(_,i)=>i+1);
+      hmEl.innerHTML = nums.map(n => {
+        const hits  = hitCount[n];
+        const plays = playCount[n];
+        const rate  = plays > 0 ? hits/plays : 0;
+        const t     = rate;
+        const r     = Math.round(20 + t*200);
+        const g     = Math.round(60 + t*130);
+        const b     = Math.round(80 + t*40);
+        const txt   = t > 0.4 ? '#fff' : '#8a9bb5';
+        const tip   = `${n}: ${hits} hits from ${plays} plays (${plays>0?Math.round(rate*100):0}%)`;
+        return `<div class="nhm-ball" style="background:rgb(${r},${g},${b});color:${txt};" title="${tip}">${n}</div>`;
+      }).join('');
+    }
+  }
+
+  // ── Journal count ─────────────────────────────────────────────
+  const countEl = document.getElementById('journalCount');
+  if (countEl) countEl.textContent = `${totalDraws} ${totalDraws===1?'entry':'entries'}`;
+
+  // ── Draw log entries ──────────────────────────────────────────
+  const entriesEl = document.getElementById('journalEntries');
+  if (!entriesEl) return;
+
+  if (recent.length === 0) {
+    entriesEl.innerHTML = `<div class="empty-state">No draws logged yet for ${cfg.name}.<br>Enter a draw result above to start tracking.</div>`;
+    return;
+  }
+
+  entriesEl.innerHTML = recent.map(e => {
+    const drawnBalls = e.drawn.main.map(n => ballHtml(n, ballCls)).join('');
+    const starBalls  = (e.drawn.extra||[]).map(n => ballHtml(n,'euro-star')).join('');
+    const extraHtml  = starBalls ? `<span class="ball-divider">★</span>${starBalls}` : '';
+    const prizeClass = e.anyPrize ? 'won' : e.bestMainMatches>=2 ? 'close' : 'miss';
+    const prizeText  = e.anyPrize ? `🏆 ${e.anyPrize} — ${e.anyPrizeAmt}` : e.bestMainMatches>=3 ? `${e.bestMainMatches} matches — just below prize` : e.bestMainMatches>=2 ? `${e.bestMainMatches} matches` : e.bestMainMatches===1?'1 match':'No matches';
+    const cardClass  = e.anyPrize ? 'has-prize' : e.bestMainMatches>=1 ? 'has-win' : 'no-match';
+
+    // Line results
+    const lineHtmlStr = e.lineResults.map(lr => {
+      const lBalls   = lr.main.map(n => {
+        const hit = lr.matchedMains.includes(n);
+        return ballHtml(n, hit ? (journalGame==='lotto'?'lotto matched':'euro-main matched') : (journalGame==='lotto'?'lotto':'euro-main'));
+      }).join('');
+      const sBalls   = (lr.extra||[]).map(n => {
+        const hit = (lr.matchedStars||[]).includes(n);
+        return ballHtml(n, hit ? 'euro-star matched' : 'euro-star');
+      }).join('');
+      const sHtml    = sBalls ? `<span class="ball-divider">★</span>${sBalls}` : '';
+      const mc       = lr.mainMatches;
+      const badgeCls = mc>=3?'jmb-3plus':mc===2?'jmb-2':mc===1?'jmb-1':'jmb-0';
+      const badgeTxt = lr.prize ? `🏆 ${lr.prize}` : mc>0 ? `${mc} main${mc>1?'s':''}${lr.starMatches>0?' + '+lr.starMatches+'★':''}` : 'No match';
+      return `<div class="je-line">
+        <span class="je-line-num">Line ${lr.lineNum}</span>
+        <div class="balls-row" style="gap:3px;">${lBalls}${sHtml}</div>
+        <span class="je-match-badge ${badgeCls}">${badgeTxt}</span>
+      </div>`;
+    }).join('');
+
+    return `<div class="journal-entry ${cardClass}">
+      <div class="je-header">
+        <div>
+          <span class="je-date">${e.date}</span>
+          <span style="font-family:var(--font-mono);font-size:0.62rem;color:var(--text3);margin-left:8px;">${cfg.name}</span>
+        </div>
+        <span class="je-prize ${prizeClass}">${prizeText}</span>
+      </div>
+      <div class="je-drawn">
+        <span class="je-label">Drawn</span>
+        <div class="balls-row" style="gap:3px;">${drawnBalls}${extraHtml}</div>
+      </div>
+      <div class="je-lines">${lineHtmlStr}</div>
+      ${e.allMatchedMains.length>0?`
+      <div style="margin-top:8px;font-family:var(--font-mono);font-size:0.62rem;color:var(--text3);">
+        Numbers matched across all lines: <strong style="color:var(--gold2);">${e.allMatchedMains.join(', ')}</strong>
+      </div>`:''}
+    </div>`;
+  }).join('');
+}
+
+function exportJournal() {
+  const journal = loadJournal().filter(e => e.game === journalGame);
+  if (!journal.length) { alert('No entries to export.'); return; }
+  let csv = `LottoAnalyst Journal Export — ${journalGame}
+`;
+  csv += `Date,Drawn Numbers,Stars,Best Matches,All Matched Numbers,Prize,Prize Amount,Draw Key
+`;
+  journal.forEach(e => {
+    csv += `${e.date},"${e.drawn.main.join('-')}","${(e.drawn.extra||[]).join('-')}",`;
+    csv += `${e.bestMainMatches},"${e.allMatchedMains.join('-')}",`;
+    csv += `"${e.anyPrize||''}","${e.anyPrizeAmt||''}","${e.lockedDrawKey||''}"
+`;
+  });
+  const blob = new Blob([csv],{type:'text/csv'});
+  const a = document.createElement('a'); a.href=URL.createObjectURL(blob);
+  a.download=`journal-${journalGame}.csv`; a.click();
+}
+
+function clearJournal() {
+  if (!confirm(`Clear all ${journalGame} journal entries? This cannot be undone.`)) return;
+  const journal = loadJournal().filter(e => e.game !== journalGame);
+  saveJournal(journal);
+  renderJournal();
+}
 
 // ============================================================
 //  AUTO-FETCH: pull new EuroMillions draws from free public API
@@ -4002,7 +4560,7 @@ async function autoFetchEuroDraws() {
 
 window.addEventListener('load', async () => {
   // ── One-time migration ────────────────────────────────────────────────────────
-  const DATA_VERSION = 'v3.1_auto_fetch';
+  const DATA_VERSION = 'v3.2_journal';
   if (localStorage.getItem('lottoanalyst_data_version') !== DATA_VERSION) {
     window.__devClearAll && window.__devClearAll();
     localStorage.setItem('lottoanalyst_data_version', DATA_VERSION);
@@ -4017,6 +4575,13 @@ window.addEventListener('load', async () => {
   await autoFetchEuroDraws();
 
   renderPicks();
+
+  // Set today's date as default in journal date picker
+  const jDate = document.getElementById('jDrawDate');
+  if (jDate && !jDate.value) jDate.value = new Date().toISOString().slice(0,10);
+  // Init journal — sets game, renders locked picks in form, renders journal
+  setJournalGame('euro');
+  renderJournalLockedLines();
 
   // Pre-compute backtest silently
   setTimeout(() => {

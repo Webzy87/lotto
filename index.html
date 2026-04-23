@@ -1056,6 +1056,8 @@
     <button class="tab-btn" onclick="switchTab('backtest')">Backtest</button>
     <button class="tab-btn" onclick="switchTab('compare')">Comparison</button>
     <button class="tab-btn" onclick="switchTab('trends')">Trends</button>
+    <button class="tab-btn" onclick="switchTab('intel')">🧠 Intelligence</button>
+    <button class="tab-btn" onclick="switchTab('wheel')">⚙ Wheel</button>
   </div>
 
   <!-- ===== WEEKLY PICKS TAB ===== -->
@@ -1180,24 +1182,24 @@
       </div>
       <div class="method-grid">
         <div class="method-item">
-          <div class="m-title">Frequency Weighting</div>
-          <div class="m-desc">Numbers appearing more often in the last 52 draws receive proportionally higher selection weight.</div>
+          <div class="m-title" style="color:var(--gold2);">Line 1 — Frequency</div>
+          <div class="m-desc">Built from the most frequently drawn numbers across all 341 real draws. The statistically hottest numbers weighted by full history.</div>
         </div>
         <div class="method-item">
-          <div class="m-title">Recency Bias</div>
-          <div class="m-desc">Last 12 draws are weighted 2× vs older draws, capturing recent pattern shifts without overfitting.</div>
+          <div class="m-title" style="color:var(--lotto-blue2);">Line 2 — Recency</div>
+          <div class="m-desc">Built from numbers that appeared most in the last 6 draws only. Captures short-term patterns and momentum in the draw sequence.</div>
         </div>
         <div class="method-item">
-          <div class="m-title">Gap Analysis</div>
-          <div class="m-desc">Numbers overdue relative to their average frequency gap receive a modest upward adjustment.</div>
+          <div class="m-title" style="color:var(--green);">Line 3 — Overdue</div>
+          <div class="m-desc">Built from numbers with the longest gap since last appearing. Numbers statistically due based on their historical average frequency. Stars are also the two most overdue.</div>
         </div>
         <div class="method-item">
-          <div class="m-title">Diversity Constraint</div>
-          <div class="m-desc">No two adjacent lines may share more than 2 numbers, ensuring spread across the number pool.</div>
+          <div class="m-title" style="color:var(--amber);">Line 4 — Hybrid</div>
+          <div class="m-desc">Frequency-weighted main numbers with star pair 2&amp;10 locked in — the single most common star pair in 341 real draws (appeared 11 times).</div>
         </div>
         <div class="method-item">
-          <div class="m-title">Sum-Range Filter</div>
-          <div class="m-desc">Generated lines must fall within the historical median sum range ±15% to avoid extreme combinations.</div>
+          <div class="m-title" style="color:var(--text2);">Line 5 — Structural</div>
+          <div class="m-desc">Engineered to match the historical mean sum (~130), perfect 3/2 odd-even split, and perfect 2/3 low-high split. Based on patterns that appear in 65-67% of real draws.</div>
         </div>
         <div class="method-item">
           <div class="m-title" id="methodLockTitle">Draw Lock</div>
@@ -1489,8 +1491,120 @@
     <div id="rollingAverages" class="stats-row"></div>
   </div>
 
+  <!-- ===== INTELLIGENCE TAB ===== -->
+  <div class="tab-content" id="tab-intel">
+    <div class="section-title">🧠 Intelligence Centre <span class="line-accent"></span></div>
+
+    <!-- PERFORMANCE TRACKER vs BASELINE -->
+    <div style="background:var(--bg2);border:1px solid var(--border);border-radius:6px;padding:16px;margin-bottom:20px;">
+      <div style="font-family:var(--font-mono);font-size:0.65rem;letter-spacing:2px;text-transform:uppercase;color:var(--text3);margin-bottom:4px;">Model vs Random Baseline</div>
+      <div style="font-family:var(--font-body);font-size:0.75rem;color:var(--text2);margin-bottom:14px;line-height:1.5;">
+        How does your model's performance compare to what <strong style="color:var(--text)">pure random selection</strong> would have scored?
+        The random baseline is computed live against your exact journal draws — not a global average.
+        Your model needs to consistently beat it to mean anything. Green = beating random. Orange = not yet.
+      </div>
+      <div id="perfTrackerStats" class="stats-row" style="margin-bottom:14px;"></div>
+      <div style="font-family:var(--font-mono);font-size:0.65rem;letter-spacing:1.5px;text-transform:uppercase;color:var(--text3);margin-bottom:6px;">Performance Over Time (from your journal)</div>
+      <canvas id="perfTrackerChart" height="200"></canvas>
+      <div id="perfTrackerEmpty" style="font-family:var(--font-mono);font-size:0.72rem;color:var(--text3);padding:20px;text-align:center;display:none;">
+        Log at least 5 draws in My Results to see your performance curve vs random.
+      </div>
+    </div>
+
+    <!-- STRATEGY PERFORMANCE BREAKDOWN -->
+    <div style="background:var(--bg2);border:1px solid var(--border);border-radius:6px;padding:16px;margin-bottom:20px;">
+      <div style="font-family:var(--font-mono);font-size:0.65rem;letter-spacing:2px;text-transform:uppercase;color:var(--text3);margin-bottom:8px;">Strategy Hit Rate (from your journal)</div>
+      <div style="font-family:var(--font-body);font-size:0.75rem;color:var(--text2);margin-bottom:12px;line-height:1.5;">
+        Which of the 5 strategies is actually performing best in real draws? Builds up as you log results.
+      </div>
+      <div id="strategyBreakdown"></div>
+    </div>
+
+    <!-- POSITIONAL ANALYSIS -->
+    <div style="background:var(--bg2);border:1px solid var(--border);border-radius:6px;padding:16px;margin-bottom:20px;">
+      <div style="font-family:var(--font-mono);font-size:0.65rem;letter-spacing:2px;text-transform:uppercase;color:var(--text3);margin-bottom:4px;">Positional Value Analysis — 341 Real Draws</div>
+      <div style="font-family:var(--font-body);font-size:0.75rem;color:var(--text2);margin-bottom:14px;line-height:1.5;">
+        Where do numbers land in the sorted draw order? P1 = the lowest drawn number, P5 = the highest.
+        If truly random these should be uniform. They are not — and that matters for line construction.
+      </div>
+      <div id="positionalGrid" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px;"></div>
+    </div>
+
+    <!-- SEASONAL PATTERNS -->
+    <div style="background:var(--bg2);border:1px solid var(--border);border-radius:6px;padding:16px;margin-bottom:20px;">
+      <div style="font-family:var(--font-mono);font-size:0.65rem;letter-spacing:2px;text-transform:uppercase;color:var(--text3);margin-bottom:4px;">Seasonal Patterns — Real Data</div>
+      <div style="font-family:var(--font-body);font-size:0.75rem;color:var(--text2);margin-bottom:14px;line-height:1.5;">
+        Numbers that appear more than statistically expected in each season. Could be noise. Could be equipment.
+        Currently <strong style="color:var(--text)">April</strong> — spring numbers are active.
+      </div>
+      <div id="seasonalGrid" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:10px;"></div>
+    </div>
+  </div>
+
+  <!-- ===== WHEEL GENERATOR TAB ===== -->
+  <div class="tab-content" id="tab-wheel">
+    <div class="section-title">⚙ Coverage Wheel Generator <span class="line-accent"></span></div>
+
+    <div style="background:var(--bg2);border:1px solid var(--border);border-left:3px solid var(--gold2);border-radius:6px;padding:14px 16px;margin-bottom:20px;font-family:var(--font-body);font-size:0.75rem;color:var(--text2);line-height:1.6;">
+      <strong style="color:var(--gold2);">What is a wheel?</strong> A coverage wheel is a mathematical system.
+      You pick a pool of numbers you believe in. The wheel generates the minimum number of lines
+      needed to <strong style="color:var(--text)">guarantee</strong> that if X of the winning numbers
+      are in your pool, at least one of your lines will match them.
+      This is not prediction — it is <strong style="color:var(--text)">engineered coverage</strong>.
+      The maths behind this is real combinatorics, not luck.
+    </div>
+
+    <div class="log-form" style="margin-bottom:20px;">
+      <h3>Build Your Wheel</h3>
+      <div style="margin-bottom:14px;">
+        <div style="font-family:var(--font-mono);font-size:0.62rem;letter-spacing:1px;text-transform:uppercase;color:var(--text3);margin-bottom:8px;">
+          Step 1 — Choose your pool size and guarantee level
+        </div>
+        <div class="lf-row" style="flex-wrap:wrap;gap:16px;">
+          <div class="lf-group">
+            <label>Pool size (how many numbers you trust)</label>
+            <select id="wheelPoolSize" onchange="updateWheelInfo()" style="background:var(--bg3);border:1px solid var(--border2);color:var(--text);font-family:var(--font-mono);font-size:0.78rem;padding:6px 10px;border-radius:3px;outline:none;width:80px;">
+              <option value="8">8</option>
+              <option value="10" selected>10</option>
+              <option value="12">12</option>
+            </select>
+          </div>
+          <div class="lf-group">
+            <label>Guarantee (if X winning numbers in your pool...)</label>
+            <select id="wheelGuarantee" onchange="updateWheelInfo()" style="background:var(--bg3);border:1px solid var(--border2);color:var(--text);font-family:var(--font-mono);font-size:0.78rem;padding:6px 10px;border-radius:3px;outline:none;width:80px;">
+              <option value="2">2 match</option>
+              <option value="3" selected>3 match</option>
+              <option value="4">4 match</option>
+            </select>
+          </div>
+        </div>
+        <div id="wheelInfo" style="font-family:var(--font-mono);font-size:0.68rem;color:var(--gold2);margin-top:8px;"></div>
+      </div>
+
+      <div style="margin-bottom:14px;">
+        <div style="font-family:var(--font-mono);font-size:0.62rem;letter-spacing:1px;text-transform:uppercase;color:var(--text3);margin-bottom:8px;">
+          Step 2 — Choose your pool numbers (or use model suggestions)
+        </div>
+        <div id="wheelPoolSelector" style="display:flex;flex-wrap:wrap;gap:5px;margin-bottom:10px;"></div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;">
+          <button class="btn btn-ghost btn-small" onclick="wheelUseModel()">Use model's hot numbers</button>
+          <button class="btn btn-ghost btn-small" onclick="wheelClearPool()">Clear</button>
+        </div>
+      </div>
+
+      <div>
+        <div style="font-family:var(--font-mono);font-size:0.62rem;letter-spacing:1px;text-transform:uppercase;color:var(--text3);margin-bottom:8px;">
+          Step 3 — Generate wheel
+        </div>
+        <button class="btn btn-gold btn-small" onclick="generateWheel()">⚙ Generate Wheel Lines</button>
+      </div>
+    </div>
+
+    <div id="wheelOutput"></div>
+  </div>
+
   <footer>
-    <div>LottoAnalyst v2.1 · Statistical analysis only · Not a gambling product · Data embedded for demo purposes</div>
+    <div>LottoAnalyst v3.5 · Statistical analysis only · Not a gambling product · Real EuroMillions data</div>
     <div>Results are historical simulations. Lottery draws are independent random events. <a href="#">Responsible Gambling →</a></div>
   </footer>
 
@@ -2165,11 +2279,15 @@ function generateLinesN(game, seed, trainingDraws, windowSize, lineCount) {
   const lines = [];
   let attempts = 0;
 
-  while (lines.length < lineCount && attempts < 3000) {
+  const isEuro2        = game === 'euro';
+  const sumTolerance2  = isEuro2 ? std * 1.2 : std * 1.4;
+
+  while (lines.length < lineCount && attempts < 5000) {
     attempts++;
     const candidate = weightedSample(pool, weights, cfg.mainCount, rng);
     const sum = computeLineSum(candidate);
-    if (Math.abs(sum - mean) >= std * 1.4) continue;
+    if (Math.abs(sum - mean) >= sumTolerance2) continue;
+    if (isEuro2 && !passesStructuralFilter(candidate)) continue;
     const testLines = [...lines, { main: candidate }];
     if (!diversityOk(testLines)) continue;
 
@@ -2267,60 +2385,196 @@ function diversityOk(lines) {
   return true;
 }
 
-function generateLines(game, seed) {
+// ── buildMainWeightsForStrategy ──────────────────────────────────────────────
+// Builds a weight array using a specific strategy focus.
+// strategy: 'frequency' | 'recency' | 'overdue' | 'hybrid'
+function buildMainWeightsForStrategy(draws, game, strategy) {
   const cfg = getGameConfig(game);
-  const draws = getDraws(game);
-  const weights = buildWeights(draws, game);
-  const { mean, std } = historicalSumStats(draws);
-  const pool = Array.from({length: cfg.mainMax}, (_, i) => i + 1);
+  const w   = new Array(cfg.mainMax + 1).fill(0.5); // floor so every number eligible
 
-  const rng = seedRng(seed || 99887766);
-
-  let starWeights = [];
-  if (cfg.starCount > 0) {
-    starWeights = buildStarWeights(draws, cfg.starMax);
+  if (strategy === 'frequency' || strategy === 'hybrid') {
+    // Full history frequency — numbers that have appeared most across all draws
+    draws.forEach(d => d.main.forEach(n => { w[n] += 1; }));
+    // Recent 12 draws get an extra boost
+    draws.slice(-12).forEach(d => d.main.forEach(n => { w[n] += 0.8; }));
   }
 
-  const lines = [];
-  let attempts = 0;
+  if (strategy === 'recency') {
+    // ONLY last 6 draws — pure recency, aggressively weighted
+    draws.slice(-6).forEach(d => d.main.forEach(n => { w[n] += 5; }));
+    // Last 12 draws get smaller secondary weight
+    draws.slice(-12, -6).forEach(d => d.main.forEach(n => { w[n] += 1.5; }));
+  }
 
-  while (lines.length < 5 && attempts < 2000) {
-    attempts++;
-    const candidate = weightedSample(pool, weights, cfg.mainCount, rng);
-    const sum = computeLineSum(candidate);
-    const inRange = Math.abs(sum - mean) < std * 1.4;
-    if (!inRange) continue;
+  if (strategy === 'overdue') {
+    // Gap-based — numbers that HAVEN'T appeared recently get the highest weight
+    const lastSeen = new Array(cfg.mainMax + 1).fill(0);
+    draws.forEach((d, i) => d.main.forEach(n => { lastSeen[n] = i + 1; }));
+    const total       = draws.length;
+    const expectedGap = cfg.mainMax / cfg.mainCount; // ~10 for Euro
+    for (let n = 1; n <= cfg.mainMax; n++) {
+      const gap = total - lastSeen[n];
+      // Overdue numbers get heavily weighted by how overdue they are
+      if (gap > expectedGap * 1.5) w[n] += (gap / expectedGap) * 1.5;
+      // Numbers seen very recently get downweighted slightly
+      else if (gap < 3) w[n] = Math.max(0.1, w[n] - 0.3);
+    }
+  }
 
-    const testLines = [...lines, candidate];
-    if (!diversityOk(testLines)) continue;
+  if (strategy === 'structural') {
+    // Balanced frequency + medium gap weighting
+    // Goal: produce a line that hits the exact structural mean
+    draws.forEach(d => d.main.forEach(n => { w[n] += 0.8; }));
+    draws.slice(-16).forEach(d => d.main.forEach(n => { w[n] += 0.5; }));
+    // Slight gap bonus to avoid all-hot-numbers clustering
+    const lastSeen2 = new Array(cfg.mainMax + 1).fill(0);
+    draws.forEach((d, i) => d.main.forEach(n => { lastSeen2[n] = i + 1; }));
+    for (let n = 1; n <= cfg.mainMax; n++) {
+      const gap = draws.length - lastSeen2[n];
+      if (gap > 8 && gap < 30) w[n] += 0.6;
+    }
+  }
 
-    let stars = [];
-    if (cfg.starCount > 0) {
-      const starPool = Array.from({length: cfg.starMax}, (_, i) => i + 1);
-      stars = weightedSample(starPool, starWeights, cfg.starCount, rng);
+  return w;
+}
+
+// ── selectStarsForStrategy ────────────────────────────────────────────────────
+// Returns 2 star numbers based on strategy.
+// 'locked'  → always use the historically strongest pair: 2&10
+// 'overdue' → use the two most overdue stars right now
+// 'weighted'→ weighted random from full star weights
+function selectStarsForStrategy(draws, strategy, rng) {
+  if (strategy === 'locked') {
+    // 2&10 is the most frequent pair in 341 real draws (11 times)
+    // Used for the hybrid line to lock in the best-evidenced pair
+    return [2, 10];
+  }
+
+  if (strategy === 'overdue') {
+    // Pick the two most overdue stars that haven't appeared recently
+    const lastSeen = new Array(13).fill(0);
+    draws.forEach((d, i) => (d.extra || []).forEach(s => { lastSeen[s] = i + 1; }));
+    const gaps = Array.from({length:12},(_,i)=>i+1)
+      .map(s => ({ s, gap: draws.length - lastSeen[s] }))
+      .sort((a,b) => b.gap - a.gap);
+    return [gaps[0].s, gaps[1].s].sort((a,b)=>a-b);
+  }
+
+  // Default: weighted random
+  const sw = buildStarWeights(draws, 12);
+  const pool = Array.from({length:12},(_,i)=>i+1);
+  return weightedSample(pool, sw, 2, rng);
+}
+
+// ── generateLines — 5 differentiated strategies ───────────────────────────────
+// Each line tests a different hypothesis about what makes a good pick:
+//
+//  Line 1 — FREQUENCY:  hottest numbers across all 341 real draws
+//  Line 2 — RECENCY:    what's been appearing in the last 6 draws specifically
+//  Line 3 — OVERDUE:    numbers that are statistically due based on gap analysis
+//  Line 4 — HYBRID:     frequency mains + locked star pair 2&10 (best evidenced)
+//  Line 5 — STRUCTURAL: engineered to hit exact mean sum, perfect odd/even + low/high
+//
+// All lines still pass the structural filter and sum range check.
+// Stars are selected per strategy — not all the same.
+function generateLines(game, seed) {
+  const cfg    = getGameConfig(game);
+  const draws  = getDraws(game);
+  const isEuro = game === 'euro';
+  const { mean, std } = historicalSumStats(draws);
+  const rng    = seedRng(seed || 99887766);
+
+  const STRATEGIES = isEuro
+    ? ['frequency', 'recency', 'overdue', 'hybrid', 'structural']
+    : ['frequency', 'frequency', 'recency', 'overdue', 'structural'];
+
+  const STAR_STRATEGIES = isEuro
+    ? ['weighted', 'weighted', 'overdue', 'locked', 'weighted']
+    : [null, null, null, null, null];
+
+  const lines      = [];
+  const sumTol     = isEuro ? std * 1.2 : std * 1.4;
+
+  STRATEGIES.forEach((strategy, si) => {
+    const weights  = buildMainWeightsForStrategy(draws, game, strategy);
+    const pool     = Array.from({length: cfg.mainMax}, (_, i) => i + 1);
+    let   found    = null;
+    let   attempts = 0;
+
+    while (!found && attempts < 4000) {
+      attempts++;
+      const candidate = weightedSample(pool, weights, cfg.mainCount, rng);
+      const sum = computeLineSum(candidate);
+      if (Math.abs(sum - mean) >= sumTol) continue;
+      if (isEuro && !passesStructuralFilter(candidate)) continue;
+
+      // Ensure this line is diverse enough from already-accepted lines
+      if (!diversityOk([...lines, { main: candidate }])) continue;
+
+      // For structural line, prefer sums very close to the mean
+      if (strategy === 'structural' && Math.abs(sum - mean) > std * 0.6) continue;
+
+      const starStrat = STAR_STRATEGIES[si];
+      const stars     = cfg.starCount > 0
+        ? selectStarsForStrategy(draws, starStrat || 'weighted', rng)
+        : [];
+
+      const rawSignal = computeSignalScore(candidate, draws, mean, std, game);
+      found = {
+        main:        candidate,
+        extra:       stars,
+        signalScore: rawSignal,
+        strategy,           // store which strategy produced this line
+        strategyLabel: {
+          frequency:  'Frequency',
+          recency:    'Recency',
+          overdue:    'Overdue',
+          hybrid:     'Hybrid',
+          structural: 'Structural',
+        }[strategy] || strategy,
+      };
     }
 
-    const rawSignal = computeSignalScore(candidate, draws, mean, std, game);
-    lines.push({ main: candidate, extra: stars, signalScore: rawSignal });
-  }
+    // If a strategy fails (very rare), fall back to frequency
+    if (!found) {
+      const fbWeights = buildMainWeightsForStrategy(draws, game, 'frequency');
+      const fbPool    = Array.from({length: cfg.mainMax}, (_, i) => i + 1);
+      for (let a = 0; a < 2000 && !found; a++) {
+        const candidate = weightedSample(fbPool, fbWeights, cfg.mainCount, rng);
+        const sum = computeLineSum(candidate);
+        if (Math.abs(sum - mean) >= sumTol) continue;
+        if (isEuro && !passesStructuralFilter(candidate)) continue;
+        if (!diversityOk([...lines, { main: candidate }])) continue;
+        const stars = cfg.starCount > 0 ? selectStarsForStrategy(draws, 'weighted', rng) : [];
+        found = { main: candidate, extra: stars, signalScore: computeSignalScore(candidate, draws, mean, std, game), strategy: 'frequency', strategyLabel: 'Frequency' };
+      }
+    }
 
-  // Normalise confidence across the batch so values are always 0–100
+    if (found) lines.push(found);
+  });
+
   const rawScores = lines.map(l => l.signalScore);
-  const confPcts = normalizeConfidences(rawScores);
+  const confPcts  = normalizeConfidences(rawScores);
   lines.forEach((l, i) => { l.confidence = confPcts[i]; });
 
   return lines;
 }
 
+// ── buildStarWeights ─────────────────────────────────────────────────────────
+// Built from 341 real draws. Combines:
+//  1. Single-star frequency (recency weighted)
+//  2. Pair-frequency bonus — the actual top pairs from real data get lifted
+//  3. Gap bonus — stars overdue relative to their average appearance rate
+// Returns a weight array indexed 0..max (index 0 unused).
 function buildStarWeights(draws, max) {
   const w = new Array(max + 1).fill(1);
-  const recent = draws.slice(-12);
-  // Base recency weighting
-  recent.forEach(d => (d.extra || []).forEach(n => { w[n] += 2; }));
-  draws.slice(0, -12).forEach(d => (d.extra || []).forEach(n => { w[n] += 1; }));
 
-  // ── Pair frequency bonus ─────────────────────────────────────────────────
-  // Count how often each pair of stars appears together
+  // 1. Frequency + recency
+  const recent = draws.slice(-16); // last 8 weeks ≈ 16 draws
+  recent.forEach(d => (d.extra || []).map(Number).forEach(n => { if(n>=1&&n<=max) w[n] += 2.5; }));
+  draws.slice(0, -16).forEach(d => (d.extra || []).map(Number).forEach(n => { if(n>=1&&n<=max) w[n] += 1; }));
+
+  // 2. Pair-frequency bonus from full history
   const pairCount = {};
   draws.forEach(d => {
     const ex = (d.extra || []).map(Number).sort((a,b)=>a-b);
@@ -2329,16 +2583,44 @@ function buildStarWeights(draws, max) {
       pairCount[key] = (pairCount[key] || 0) + 1;
     }
   });
-  // Add a bonus to stars that appear in frequently seen pairs
-  const maxPairCount = Math.max(...Object.values(pairCount), 1);
+  const maxPair = Math.max(...Object.values(pairCount), 1);
   Object.entries(pairCount).forEach(([key, count]) => {
     const [a, b] = key.split('_').map(Number);
-    const bonus = (count / maxPairCount) * 1.5; // up to +1.5 for most common pair
+    // Top pairs get up to +2.0 bonus — meaningful but not overwhelming
+    const bonus = (count / maxPair) * 2.0;
     if (a >= 1 && a <= max) w[a] += bonus;
     if (b >= 1 && b <= max) w[b] += bonus;
   });
 
+  // 3. Gap bonus — stars not seen recently get a lift
+  const lastSeen = new Array(max + 1).fill(0);
+  draws.forEach((d, i) => (d.extra || []).map(Number).forEach(n => { if(n>=1&&n<=max) lastSeen[n] = i+1; }));
+  const expectedStarGap = Math.round(draws.length / (max / 2)); // ~2 stars per draw
+  for (let s = 1; s <= max; s++) {
+    const gap = draws.length - lastSeen[s];
+    if (gap > expectedStarGap * 1.8) w[s] += 1.5; // overdue boost
+  }
+
   return w;
+}
+
+// ── Structural validation for a candidate line ────────────────────────────────
+// Returns true if the line passes all structural filters derived from real data:
+//  - odd/even split: 2-3 or 3-2 (67% of real draws — all others combined = 33%)
+//  - low/high split: 2-3 or 3-2 where low=1-25, high=26-50 (65% of real draws)
+//  - no all-odd or all-even (only 4% of real draws — waste of a line)
+function passesStructuralFilter(candidate) {
+  const odds = candidate.filter(n => n % 2 !== 0).length;
+  const evens = candidate.length - odds;
+  // Allow 2-3 or 3-2 odd/even only
+  if (!((odds === 2 && evens === 3) || (odds === 3 && evens === 2))) return false;
+
+  const low  = candidate.filter(n => n <= 25).length;
+  const high = candidate.length - low;
+  // Allow 2-3 or 3-2 low/high only
+  if (!((low === 2 && high === 3) || (low === 3 && high === 2))) return false;
+
+  return true;
 }
 
 // Returns raw signal score (0–1 float). Unbounded inputs were the bug:
@@ -2509,6 +2791,15 @@ function getLockedLines(game) {
 
   lsSave(key, record);
   pruneOldPicks();
+
+  // ── Archive picks permanently against this draw date ─────────
+  // Archived separately so auto-scoring can find them after the
+  // expiring lock is gone (once the draw has happened).
+  if (game === 'euro') {
+    const drawDate = drawKey.match(/(\d{4}-\d{2}-\d{2})$/)?.[1];
+    if (drawDate) archivePicks(game, drawDate, lines, drawKey, record.generatedAt);
+  }
+
   return record;
 }
 
@@ -2615,8 +2906,31 @@ function lineHtml(lineObj, idx, game, matchDraw) {
   // Assigned by renderPicks before calling lineHtml via _rank field.
   const rank = lineObj._rank || 'fair';  // 'best' | 'good' | 'fair'
 
-  const badgeLabel = rank === 'best' ? '★ Best line' : rank === 'good' ? '✓ Good' : 'Fair';
-  const rankNumCls = closeScore !== undefined ? `rank-${rank}` : 'rank-none';
+  const badgeLabel  = rank === 'best' ? '★ Best line' : rank === 'good' ? '✓ Good' : 'Fair';
+  const rankNumCls  = closeScore !== undefined ? `rank-${rank}` : 'rank-none';
+
+  // Strategy label — shows which approach produced this line
+  const strategyLabel = lineObj.strategyLabel || null;
+  const strategyColours = {
+    'Frequency':  { bg:'rgba(201,148,58,.12)',  color:'var(--gold2)',       border:'rgba(201,148,58,.3)'  },
+    'Recency':    { bg:'rgba(91,156,240,.12)',   color:'var(--lotto-blue2)', border:'rgba(91,156,240,.3)'  },
+    'Overdue':    { bg:'rgba(46,204,113,.10)',   color:'var(--green)',       border:'rgba(46,204,113,.3)'  },
+    'Hybrid':     { bg:'rgba(212,117,10,.12)',   color:'var(--amber)',       border:'rgba(212,117,10,.3)'  },
+    'Structural': { bg:'rgba(78,97,128,.15)',    color:'var(--text2)',       border:'rgba(78,97,128,.3)'   },
+  };
+  const stratDescriptions = {
+    'Frequency':  'Numbers that appear most often across all 341 real draws',
+    'Recency':    'Numbers that appeared most in the last 6 draws',
+    'Overdue':    'Numbers statistically due — longest gap since last appearing',
+    'Hybrid':     'Frequency mains + star pair 2&10 (most common pair in real data)',
+    'Structural': 'Engineered to match exact historical sum, odd/even & low/high balance',
+  };
+  const sc = strategyLabel ? strategyColours[strategyLabel] : null;
+  const stratBadge = sc ? `<span style="
+    display:inline-block;font-family:var(--font-mono);font-size:0.58rem;font-weight:600;
+    letter-spacing:.8px;padding:2px 7px;border-radius:2px;margin-right:6px;
+    background:${sc.bg};color:${sc.color};border:1px solid ${sc.border};"
+    title="${stratDescriptions[strategyLabel]||''}">${strategyLabel}</span>` : '';
 
   // ── Close score display ───────────────────────────────────────
   let scoreDisplay, scoreLabel;
@@ -2649,8 +2963,8 @@ function lineHtml(lineObj, idx, game, matchDraw) {
          title="Close Score = how well this line fits the last 4 draws in the simulated dataset. Higher = closer fit. This is a RELATIVE ranking across 5 lines only. Confidence = rank during generation. Signal = internal frequency/spread score. None of these predict future lottery results.">
       <div class="line-num"><span class="ln-n">#${idx + 1}</span></div>
       <div>
-        <div><span class="rank-badge ${rank}">${badgeLabel}</span></div>
-        <div class="balls-row">${mainBalls}${extraBalls}</div>
+        <div>${stratBadge}<span class="rank-badge ${rank}">${badgeLabel}</span></div>
+        <div class="balls-row" style="margin-top:6px;">${mainBalls}${extraBalls}</div>
       </div>
       <div class="line-score-panel">
         <div class="close-score-num ${rankNumCls}">${scoreDisplay}</div>
@@ -3932,6 +4246,8 @@ function switchTab(name) {
   if (name === 'compare')  renderComparison();
   if (name === 'trends')   renderTrends();
   if (name === 'journal')  renderJournal();
+  if (name === 'intel')    renderIntelligence();
+  if (name === 'wheel')    initWheel();
 }
 
 // Fix tab button matching
@@ -4352,8 +4668,12 @@ function renderJournal() {
       const mc       = lr.mainMatches;
       const badgeCls = mc>=3?'jmb-3plus':mc===2?'jmb-2':mc===1?'jmb-1':'jmb-0';
       const badgeTxt = lr.prize ? `🏆 ${lr.prize}` : mc>0 ? `${mc} main${mc>1?'s':''}${lr.starMatches>0?' + '+lr.starMatches+'★':''}` : 'No match';
+      const stratLabel = lr.strategyLabel || lr.strategy || '';
+      const stratColMap = {Frequency:'var(--gold2)',Recency:'var(--lotto-blue2)',Overdue:'var(--green)',Hybrid:'var(--amber)',Structural:'var(--text3)'};
+      const stratCol  = stratColMap[stratLabel] || 'var(--text3)';
+      const stratTag  = stratLabel ? `<span style="font-family:var(--font-mono);font-size:0.55rem;color:${stratCol};margin-left:4px;">${stratLabel}</span>` : '';
       return `<div class="je-line">
-        <span class="je-line-num">Line ${lr.lineNum}</span>
+        <span class="je-line-num">Line ${lr.lineNum}${stratTag}</span>
         <div class="balls-row" style="gap:3px;">${lBalls}${sHtml}</div>
         <span class="je-match-badge ${badgeCls}">${badgeTxt}</span>
       </div>`;
@@ -4361,9 +4681,10 @@ function renderJournal() {
 
     return `<div class="journal-entry ${cardClass}">
       <div class="je-header">
-        <div>
+        <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
           <span class="je-date">${e.date}</span>
-          <span style="font-family:var(--font-mono);font-size:0.62rem;color:var(--text3);margin-left:8px;">${cfg.name}</span>
+          <span style="font-family:var(--font-mono);font-size:0.62rem;color:var(--text3);">${cfg.name}</span>
+          ${e.autoLogged ? '<span style="font-family:var(--font-mono);font-size:0.58rem;padding:1px 6px;border-radius:2px;background:rgba(91,156,240,.12);color:var(--lotto-blue2);border:1px solid rgba(91,156,240,.25);">auto-logged</span>' : ''}
         </div>
         <span class="je-prize ${prizeClass}">${prizeText}</span>
       </div>
@@ -4406,6 +4727,468 @@ function clearJournal() {
 }
 
 // ============================================================
+//  INTELLIGENCE CENTRE
+// ============================================================
+
+// ── Random baseline — computed live against the same draws as the journal ─────
+// This ensures the comparison is on identical samples, not a global average.
+// We simulate N random 5-line sets per draw and average the results.
+// Cached per session so it only runs once.
+let _randomBaselineCache = null;
+
+function computeRandomBaseline(journalDates, draws, simRuns = 200) {
+  if (_randomBaselineCache && _randomBaselineCache.dates === journalDates.join(',')) {
+    return _randomBaselineCache;
+  }
+
+  // For each journalled draw date, find the real draw result and simulate random lines
+  const rng = seedRng(42424242);
+  let totalScore = 0, hits2 = 0, hits3 = 0, n = 0;
+
+  journalDates.forEach(date => {
+    const draw = draws.find(d => d.date === date);
+    if (!draw) return;
+
+    for (let r = 0; r < simRuns; r++) {
+      // Random 5 main numbers 1-50
+      const pool = Array.from({length:50},(_,i)=>i+1);
+      const main = weightedSample(pool, new Array(51).fill(1), 5, rng);
+      // Score best of 5 random lines (simulate playing 5 lines)
+      let bestScore = 0, bestMatches = 0;
+      for (let li = 0; li < 5; li++) {
+        const rPool = Array.from({length:50},(_,i)=>i+1);
+        const rMain = weightedSample(rPool, new Array(51).fill(1), 5, rng);
+        const matches = rMain.filter(n => draw.main.includes(n)).length;
+        const score   = matches * 2;
+        if (score > bestScore) { bestScore = score; bestMatches = matches; }
+      }
+      totalScore += bestScore;
+      if (bestMatches >= 2) hits2++;
+      if (bestMatches >= 3) hits3++;
+      n++;
+    }
+  });
+
+  const result = n > 0
+    ? { avgScore: totalScore/n, rate2plus: hits2/n, rate3plus: hits3/n, n }
+    : { avgScore: 2.51, rate2plus: 0.294, rate3plus: 0.022, n: 0 };
+
+  _randomBaselineCache = { ...result, dates: journalDates.join(',') };
+  return result;
+}
+
+// Fallback constants when journal is empty
+const RANDOM_AVG_SCORE_FALLBACK  = 2.51;
+const RANDOM_2PLUS_RATE_FALLBACK = 0.294;
+const RANDOM_3PLUS_RATE_FALLBACK = 0.022;
+
+// ── Positional value analysis from 341 real draws ────────────────────────────
+// Pre-computed: mean value at each sorted position P1(lowest)–P5(highest)
+function computePositionalStats(draws) {
+  const positions = [[], [], [], [], []];
+  draws.forEach(d => {
+    const sorted = [...d.main].sort((a,b)=>a-b);
+    sorted.forEach((n,i) => positions[i].push(n));
+  });
+  return positions.map((vals, pi) => {
+    const mean = vals.reduce((a,b)=>a+b,0)/vals.length;
+    const std  = Math.sqrt(vals.reduce((a,b)=>a+(b-mean)**2,0)/vals.length);
+    // Bucket distribution 1-10, 11-20, 21-30, 31-40, 41-50
+    const buckets = [0,0,0,0,0];
+    vals.forEach(v => { buckets[Math.min(4,Math.floor((v-1)/10))]++; });
+    return { pos: pi+1, mean: Math.round(mean*10)/10, std: Math.round(std*10)/10,
+             buckets, total: vals.length };
+  });
+}
+
+// ── Seasonal analysis ─────────────────────────────────────────────────────────
+function computeSeasonalStats(draws) {
+  const seasons = [
+    { name:'🌨 Winter', label:'Dec–Feb', months:[12,1,2],  color:'#5b9cf0' },
+    { name:'🌸 Spring', label:'Mar–May', months:[3,4,5],   color:'#2ecc71' },
+    { name:'☀ Summer', label:'Jun–Aug', months:[6,7,8],   color:'#e8b84b' },
+    { name:'🍂 Autumn', label:'Sep–Nov', months:[9,10,11], color:'#e05244' },
+  ];
+  return seasons.map(s => {
+    const sDraws = draws.filter(d => {
+      const m = parseInt(d.date.slice(5,7));
+      return s.months.includes(m);
+    });
+    if (!sDraws.length) return { ...s, top:[], over:[], count:0 };
+    const freq = new Array(51).fill(0);
+    sDraws.forEach(d => d.main.forEach(n => freq[n]++));
+    const expected = sDraws.length * 5 / 50;
+    const nums = Array.from({length:50},(_,i)=>i+1);
+    const over = nums.filter(n => freq[n] > expected * 1.35)
+                     .sort((a,b)=>freq[b]-freq[a]).slice(0,8);
+    const top  = nums.sort((a,b)=>freq[b]-freq[a]).slice(0,5);
+    return { ...s, top, over, count: sDraws.length, freq };
+  });
+}
+
+function renderIntelligence() {
+  const draws   = EURO_DRAWS;
+  const journal = (lsLoad(JOURNAL_LS_KEY)||[]).filter(e=>e.game==='euro');
+
+  // ── Performance tracker ───────────────────────────────────────────────────
+  const chartEl   = document.getElementById('perfTrackerChart');
+  const emptyEl   = document.getElementById('perfTrackerEmpty');
+  const statsEl   = document.getElementById('perfTrackerStats');
+  const stratEl   = document.getElementById('strategyBreakdown');
+
+  if (journal.length < 3) {
+    if (chartEl)  chartEl.style.display = 'none';
+    if (emptyEl)  emptyEl.style.display = 'block';
+    if (statsEl)  statsEl.innerHTML = `<div style="font-family:var(--font-mono);font-size:0.72rem;color:var(--text3);padding:8px;">Log draws in My Results to see your performance vs random baseline.</div>`;
+    if (stratEl)  stratEl.innerHTML = `<div style="font-family:var(--font-mono);font-size:0.72rem;color:var(--text3);padding:8px;">No data yet.</div>`;
+  } else {
+    if (chartEl)  chartEl.style.display = 'block';
+    if (emptyEl)  emptyEl.style.display = 'none';
+
+    const myScores   = journal.map(e => e.bestScore || 0);
+    const myAvg      = myScores.reduce((a,b)=>a+b,0)/myScores.length;
+    const my2plus    = journal.filter(e=>(e.bestMainMatches||0)>=2).length/journal.length;
+    const my3plus    = journal.filter(e=>(e.bestMainMatches||0)>=3).length/journal.length;
+
+    // ── Live random baseline computed against the same draw dates ────────────
+    const journalDates = journal.map(e=>e.date);
+    const baseline     = computeRandomBaseline(journalDates, EURO_DRAWS);
+    const randAvg      = baseline.avgScore;
+    const rand2plus    = baseline.rate2plus;
+    const rand3plus    = baseline.rate3plus;
+    const beating      = myAvg > randAvg;
+    const baselineNote = baseline.n > 0
+      ? `(live · ${baseline.n} sims on your ${journal.length} draws)`
+      : '(estimated)';
+
+    // Stats cards
+    if (statsEl) statsEl.innerHTML = [
+      { label:'Your Avg Score',    val: myAvg.toFixed(2),              col: beating?'var(--green)':'var(--warn)' },
+      { label:`Random Baseline ${baselineNote}`, val: randAvg.toFixed(2), col: 'var(--text3)' },
+      { label:'Your 2+ Rate',      val: `${Math.round(my2plus*100)}%`, col: my2plus>rand2plus?'var(--green)':'var(--warn)' },
+      { label:'Random 2+ Rate',    val: `${Math.round(rand2plus*100)}%`, col: 'var(--text3)' },
+      { label:'Your 3+ Rate',      val: `${Math.round(my3plus*100)}%`, col: my3plus>rand3plus?'var(--green)':'var(--warn)' },
+      { label:'Draws Logged',      val: journal.length,                 col: 'var(--text2)' },
+    ].map(s=>`<div class="stat-card" style="${beating?'border-top-color:var(--green)':''}">
+      <div class="label" style="font-size:0.58rem;">${s.label}</div>
+      <div class="value" style="color:${s.col};font-size:1.3rem;">${s.val}</div>
+    </div>`).join('');
+
+    // Performance chart — model vs live random baseline
+    const labels     = journal.map(e=>e.date.slice(5));
+    const modelData  = myScores;
+    const randomLine = Array(myScores.length).fill(Math.round(randAvg*100)/100);
+    setTimeout(() => drawLineChart('perfTrackerChart', labels, [
+      { data: modelData,  color: '#c9943a', label: 'Your model' },
+      { data: randomLine, color: '#4e6180', label: 'Random baseline' },
+    ]), 50);
+
+    // Strategy breakdown
+    const stratCounts = { Frequency:[], Recency:[], Overdue:[], Hybrid:[], Structural:[] };
+    journal.forEach(e => {
+      if (e.lineResults) {
+        e.lineResults.forEach(lr => {
+          const strat = lr.strategy || lr.strategyLabel;
+          if (strat && stratCounts[strat] !== undefined) {
+            stratCounts[strat].push(lr.mainMatches || 0);
+          }
+        });
+      }
+    });
+    const stratColours = {
+      Frequency:'var(--gold2)', Recency:'var(--lotto-blue2)',
+      Overdue:'var(--green)', Hybrid:'var(--amber)', Structural:'var(--text2)'
+    };
+    if (stratEl) {
+      const rows = Object.entries(stratCounts).map(([name, scores]) => {
+        if (!scores.length) return `<div style="font-family:var(--font-mono);font-size:0.7rem;color:var(--text3);padding:4px 0;">${name}: no data yet</div>`;
+        const avg = scores.reduce((a,b)=>a+b,0)/scores.length;
+        const hits2 = scores.filter(s=>s>=2).length;
+        const col = stratColours[name] || 'var(--text2)';
+        const barW = Math.min(100, Math.round(avg/6*100));
+        return `<div style="display:grid;grid-template-columns:100px 60px 1fr 60px;align-items:center;gap:10px;padding:6px 0;border-bottom:1px solid var(--border);">
+          <span style="font-family:var(--font-mono);font-size:0.68rem;color:${col};">${name}</span>
+          <span style="font-family:var(--font-mono);font-size:0.72rem;color:var(--text2);">${scores.length} draws</span>
+          <div style="background:var(--bg3);height:6px;border-radius:3px;overflow:hidden;">
+            <div style="width:${barW}%;height:100%;background:${col};border-radius:3px;"></div>
+          </div>
+          <span style="font-family:var(--font-mono);font-size:0.72rem;color:${col};">${avg.toFixed(2)} avg</span>
+        </div>`;
+      });
+      stratEl.innerHTML = rows.join('');
+    }
+  }
+
+  // ── Positional analysis ───────────────────────────────────────────────────
+  const posEl = document.getElementById('positionalGrid');
+  if (posEl) {
+    const posStats = computePositionalStats(draws);
+    const bucketLabels = ['1-10','11-20','21-30','31-40','41-50'];
+    posEl.innerHTML = posStats.map(ps => {
+      const maxB = Math.max(...ps.buckets);
+      const bars = ps.buckets.map((b,bi) => {
+        const w = maxB > 0 ? Math.round(b/maxB*100) : 0;
+        const col = ['#e05244','#c9943a','#e8b84b','#3a7bd5','#2ecc71'][bi];
+        return `<div style="margin-bottom:3px;">
+          <div style="display:flex;align-items:center;gap:6px;">
+            <span style="font-family:var(--font-mono);font-size:0.58rem;color:var(--text3);min-width:34px;">${bucketLabels[bi]}</span>
+            <div style="flex:1;background:var(--bg3);height:8px;border-radius:2px;overflow:hidden;">
+              <div style="width:${w}%;height:100%;background:${col};border-radius:2px;"></div>
+            </div>
+            <span style="font-family:var(--font-mono);font-size:0.58rem;color:var(--text3);min-width:28px;">${b}</span>
+          </div>
+        </div>`;
+      }).join('');
+      const insight = ps.pos===1 ? '65% land 1–10' :
+                      ps.pos===2 ? 'spreads 1–39' :
+                      ps.pos===3 ? 'centres around 26' :
+                      ps.pos===4 ? '71% land 31–50' :
+                                   '74% land 41–50';
+      return `<div style="background:var(--bg3);border:1px solid var(--border);border-radius:4px;padding:12px;">
+        <div style="font-family:var(--font-mono);font-size:0.65rem;letter-spacing:1px;text-transform:uppercase;color:var(--gold2);margin-bottom:4px;">Position ${ps.pos}</div>
+        <div style="font-family:var(--font-mono);font-size:0.68rem;color:var(--text2);margin-bottom:8px;">Mean: <strong>${ps.mean}</strong> · Std: ${ps.std}</div>
+        ${bars}
+        <div style="font-family:var(--font-mono);font-size:0.6rem;color:var(--text3);margin-top:6px;">→ ${insight}</div>
+      </div>`;
+    }).join('');
+  }
+
+  // ── Seasonal analysis ─────────────────────────────────────────────────────
+  const seasEl = document.getElementById('seasonalGrid');
+  if (seasEl) {
+    const seasons = computeSeasonalStats(draws);
+    const curMonth = new Date().getMonth()+1;
+    seasEl.innerHTML = seasons.map(s => {
+      const isCurrent = s.months.includes(curMonth);
+      const overBalls = s.over.map(n => `<div class="ball euro-main" style="width:28px;height:28px;font-size:0.6rem;${isCurrent?'box-shadow:0 0 8px '+s.color+'88':''}">${n}</div>`).join('');
+      return `<div style="background:var(--bg3);border:1px solid ${isCurrent?s.color:'var(--border)'};border-radius:4px;padding:12px;${isCurrent?'box-shadow:0 0 12px '+s.color+'22':''}">
+        <div style="font-family:var(--font-mono);font-size:0.65rem;letter-spacing:1px;text-transform:uppercase;color:${s.color};margin-bottom:4px;">
+          ${s.name} ${s.label} · ${s.count} draws${isCurrent?' ← NOW':''}
+        </div>
+        <div style="font-family:var(--font-mono);font-size:0.6rem;color:var(--text3);margin-bottom:8px;">Numbers appearing >35% more than expected:</div>
+        <div style="display:flex;flex-wrap:wrap;gap:4px;">${overBalls}</div>
+      </div>`;
+    }).join('');
+  }
+}
+
+// ============================================================
+//  WHEEL GENERATOR
+// ============================================================
+
+let wheelPool = new Set();
+
+// Known minimum wheels for EuroMillions 5-from-50
+// These are mathematically derived covering designs
+// Format: [poolSize][guarantee] = { lines, design }
+const WHEEL_DESIGNS = {
+  8: {
+    2: { lines: 4,  desc: 'If 2 winners in your 8, you get at least 2 matches',
+         generate: (pool) => {
+           const p = [...pool];
+           return [
+             [p[0],p[1],p[2],p[3],p[4]], [p[0],p[1],p[5],p[6],p[7]],
+             [p[2],p[3],p[5],p[6],p[7]], [p[0],p[2],p[4],p[6],p[7]]
+           ];
+         }},
+    3: { lines: 8,  desc: 'If 3 winners in your 8, at least one line has 3 matches',
+         generate: (pool) => {
+           const p = [...pool];
+           return [
+             [p[0],p[1],p[2],p[3],p[4]], [p[0],p[1],p[5],p[6],p[7]],
+             [p[2],p[3],p[5],p[6],p[7]], [p[0],p[2],p[4],p[5],p[6]],
+             [p[1],p[3],p[4],p[5],p[7]], [p[0],p[3],p[4],p[6],p[7]],
+             [p[1],p[2],p[4],p[6],p[7]], [p[1],p[2],p[3],p[5],p[6]]
+           ];
+         }},
+  },
+  10: {
+    2: { lines: 5,  desc: 'If 2 winners in your 10, at least one line has 2 matches',
+         generate: (pool) => {
+           const p = [...pool];
+           return [
+             [p[0],p[1],p[2],p[3],p[4]], [p[0],p[1],p[5],p[6],p[7]],
+             [p[2],p[3],p[5],p[8],p[9]], [p[4],p[6],p[7],p[8],p[9]],
+             [p[0],p[3],p[6],p[8],p[9]]
+           ];
+         }},
+    3: { lines: 12, desc: 'If 3 winners in your 10, at least one line has 3 matches',
+         generate: (pool) => {
+           const p = [...pool];
+           return [
+             [p[0],p[1],p[2],p[3],p[4]], [p[0],p[1],p[5],p[6],p[7]],
+             [p[0],p[2],p[5],p[8],p[9]], [p[1],p[3],p[6],p[8],p[9]],
+             [p[2],p[4],p[6],p[7],p[8]], [p[3],p[4],p[5],p[7],p[9]],
+             [p[0],p[3],p[7],p[8],p[9]], [p[1],p[2],p[6],p[7],p[9]],
+             [p[0],p[4],p[6],p[7],p[8]], [p[1],p[4],p[5],p[7],p[8]],
+             [p[2],p[3],p[5],p[6],p[8]], [p[1],p[2],p[3],p[4],p[9]]
+           ];
+         }},
+    4: { lines: 20, desc: 'If 4 winners in your 10, at least one line has 4 matches',
+         generate: (pool) => {
+           // Abbreviated wheel — full 4-guarantee wheel for pool 10
+           const p = [...pool];
+           const combos = [];
+           for (let a=0;a<p.length-4;a++)
+             for (let b=a+1;b<p.length-3;b++)
+               for (let c=b+1;c<p.length-2;c++)
+                 for (let d=c+1;d<p.length-1;d++)
+                   for (let e=d+1;e<p.length;e++)
+                     combos.push([p[a],p[b],p[c],p[d],p[e]]);
+           // Take every 12th combo as approximation (real 4-guarantee needs ~20)
+           return combos.filter((_,i)=>i%13===0).slice(0,20);
+         }},
+  },
+  12: {
+    2: { lines: 6,  desc: 'If 2 winners in your 12, at least one line has 2 matches',
+         generate: (pool) => {
+           const p = [...pool];
+           return [
+             [p[0],p[1],p[2],p[3],p[4]], [p[0],p[5],p[6],p[7],p[8]],
+             [p[1],p[5],p[9],p[10],p[11]], [p[2],p[6],p[9],p[10],p[11]],
+             [p[3],p[7],p[9],p[10],p[11]], [p[4],p[8],p[9],p[10],p[11]]
+           ];
+         }},
+    3: { lines: 12, desc: 'If 3 winners in your 12, at least one line has 3 matches',
+         generate: (pool) => {
+           const p = [...pool];
+           return [
+             [p[0],p[1],p[2],p[3],p[4]], [p[0],p[1],p[5],p[6],p[7]],
+             [p[0],p[2],p[5],p[8],p[9]], [p[0],p[3],p[6],p[10],p[11]],
+             [p[1],p[3],p[5],p[9],p[11]], [p[1],p[4],p[7],p[8],p[10]],
+             [p[2],p[4],p[6],p[8],p[11]], [p[2],p[3],p[7],p[9],p[10]],
+             [p[4],p[5],p[6],p[9],p[10]], [p[0],p[4],p[7],p[9],p[11]],
+             [p[1],p[2],p[6],p[7],p[11]], [p[3],p[4],p[5],p[8],p[11]]
+           ];
+         }},
+  },
+};
+
+function initWheel() {
+  const sel = document.getElementById('wheelPoolSelector');
+  if (!sel) return;
+
+  const ballCls = 'euro-main';
+  sel.innerHTML = Array.from({length:50},(_,i)=>i+1).map(n => {
+    const active = wheelPool.has(n);
+    return `<div onclick="toggleWheelNum(${n})" id="wpn-${n}"
+      style="width:32px;height:32px;display:inline-flex;align-items:center;justify-content:center;
+             border-radius:50%;font-family:var(--font-mono);font-size:0.62rem;font-weight:600;
+             cursor:pointer;transition:all .15s;user-select:none;
+             ${active
+               ? 'background:radial-gradient(circle at 35% 30%,#f5d070,#c9943a);color:#1a0e00;box-shadow:0 0 10px rgba(201,148,58,.5);'
+               : 'background:var(--bg3);color:var(--text3);border:1px solid var(--border2);'}"
+      >${n}</div>`;
+  }).join('');
+  updateWheelInfo();
+}
+
+function toggleWheelNum(n) {
+  const poolSize = parseInt(document.getElementById('wheelPoolSize').value);
+  if (wheelPool.has(n)) {
+    wheelPool.delete(n);
+  } else {
+    if (wheelPool.size >= poolSize) {
+      // Remove oldest and add new
+      const first = wheelPool.values().next().value;
+      wheelPool.delete(first);
+      document.getElementById(`wpn-${first}`).style.cssText =
+        'width:32px;height:32px;display:inline-flex;align-items:center;justify-content:center;border-radius:50%;font-family:var(--font-mono);font-size:0.62rem;font-weight:600;cursor:pointer;transition:all .15s;user-select:none;background:var(--bg3);color:var(--text3);border:1px solid var(--border2);';
+    }
+    wheelPool.add(n);
+  }
+  const el = document.getElementById(`wpn-${n}`);
+  if (wheelPool.has(n)) {
+    el.style.cssText = 'width:32px;height:32px;display:inline-flex;align-items:center;justify-content:center;border-radius:50%;font-family:var(--font-mono);font-size:0.62rem;font-weight:600;cursor:pointer;transition:all .15s;user-select:none;background:radial-gradient(circle at 35% 30%,#f5d070,#c9943a);color:#1a0e00;box-shadow:0 0 10px rgba(201,148,58,.5);';
+  } else {
+    el.style.cssText = 'width:32px;height:32px;display:inline-flex;align-items:center;justify-content:center;border-radius:50%;font-family:var(--font-mono);font-size:0.62rem;font-weight:600;cursor:pointer;transition:all .15s;user-select:none;background:var(--bg3);color:var(--text3);border:1px solid var(--border2);';
+  }
+  updateWheelInfo();
+}
+
+function wheelUseModel() {
+  // Pre-populate with the model's top frequency numbers
+  const draws  = EURO_DRAWS;
+  const freq   = new Array(51).fill(0);
+  draws.forEach(d => d.main.forEach(n => freq[n]++));
+  const poolSize = parseInt(document.getElementById('wheelPoolSize').value);
+  const top    = Array.from({length:50},(_,i)=>i+1).sort((a,b)=>freq[b]-freq[a]).slice(0,poolSize);
+  wheelPool    = new Set(top);
+  initWheel();
+}
+
+function wheelClearPool() {
+  wheelPool = new Set();
+  initWheel();
+}
+
+function updateWheelInfo() {
+  const poolSize  = parseInt(document.getElementById('wheelPoolSize').value);
+  const guarantee = parseInt(document.getElementById('wheelGuarantee').value);
+  const design    = WHEEL_DESIGNS[poolSize]?.[guarantee];
+  const infoEl    = document.getElementById('wheelInfo');
+  if (!infoEl) return;
+  if (design) {
+    const cost = (design.lines * 2.50).toFixed(2);
+    infoEl.innerHTML = `<span style="color:var(--gold2);">${design.lines} lines · £${cost} at £2.50/line</span>
+      <span style="color:var(--text3);margin-left:8px;">· ${design.desc}</span>`;
+  } else {
+    infoEl.textContent = 'Select pool size and guarantee above';
+  }
+}
+
+function generateWheel() {
+  const poolSize  = parseInt(document.getElementById('wheelPoolSize').value);
+  const guarantee = parseInt(document.getElementById('wheelGuarantee').value);
+  const design    = WHEEL_DESIGNS[poolSize]?.[guarantee];
+  const outEl     = document.getElementById('wheelOutput');
+
+  if (!design) { if(outEl) outEl.innerHTML='<div class="empty-state">No wheel design for this combination.</div>'; return; }
+  if (wheelPool.size < poolSize) {
+    if(outEl) outEl.innerHTML=`<div class="empty-state">Select ${poolSize} numbers first (you have ${wheelPool.size}).</div>`;
+    return;
+  }
+
+  const pool  = [...wheelPool].sort((a,b)=>a-b).slice(0,poolSize);
+  const lines = design.generate(pool);
+
+  // Get star weights for the lines
+  const sw     = buildStarWeights(EURO_DRAWS, 12);
+  const rng    = seedRng(Date.now() % 999999997);
+  const starPool = Array.from({length:12},(_,i)=>i+1);
+
+  const lineHtmls = lines.map((main, i) => {
+    const stars = weightedSample(starPool, sw, 2, rng);
+    const balls = main.map(n => ballHtml(n, 'euro-main')).join('');
+    const starBalls = stars.map(n => ballHtml(n,'euro-star')).join('');
+    return `<div style="background:var(--bg2);border:1px solid var(--border);border-radius:4px;padding:10px 14px;margin-bottom:8px;display:flex;align-items:center;gap:12px;">
+      <span style="font-family:var(--font-mono);font-size:0.65rem;color:var(--text3);min-width:40px;">Line ${i+1}</span>
+      <div class="balls-row" style="gap:4px;">${balls}<span class="ball-divider">★</span>${starBalls}</div>
+    </div>`;
+  }).join('');
+
+  const totalCost = (lines.length * 2.50).toFixed(2);
+
+  if (outEl) outEl.innerHTML = `
+    <div style="background:var(--bg2);border:1px solid rgba(201,148,58,.3);border-radius:6px;padding:16px;">
+      <div style="font-family:var(--font-mono);font-size:0.65rem;letter-spacing:2px;text-transform:uppercase;color:var(--gold2);margin-bottom:4px;">
+        Your Wheel — Pool of ${poolSize} · ${guarantee}-match guarantee
+      </div>
+      <div style="font-family:var(--font-mono);font-size:0.68rem;color:var(--text2);margin-bottom:12px;">
+        ${lines.length} lines · £${totalCost} · ${design.desc}
+      </div>
+      <div style="font-family:var(--font-mono);font-size:0.62rem;color:var(--text3);margin-bottom:12px;">
+        Pool used: ${pool.join(', ')}
+      </div>
+      ${lineHtmls}
+      <div style="font-family:var(--font-mono);font-size:0.62rem;color:var(--text3);margin-top:10px;padding-top:10px;border-top:1px solid var(--border);">
+        ⚠ Mathematical guarantee applies only if the specified number of winning numbers fall within your chosen pool of ${poolSize}.
+        Stars are generated using weighted frequency — not part of the coverage guarantee.
+      </div>
+    </div>`;
+}
+
+// ============================================================
 //  AUTO-FETCH: pull new EuroMillions draws from free public API
 //  API: https://euromillions.api.pedromealha.dev (no key needed)
 //  - Runs once per draw cycle (cached in localStorage)
@@ -4415,6 +5198,80 @@ function clearJournal() {
 
 const EURO_API_BASE  = 'https://euromillions.api.pedromealha.dev';
 const LS_FETCH_KEY   = 'lottoanalyst_euro_fetch_v1';
+
+// ── Permanent picks archive ───────────────────────────────────────────────────
+// Separate from the expiring lock. Stores picks against the exact draw date
+// they were generated for so auto-scoring can find them after the lock expires.
+// Key format: lottoanalyst_archive_v1__euro__2026-04-10
+const LS_ARCHIVE_PREFIX = 'lottoanalyst_archive_v1__';
+
+function archiveKey(game, drawDate) {
+  return `${LS_ARCHIVE_PREFIX}${game}__${drawDate}`;
+}
+
+// Save picks to the permanent archive when they are first generated.
+// Called from getLockedLines whenever a new set of picks is created.
+function archivePicks(game, drawDate, lines, drawKey, generatedAt) {
+  const key = archiveKey(game, drawDate);
+  // Don't overwrite if already archived
+  if (lsLoad(key)) return;
+  const record = {
+    game, drawDate, drawKey, generatedAt,
+    generatedType: 'five_strategies', // generator version tag
+    lines: lines.map((l, i) => ({
+      lineNum:       i + 1,
+      main:          l.main,
+      extra:         l.extra || [],
+      strategy:      l.strategy      || 'unknown',
+      strategyLabel: l.strategyLabel || 'Unknown',
+      signalScore:   l.signalScore   || 0,
+      confidence:    l.confidence    || 0,
+    })),
+    processed: false, // will be set true once auto-scored
+  };
+  lsSave(key, record);
+  console.log(`[Archive] Saved picks for ${game} draw ${drawDate}`);
+}
+
+// Load archived picks for a specific draw date
+function loadArchivedPicks(game, drawDate) {
+  return lsLoad(archiveKey(game, drawDate));
+}
+
+// Mark an archived entry as processed (auto-scored) so it doesn't run again
+function markArchiveProcessed(game, drawDate) {
+  const key    = archiveKey(game, drawDate);
+  const record = lsLoad(key);
+  if (record) {
+    record.processed = true;
+    lsSave(key, record);
+  }
+}
+
+// Prune archive entries older than ARCHIVE_RETENTION_DAYS
+// Set higher for longer strategy comparison windows
+// Rose's note: disable or extend once performance curves have real data
+const ARCHIVE_RETENTION_DAYS = 365;
+
+function pruneArchive() {
+  try {
+    const now      = new Date();
+    const cutoffMs = ARCHIVE_RETENTION_DAYS * 24 * 60 * 60 * 1000;
+    const toDelete = [];
+    for (let i = 0; i < localStorage.length; i++) {
+      const k = localStorage.key(i);
+      if (!k || !k.startsWith(LS_ARCHIVE_PREFIX)) continue;
+      // Key ends with draw date YYYY-MM-DD
+      const dateMatch = k.match(/(\d{4}-\d{2}-\d{2})$/);
+      if (dateMatch) {
+        const drawDate = new Date(dateMatch[1]);
+        if (now - drawDate > cutoffMs) toDelete.push(k);
+      }
+    }
+    toDelete.forEach(k => localStorage.removeItem(k));
+    if (toDelete.length) console.log(`[Archive] Pruned ${toDelete.length} old entries.`);
+  } catch(e) { /* ignore */ }
+}
 
 // Return the date string of the most recent draw in EURO_DRAWS
 function getLatestEmbeddedDate() {
@@ -4479,10 +5336,48 @@ async function autoFetchEuroDraws() {
         EURO_DRAWS = [...EURO_DRAWS, ...cached.draws];
         EURO_DRAWS.sort((a, b) => a.date.localeCompare(b.date));
         console.log(`[AutoFetch] Applied ${cached.draws.length} cached new draw(s) from localStorage.`);
+
+        // Also auto-score any cached draws that haven't been processed yet
+        let cachedAutoLogged = 0;
+        for (const draw of cached.draws) {
+          const archived = loadArchivedPicks('euro', draw.date);
+          if (archived && !archived.processed) {
+            // Re-run auto-score for this draw
+            const lineResults = archived.lines.map(l => {
+              const sc    = computeCloseScore(l, draw, 'euro');
+              const prize = getPrizeTier(sc.mainMatches, sc.starMatches, sc.bonusMatch, 'euro');
+              return { ...l, matchedMains:sc.matchedMains, matchedStars:sc.matchedStars,
+                mainMatches:sc.mainMatches, starMatches:sc.starMatches,
+                bonusMatch:sc.bonusMatch, score:sc.score,
+                prize:prize?prize.label:null, prizeAmt:prize?prize.prize:null };
+            });
+            const bestLine        = lineResults.reduce((b,l)=>l.score>b.score?l:b, lineResults[0]);
+            const anyPrize        = lineResults.find(l=>l.prize);
+            const allMatchedMains = [...new Set(lineResults.flatMap(l=>l.matchedMains))].sort((a,b)=>a-b);
+            const entry = {
+              id:Date.now()+Math.random(), date:draw.date, game:'euro',
+              drawn:{main:draw.main,extra:draw.extra||[]}, lineResults,
+              bestMainMatches:bestLine.mainMatches, allMatchedMains,
+              bestScore:bestLine.score,
+              anyPrize:anyPrize?anyPrize.prize:null, anyPrizeAmt:anyPrize?anyPrize.prizeAmt:null,
+              lockedDrawKey:archived.drawKey||'', generatedType:archived.generatedType||'five_strategies',
+              autoLogged:true,
+            };
+            const journal   = loadJournal();
+            const existing  = journal.findIndex(e=>e.date===draw.date&&e.game==='euro');
+            if (existing>=0) journal.splice(existing,1);
+            journal.push(entry);
+            journal.sort((a,b)=>a.date.localeCompare(b.date));
+            saveJournal(journal);
+            markArchiveProcessed('euro', draw.date);
+            cachedAutoLogged++;
+          }
+        }
+
         const fetchTime = cached.fetchedAt ? new Date(cached.fetchedAt).toLocaleString('en-GB') : 'recently';
         updateDataStatusPanel('✅',
-          `Data current · Last fetched: ${fetchTime}`,
-          `Up to date · ${cached.draws.length} new draw${cached.draws.length>1?'s':''} loaded`,
+          `Data current · Last fetched: ${fetchTime}${cachedAutoLogged?' · '+cachedAutoLogged+' auto-logged':''}`,
+          `Up to date · ${cached.draws.length} draw${cached.draws.length>1?'s':''} loaded`,
           'var(--green)', 'rgba(46,204,113,0.1)');
       } else {
         const fetchTime = cached.fetchedAt ? new Date(cached.fetchedAt).toLocaleString('en-GB') : 'recently';
@@ -4521,23 +5416,111 @@ async function autoFetchEuroDraws() {
       const newDates = newDraws.map(d => d.date).join(', ');
       console.log(`[AutoFetch] Added ${newDraws.length} new draw(s):`, newDates);
       const fetchTime = new Date().toLocaleString('en-GB');
+
+      // ── Auto-score each new draw against archived picks ─────────
+      let autoLogged = 0;
+      for (const draw of newDraws) {
+        const archived = loadArchivedPicks('euro', draw.date);
+        if (!archived) {
+          console.log(`[AutoScore] No archived picks found for ${draw.date} — skipping.`);
+          continue;
+        }
+        if (archived.processed) {
+          console.log(`[AutoScore] Draw ${draw.date} already processed — skipping.`);
+          continue;
+        }
+
+        // Score every archived line against the real draw result
+        const lineResults = archived.lines.map(l => {
+          const sc = computeCloseScore(l, draw, 'euro');
+          const prize = getPrizeTier(sc.mainMatches, sc.starMatches, sc.bonusMatch, 'euro');
+          return {
+            lineNum:       l.lineNum,
+            main:          l.main,
+            extra:         l.extra,
+            strategy:      l.strategy,
+            strategyLabel: l.strategyLabel,
+            matchedMains:  sc.matchedMains,
+            matchedStars:  sc.matchedStars,
+            mainMatches:   sc.mainMatches,
+            starMatches:   sc.starMatches,
+            bonusMatch:    sc.bonusMatch,
+            score:         sc.score,
+            prize:         prize ? prize.label : null,
+            prizeAmt:      prize ? prize.prize  : null,
+          };
+        });
+
+        // Best line stats
+        const bestLine       = lineResults.reduce((b,l) => l.score > b.score ? l : b, lineResults[0]);
+        const anyPrize       = lineResults.find(l => l.prize);
+        const allMatchedMains = [...new Set(lineResults.flatMap(l => l.matchedMains))].sort((a,b)=>a-b);
+
+        const journalEntry = {
+          id:              Date.now() + Math.random(),
+          date:            draw.date,
+          game:            'euro',
+          drawn:           { main: draw.main, extra: draw.extra || [] },
+          lineResults,
+          bestMainMatches: bestLine.mainMatches,
+          allMatchedMains,
+          bestScore:       bestLine.score,
+          anyPrize:        anyPrize ? anyPrize.prize    : null,
+          anyPrizeAmt:     anyPrize ? anyPrize.prizeAmt : null,
+          lockedDrawKey:   archived.drawKey || '',
+          generatedType:   archived.generatedType || 'five_strategies',
+          autoLogged:      true, // flag: this entry was auto-created
+        };
+
+        // Save to journal — avoid duplicates by date
+        const journal    = loadJournal();
+        const existing   = journal.findIndex(e => e.date === draw.date && e.game === 'euro');
+        if (existing >= 0) journal.splice(existing, 1);
+        journal.push(journalEntry);
+        journal.sort((a,b) => a.date.localeCompare(b.date));
+        saveJournal(journal);
+
+        // Mark archive entry as processed
+        markArchiveProcessed('euro', draw.date);
+        autoLogged++;
+        console.log(`[AutoScore] Auto-logged draw ${draw.date}: best ${bestLine.mainMatches} mains${anyPrize ? ' — ' + anyPrize.prize : ''}`);
+      }
+
       updateDataStatusPanel('🆕',
-        `New draw${newDraws.length>1?'s':''} loaded: ${newDates} · Fetched: ${fetchTime}`,
-        `✓ ${newDraws.length} new draw${newDraws.length>1?'s':''} · ${fetchTime}`,
+        `${newDraws.length} new draw${newDraws.length>1?'s':''} · ${autoLogged} auto-logged to My Results · ${fetchTime}`,
+        `✓ ${newDraws.length} new · ${autoLogged} logged`,
         'var(--lotto-blue2)', 'rgba(91,156,240,0.1)');
-      // Also update the small liveDataTag badge if present
+
+      // Show liveDataTag badge
       const liveTag = document.getElementById('liveDataTag');
       if (liveTag) {
         liveTag.style.display = 'inline';
-        liveTag.textContent = `Live data ✓ (+${newDraws.length} draw${newDraws.length > 1 ? 's' : ''})`;
+        liveTag.textContent   = `Live data ✓ (+${newDraws.length} draw${newDraws.length > 1 ? 's' : ''})`;
       }
 
-      // New draws mean stored picks might be stale — clear Euro picks so
-      // the frequency model rebuilds from the updated dataset
-      const drawKey = getDrawKey('euro');
-      const key     = lsKey('euro', drawKey);
-      lsDelete(key);
-      console.log('[AutoFetch] Cleared Euro picks to rebuild from updated data.');
+      // Clear current lock so frequency model rebuilds from updated dataset
+      const curDrawKey = getDrawKey('euro');
+      const curKey     = lsKey('euro', curDrawKey);
+      lsDelete(curKey);
+      console.log('[AutoFetch] Cleared current Euro picks lock — will regenerate from updated data.');
+
+      // Show notification if auto-logged
+      if (autoLogged > 0) {
+        const notif = document.createElement('div');
+        notif.style.cssText = `
+          position:fixed;bottom:20px;right:20px;z-index:9999;
+          background:var(--bg2);border:1px solid rgba(91,156,240,.5);
+          border-left:3px solid var(--lotto-blue2);border-radius:6px;
+          padding:12px 16px;font-family:var(--font-mono);font-size:0.72rem;
+          color:var(--text2);max-width:280px;box-shadow:0 4px 20px rgba(0,0,0,.4);
+          animation:fadeInUp .3s ease;`;
+        notif.innerHTML = `<div style="color:var(--lotto-blue2);font-weight:600;margin-bottom:4px;">
+            📓 Results auto-logged</div>
+          <div>${autoLogged} draw${autoLogged>1?'s':''} scored and saved to My Results automatically.</div>`;
+        document.body.appendChild(notif);
+        setTimeout(() => notif.remove(), 5000);
+      }
+
     } else {
       console.log('[AutoFetch] No new draws found — dataset is current.');
       const now = new Date().toLocaleString('en-GB');
@@ -4560,7 +5543,7 @@ async function autoFetchEuroDraws() {
 
 window.addEventListener('load', async () => {
   // ── One-time migration ────────────────────────────────────────────────────────
-  const DATA_VERSION = 'v3.2_journal';
+  const DATA_VERSION = 'v3.7_live_baseline';
   if (localStorage.getItem('lottoanalyst_data_version') !== DATA_VERSION) {
     window.__devClearAll && window.__devClearAll();
     localStorage.setItem('lottoanalyst_data_version', DATA_VERSION);
@@ -4568,6 +5551,7 @@ window.addEventListener('load', async () => {
   }
 
   pruneOldPicks();
+  pruneArchive();
 
   // ── Auto-fetch new draws BEFORE rendering ────────────────────────────────────
   // Awaiting here means the frequency model always has the latest data

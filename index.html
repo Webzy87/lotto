@@ -2046,7 +2046,12 @@ const EURO_DRAWS_REAL = [
   {date:"2026-03-27",main:[4, 10, 43, 44, 48],extra:[2, 4],bonus:null},
   {date:"2026-03-31",main:[5, 8, 10, 33, 38],extra:[2, 7],bonus:null},
   {date:"2026-04-03",main:[8, 27, 29, 46, 49],extra:[2, 10],bonus:null},
-  {date:"2026-04-07",main:[11, 14, 19, 36, 49],extra:[6, 7],bonus:null}
+  {date:"2026-04-07",main:[11, 14, 19, 36, 49],extra:[6, 7],bonus:null},
+  {date:"2026-04-10",main:[10, 13, 14, 38, 41],extra:[6, 9],bonus:null},
+  {date:"2026-04-14",main:[1,  2,  4,  28, 44], extra:[5, 12],bonus:null},
+  {date:"2026-04-17",main:[22, 23, 28, 41, 47],extra:[6, 8],bonus:null},
+  {date:"2026-04-21",main:[13, 16, 29, 40, 47],extra:[3, 4],bonus:null},
+  {date:"2026-04-24",main:[25, 26, 30, 40, 45],extra:[1, 5],bonus:null}
 ];
 
 // Use real data — falls back to simulated if real data somehow empty
@@ -5391,15 +5396,31 @@ async function autoFetchEuroDraws() {
 
     // ── Fetch from API ───────────────────────────────────────────
     console.log('[AutoFetch] Checking for new EuroMillions draws since', latestEmbedded, '...');
-    const url = `${EURO_API_BASE}/draws?end_date=${new Date().toISOString().slice(0,10)}&begin_date=${latestEmbedded}`;
-    const resp = await fetch(url, { signal: AbortSignal.timeout(6000) });
-    if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
-    const data = await resp.json();
 
-    // API returns array directly or wrapped in a key
-    const rawDraws = Array.isArray(data) ? data
-                   : Array.isArray(data.draws) ? data.draws
-                   : [];
+    // Try multiple endpoint formats — the API has changed structure over time
+    let rawDraws = [];
+    const endpoints = [
+      `${EURO_API_BASE}/draws?end_date=${new Date().toISOString().slice(0,10)}&begin_date=${latestEmbedded}`,
+      `${EURO_API_BASE}/draws/latest`,
+      `${EURO_API_BASE}/draws`,
+    ];
+
+    for (const url of endpoints) {
+      try {
+        const resp = await fetch(url, { signal: AbortSignal.timeout(6000) });
+        if (!resp.ok) continue;
+        const data = await resp.json();
+        rawDraws = Array.isArray(data) ? data
+                 : Array.isArray(data.draws) ? data.draws
+                 : data.draw ? [data.draw]
+                 : data.date ? [data] // single draw object
+                 : [];
+        if (rawDraws.length > 0) {
+          console.log(`[AutoFetch] Got ${rawDraws.length} draw(s) from ${url}`);
+          break;
+        }
+      } catch(e) { continue; }
+    }
 
     // Convert and filter to only draws strictly newer than our latest
     const newDraws = rawDraws
@@ -5543,11 +5564,13 @@ async function autoFetchEuroDraws() {
 
 window.addEventListener('load', async () => {
   // ── One-time migration ────────────────────────────────────────────────────────
-  const DATA_VERSION = 'v3.7_live_baseline';
+  const DATA_VERSION = 'v3.8_draws_current';
   if (localStorage.getItem('lottoanalyst_data_version') !== DATA_VERSION) {
     window.__devClearAll && window.__devClearAll();
+    // Also clear the fetch cache so auto-fetch re-checks from the new latest date
+    localStorage.removeItem('lottoanalyst_euro_fetch_v1');
     localStorage.setItem('lottoanalyst_data_version', DATA_VERSION);
-    console.log('[LottoAnalyst] Data version upgraded to', DATA_VERSION, '— picks regenerated.');
+    console.log('[LottoAnalyst] Data version upgraded to', DATA_VERSION, '— picks + fetch cache cleared.');
   }
 
   pruneOldPicks();
